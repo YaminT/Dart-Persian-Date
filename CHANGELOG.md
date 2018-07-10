@@ -1,3 +1,3 @@
-## [0.0.1] - TODO: Add release date.
+## [0.0.1] - July 10 2018
 
-* TODO: Describe initial release.
+* Convert Gregorian date to Jalali date
