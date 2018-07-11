@@ -50,6 +50,11 @@ class PersianDate {
     }
   }
 
+  PersianDate.fromGregorianString(String datetime){
+    _dateTime = DateTime.parse(datetime);
+    GreToJal();
+  }
+
   PersianDate.fromDateTime(DateTime datetime)
   :_dateTime = datetime{
     GreToJal();
@@ -67,9 +72,27 @@ class PersianDate {
         day = day;
 
   ///returns date in string
-  String dateToString() {
-    return year.toString() + '/' + month.toString() + '/' + day.toString();
+  String toString({bool showDate = true, bool showTime = false,}) {
+    if (!(showDate || showTime)) {
+      throw new Exception(
+          'At least one of arguments [showDate or showTime] must be true');
+    }
+    String stringDate = '';
+    if(showDate) {
+      stringDate = year.toString() + '/' + month.toString() + '/' + day.toString();
+      if(showTime){
+        stringDate += ' ';
+      }
+    }
+    if(showTime) {
+      stringDate += _dateTime.hour.toString() + ':' + _dateTime.minute.toString() + ':' + _dateTime.second.toString();
+    }
+    return stringDate;
+
   }
+
+
+
 
   ///Gregorian to Jalali converter
   /// Thanks to breceivemail [breceivemail.android [AT] yahoo dot com] for java code

@@ -1,12 +1,14 @@
 name: jalali_date
 description: Persian (Jalali) date
 version: 0.1.1
-author: Yamin Tashakkori
-homepage: iYamin.ir
+author: Yamin Tashakkori<Yamin.tashakkori@gmail.com>
+homepage: http://iYamin.ir
 
 dependencies:
   flutter:
     sdk: flutter
+environment:
+  sdk: ">=1.19.0 <2.0.0"
 
 dev_dependencies:
   flutter_test:
