@@ -1,5 +1,5 @@
 name: jalali_date
-description: Persian (Jalali) date
+description: Persian (Jalali) date for Dart (Web/Flutter/DartVm). This calendar is using in Iran, Afghanistan and other countries. with this plugin, you can convert Gregorian date to Persian date.
 version: 0.1.1
 author: Yamin Tashakkori<Yamin.tashakkori@gmail.com>
 homepage: http://iYamin.ir
