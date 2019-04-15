@@ -1,5 +1,5 @@
 import 'package:jalali_date/jalali_date.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('Gregorian to Jalali conversion', () {
@@ -12,7 +12,8 @@ void main() {
     final Farv00_1 = new PersianDate.fromGregorian(2021, 03, 21);
     expect(Farv00_1.toString(showTime: true), "1400/1/1 0:0:0");
 
-    final string_format = new PersianDate.fromGregorianString('2018-07-07T21:43:44.909Z');
+    final string_format =
+        new PersianDate.fromGregorianString('2018-07-07T21:43:44.909Z');
     expect(string_format.toString(showTime: true), '1397/4/16 21:43:44');
   });
 }
