@@ -44,7 +44,7 @@ class PersianDate {
   PersianDate.now() {
     _dateTime = new DateTime.now();
     try {
-      GreToJal();
+      greToJal();
     } catch (e) {
       print(e.toString());
     }
@@ -52,16 +52,16 @@ class PersianDate {
 
   PersianDate.fromGregorianString(String datetime) {
     _dateTime = DateTime.parse(datetime);
-    GreToJal();
+    greToJal();
   }
 
   PersianDate.fromDateTime(DateTime datetime) : _dateTime = datetime {
-    GreToJal();
+    greToJal();
   }
 
   PersianDate.fromGregorian(int year, int month, int day) {
     _dateTime = DateTime(year, month, day);
-    GreToJal();
+    greToJal();
   }
 
   ///Default constructor from Jalali date
@@ -100,7 +100,7 @@ class PersianDate {
   /// Gregorian to Jalali converter
   /// Thanks to breceivemail [breceivemail.android [AT] yahoo dot com] for java code
   /// TODO: add docs to this method
-  GreToJal() {
+  greToJal() {
     int gregorieanYear = _dateTime.year;
     if ((gregorieanYear % 4) != 0) {
       day = monthsLength[_dateTime.month - 1] + _dateTime.day;
