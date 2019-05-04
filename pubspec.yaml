@@ -1,6 +1,6 @@
 name: jalali_date
 description: Persian (Jalali) date for Dart (Web/ Flutter/ DartVM). it converts Gregorian date to Persian date.
-version: 0.1.4
+version: 0.1.5
 author: Yamin Tashakkori<Yamin.tashakkori@gmail.com>
 homepage: https://github.com/YaminT/Dart-Persian-Date
 
