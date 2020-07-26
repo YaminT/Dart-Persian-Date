@@ -74,6 +74,9 @@ class PersianDate {
   String toString({
     bool showDate = true,
     bool showTime = false,
+    bool hour = true,
+    bool minute = true,
+    bool second = true,
   }) {
     if (!(showDate || showTime)) {
       throw new Exception(
@@ -88,11 +91,15 @@ class PersianDate {
       }
     }
     if (showTime) {
-      stringDate += _dateTime.hour.toString() +
-          ':' +
-          _dateTime.minute.toString() +
-          ':' +
-          _dateTime.second.toString();
+      String _hour;
+      String _minute;
+      String _second;
+
+      hour ? _hour = _dateTime.hour.toString() : _hour = '';
+      minute ? _minute = ':' + _dateTime.minute.toString() : _minute = '';
+      second ? _second = ':' + _dateTime.second.toString() : _second = '';
+
+      stringDate += _hour + _minute + _second;
     }
     return stringDate;
   }
