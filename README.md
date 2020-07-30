@@ -11,3 +11,20 @@ void main(){
     print(date.dateToString());
 }
 ````
+
+## Usage in fromJson or fromMap:
+````
+class Item{
+    String text;
+    String date;
+    
+    Item(this.text, this.date);
+    
+    Item.fromJson(Map<String, dynamic> json){
+        text = json['text'];
+        if(json['date'] != null)
+          date = PersianDate.fromDateTime(DateTime.parse(json['date']).toLocal()).toString(
+              showTime: true, second: false);
+    }
+}
+````
