@@ -83,6 +83,7 @@ class PersianDate {
           'At least one of arguments [showDate or showTime] must be true');
     }
     String stringDate = '';
+
     if (showDate) {
       stringDate =
           year.toString() + '/' + month.toString() + '/' + day.toString();
@@ -95,9 +96,18 @@ class PersianDate {
       String _minute;
       String _second;
 
-      hour ? _hour = _dateTime.hour.toString() : _hour = '';
-      minute ? _minute = ':' + _dateTime.minute.toString() : _minute = '';
-      second ? _second = ':' + _dateTime.second.toString() : _second = '';
+      hour    ? _hour   = _dateTime.hour.toString()   : _hour   = '';
+      minute  ? _minute = _dateTime.minute.toString() : _minute = '';
+      second  ? _second = _dateTime.second.toString() : _second = '';
+
+      _hour.length == 1 ? _hour = '0' + _hour : '';
+
+      _minute.length == 1 ? _minute = ':0' + _minute :
+          _minute.length == 2 ? _minute = ':' + _minute : _minute = '';
+
+      _second.length == 1 ? _second = ':0' + _second :
+          _second.length == 2 ? _second = ':' + _second : _second = '';
+
 
       stringDate += _hour + _minute + _second;
     }
