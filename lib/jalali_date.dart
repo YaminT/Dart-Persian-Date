@@ -63,20 +63,35 @@ class PersianDate {
   ///Default constructor from Jalali date
   PersianDate(this.year, this.month, this.day);
 
-  ///returns date in string
+  /// Returns the date as `year/month/day`, optionally followed by the time.
+  ///
+  /// The time is `HH:mm:ss`, zero-padded. [showHour], [showMinute], and
+  /// [showSecond] drop the matching part and only apply when [showTime] is
+  /// true.
+  ///
+  /// Throws [ArgumentError] when both [showDate] and [showTime] are false, or
+  /// when [showTime] is true and every time part is disabled. Throws
+  /// [StateError] when [showTime] is true but this instance was created from
+  /// a Jalali date and therefore carries no time of day.
   @override
-  String toString({bool showDate = true, bool showTime = false}) {
-    if (!(showDate || showTime)) {
-      throw Exception(
-        'At least one of arguments [showDate or showTime] must be true',
+  String toString({
+    bool showDate = true,
+    bool showTime = false,
+    bool showHour = true,
+    bool showMinute = true,
+    bool showSecond = true,
+  }) {
+    if (!showDate && !showTime) {
+      throw ArgumentError('At least one of showDate or showTime must be true.');
+    }
+    if (showTime && !showHour && !showMinute && !showSecond) {
+      throw ArgumentError(
+        'showTime requires at least one of showHour, showMinute, or showSecond.',
       );
     }
-    String stringDate = '';
+    final parts = <String>[];
     if (showDate) {
-      stringDate = '$year/$month/$day';
-      if (showTime) {
-        stringDate += ' ';
-      }
+      parts.add('$year/$month/$day');
     }
     if (showTime) {
       final dateTime = _dateTime;
@@ -85,10 +100,18 @@ class PersianDate {
           'Cannot show time for a PersianDate created without a Gregorian DateTime.',
         );
       }
-      stringDate += '${dateTime.hour}:${dateTime.minute}:${dateTime.second}';
+      parts.add(
+        [
+          if (showHour) _twoDigits(dateTime.hour),
+          if (showMinute) _twoDigits(dateTime.minute),
+          if (showSecond) _twoDigits(dateTime.second),
+        ].join(':'),
+      );
     }
-    return stringDate;
+    return parts.join(' ');
   }
+
+  static String _twoDigits(int value) => value.toString().padLeft(2, '0');
 
   /// Gregorian to Jalali converter
   /// Thanks to breceivemail [breceivemail.android [AT] yahoo dot com] for java code
