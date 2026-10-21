@@ -1,41 +1,19 @@
 library jalali_date;
 
+import 'src/jalali_calc.dart';
+
 /// Jalali Date for Dart
+///
+/// Supports Jalali years -61 to 3177, roughly Gregorian 560-03-20 to
+/// 3798-12-31. Constructing from a Gregorian date after that range throws
+/// [ArgumentError]; dates before it follow jalaali-js and are not
+/// range-checked.
 class PersianDate {
   late int day;
   late int month;
   late int year;
-  late int ld;
 
   DateTime? _dateTime;
-  static const monthsLength = [
-    0,
-    31,
-    59,
-    90,
-    120,
-    151,
-    181,
-    212,
-    243,
-    273,
-    304,
-    334,
-  ];
-  static const kabiseMonthsLength = [
-    0,
-    31,
-    60,
-    91,
-    121,
-    152,
-    182,
-    213,
-    244,
-    274,
-    305,
-    335,
-  ];
 
   //TODO: Jalali to Gregorian
   //TODO: From
@@ -113,117 +91,13 @@ class PersianDate {
 
   static String _twoDigits(int value) => value.toString().padLeft(2, '0');
 
-  /// Gregorian to Jalali converter
-  /// Thanks to breceivemail [breceivemail.android [AT] yahoo dot com] for java code
-  /// TODO: add docs to this method
+  /// Gregorian to Jalali converter, backed by the jalaali-js port in
+  /// `src/jalali_calc.dart`.
   void greToJal() {
     final dateTime = _dateTime!;
-    int gregorieanYear = dateTime.year;
-    if ((gregorieanYear % 4) != 0) {
-      day = monthsLength[dateTime.month - 1] + dateTime.day;
-
-      if (day > 79) {
-        day = day - 79;
-        if (day <= 186) {
-          switch (day % 31) {
-            case 0:
-              month = day ~/ 31;
-              day = 31;
-              break;
-            default:
-              month = (day ~/ 31) + 1;
-              day = (day % 31);
-              break;
-          }
-          year = gregorieanYear - 621;
-        } else {
-          day = day - 186;
-
-          switch (day % 30) {
-            case 0:
-              month = (day ~/ 30) + 6;
-              day = 30;
-              break;
-            default:
-              month = (day ~/ 30) + 7;
-              day = (day % 30);
-              break;
-          }
-          year = gregorieanYear - 621;
-        }
-      } else {
-        if ((gregorieanYear > 1996) && (gregorieanYear % 4) == 1) {
-          ld = 11;
-        } else {
-          ld = 10;
-        }
-        day = day + ld;
-
-        switch (day % 30) {
-          case 0:
-            month = (day ~/ 30) + 9;
-            day = 30;
-            break;
-          default:
-            month = (day ~/ 30) + 10;
-            day = (day % 30);
-            break;
-        }
-        year = gregorieanYear - 622;
-      }
-    } else {
-      day = kabiseMonthsLength[dateTime.month - 1] + dateTime.day;
-
-      if (gregorieanYear >= 1996) {
-        ld = 79;
-      } else {
-        ld = 80;
-      }
-      if (day > ld) {
-        day = day - ld;
-
-        if (day <= 186) {
-          switch (day % 31) {
-            case 0:
-              month = (day ~/ 31);
-              day = 31;
-              break;
-            default:
-              month = (day ~/ 31) + 1;
-              day = (day % 31);
-              break;
-          }
-          year = gregorieanYear - 621;
-        } else {
-          day = day - 186;
-
-          switch (day % 30) {
-            case 0:
-              month = (day ~/ 30) + 6;
-              day = 30;
-              break;
-            default:
-              month = (day ~/ 30) + 7;
-              day = (day % 30);
-              break;
-          }
-          year = gregorieanYear - 621;
-        }
-      } else {
-        day = day + 10;
-
-        switch (day % 30) {
-          case 0:
-            month = (day ~/ 30) + 9;
-            day = 30;
-            break;
-          default:
-            month = (day ~/ 30) + 10;
-            day = (day % 30);
-            break;
-        }
-        year = gregorieanYear - 622;
-      }
-    }
+    final date = toJalali(dateTime.year, dateTime.month, dateTime.day);
+    year = date.jy;
+    month = date.jm;
+    day = date.jd;
   }
 }
