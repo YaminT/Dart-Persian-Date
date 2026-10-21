@@ -2,12 +2,12 @@ library jalali_date;
 
 /// Jalali Date for Dart
 class PersianDate {
-  int day;
-  int month;
-  int year;
-  int ld;
+  late int day;
+  late int month;
+  late int year;
+  late int ld;
 
-  DateTime _dateTime;
+  DateTime? _dateTime;
   static const monthsLength = [
     0,
     31,
@@ -20,7 +20,7 @@ class PersianDate {
     243,
     273,
     304,
-    334
+    334,
   ];
   static const kabiseMonthsLength = [
     0,
@@ -34,7 +34,7 @@ class PersianDate {
     244,
     274,
     305,
-    335
+    335,
   ];
 
   //TODO: Jalali to Gregorian
@@ -42,12 +42,8 @@ class PersianDate {
 
   ///Constructor from current date and time
   PersianDate.now() {
-    _dateTime = new DateTime.now();
-    try {
-      greToJal();
-    } catch (e) {
-      print(e.toString());
-    }
+    _dateTime = DateTime.now();
+    greToJal();
   }
 
   PersianDate.fromGregorianString(String datetime) {
@@ -65,34 +61,31 @@ class PersianDate {
   }
 
   ///Default constructor from Jalali date
-  PersianDate(int year, int month, int day)
-      : year = year,
-        month = month,
-        day = day;
+  PersianDate(this.year, this.month, this.day);
 
   ///returns date in string
-  String toString({
-    bool showDate = true,
-    bool showTime = false,
-  }) {
+  @override
+  String toString({bool showDate = true, bool showTime = false}) {
     if (!(showDate || showTime)) {
-      throw new Exception(
-          'At least one of arguments [showDate or showTime] must be true');
+      throw Exception(
+        'At least one of arguments [showDate or showTime] must be true',
+      );
     }
     String stringDate = '';
     if (showDate) {
-      stringDate =
-          year.toString() + '/' + month.toString() + '/' + day.toString();
+      stringDate = '$year/$month/$day';
       if (showTime) {
         stringDate += ' ';
       }
     }
     if (showTime) {
-      stringDate += _dateTime.hour.toString() +
-          ':' +
-          _dateTime.minute.toString() +
-          ':' +
-          _dateTime.second.toString();
+      final dateTime = _dateTime;
+      if (dateTime == null) {
+        throw StateError(
+          'Cannot show time for a PersianDate created without a Gregorian DateTime.',
+        );
+      }
+      stringDate += '${dateTime.hour}:${dateTime.minute}:${dateTime.second}';
     }
     return stringDate;
   }
@@ -100,10 +93,11 @@ class PersianDate {
   /// Gregorian to Jalali converter
   /// Thanks to breceivemail [breceivemail.android [AT] yahoo dot com] for java code
   /// TODO: add docs to this method
-  greToJal() {
-    int gregorieanYear = _dateTime.year;
+  void greToJal() {
+    final dateTime = _dateTime!;
+    int gregorieanYear = dateTime.year;
     if ((gregorieanYear % 4) != 0) {
-      day = monthsLength[_dateTime.month - 1] + _dateTime.day;
+      day = monthsLength[dateTime.month - 1] + dateTime.day;
 
       if (day > 79) {
         day = day - 79;
@@ -155,7 +149,7 @@ class PersianDate {
         year = gregorieanYear - 622;
       }
     } else {
-      day = kabiseMonthsLength[_dateTime.month - 1] + _dateTime.day;
+      day = kabiseMonthsLength[dateTime.month - 1] + dateTime.day;
 
       if (gregorieanYear >= 1996) {
         ld = 79;
