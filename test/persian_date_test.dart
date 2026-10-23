@@ -170,4 +170,30 @@ void main() {
       expect(PersianDate(1400, 1, 1).format('Q yyyy! T'), 'Q 1400! T');
     });
   });
+
+  group('bounds and copyWith', () {
+    test('min and max are the ends of the supported range', () {
+      expect(PersianDate.min, PersianDate(-61, 1, 1));
+      expect(PersianDate.max, PersianDate(3177, 10, 11));
+      expect(PersianDate.min.toDateTime(), DateTime(560, 3, 20));
+      expect(PersianDate.max.toDateTime(), DateTime(3798, 12, 31));
+    });
+
+    test('copyWith replaces fields and validates', () {
+      final date = PersianDate(1403, 6, 31);
+      expect(date.copyWith(year: 1402), PersianDate(1402, 6, 31));
+      expect(date.copyWith(day: 1), PersianDate(1403, 6, 1));
+      expect(date.copyWith(), date);
+      expect(() => date.copyWith(month: 7), throwsArgumentError);
+      expect(
+        () => PersianDate(1403, 12, 30).copyWith(year: 1404),
+        throwsArgumentError,
+      );
+    });
+
+    test('copyWith drops the time of day', () {
+      final date = PersianDate.fromDateTime(DateTime(2024, 3, 20, 10, 30));
+      expect(() => date.copyWith().toString(showTime: true), throwsStateError);
+    });
+  });
 }

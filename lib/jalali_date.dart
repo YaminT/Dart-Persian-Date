@@ -76,6 +76,19 @@ class PersianDate implements Comparable<PersianDate> {
 
   PersianDate._(this.year, this.month, this.day, this._dateTime);
 
+  /// Date-only instance for Julian day number [jdn], range-checked.
+  factory PersianDate._fromJulianDay(int jdn) {
+    _checkRange(jdn);
+    final date = d2j(jdn);
+    return PersianDate._(date.jy, date.jm, date.jd, null);
+  }
+
+  /// First supported date, Jalali -61/01/01 (Gregorian 560-03-20).
+  static final PersianDate min = PersianDate._fromJulianDay(_firstDay);
+
+  /// Last supported date, Jalali 3177/10/11 (Gregorian 3798-12-31).
+  static final PersianDate max = PersianDate._fromJulianDay(_lastDay);
+
   static final _firstDay = g2d(560, 3, 20);
   static final _lastDay = g2d(3798, 12, 31);
 
@@ -87,6 +100,14 @@ class PersianDate implements Comparable<PersianDate> {
       );
     }
   }
+
+  /// Returns a date-only copy with the given fields replaced.
+  ///
+  /// The result is validated like [PersianDate.new] and throws
+  /// [ArgumentError] instead of clamping, so `copyWith(day: 31)` on a
+  /// 30-day month throws. The time of day is dropped.
+  PersianDate copyWith({int? year, int? month, int? day}) =>
+      PersianDate(year ?? this.year, month ?? this.month, day ?? this.day);
 
   /// Whether [year] is a Jalali leap year, with 30 days in Esfand.
   bool get isLeapYear => isLeapJalaliYear(year);
