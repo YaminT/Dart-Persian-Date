@@ -351,8 +351,8 @@ Other building blocks:
 
 These live in this repository under `packages/` and are released separately.
 
-- [jalali_date_picker](packages/jalali_date_picker): Material 3 date picker and range picker for Flutter, Saturday-first, Persian digits, right-to-left.
-- [jalali_holidays](packages/jalali_holidays): Iranian holidays and events from a holiday source you choose explicitly.
+- [jalali_holidays](https://pub.dev/packages/jalali_holidays): Iranian holidays and events from a holiday source you choose explicitly (holidayapi.ir, Calendarific, or Google Calendar).
+- [jalali_date_picker](packages/jalali_date_picker): Material 3 date picker and range picker for Flutter. In development and not published yet.
 
 ## Notes for code generators and AI assistants
 

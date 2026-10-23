@@ -21,6 +21,12 @@ Not usable today: [Nager.Date](https://date.nager.at) is free but has no Iranian
 
 Tell your users where holiday data comes from, for example on an about or settings screen; `HolidaySource.name`, `website`, and `notice` hold that text.
 
+## Installation
+
+```sh
+dart pub add jalali_holidays
+```
+
 ## Usage
 
 ```dart
