@@ -1,3 +1,5 @@
+/// Persian (Jalali) calendar: conversion between Gregorian and Jalali dates,
+/// leap years, month lengths, and formatting with Persian names.
 library jalali_date;
 
 import 'src/jalali_calc.dart';
@@ -7,8 +9,13 @@ import 'src/jalali_calc.dart';
 /// Supports Jalali -61/01/01 to 3177/10/11, which is Gregorian 560-03-20 to
 /// 3798-12-31. Every constructor throws [ArgumentError] outside that range.
 class PersianDate implements Comparable<PersianDate> {
+  /// Jalali year, for example 1403.
   final int year;
+
+  /// Jalali month, 1 (Farvardin) to 12 (Esfand).
   final int month;
+
+  /// Day of the month, 1 to [monthLength].
   final int day;
 
   final DateTime? _dateTime;
