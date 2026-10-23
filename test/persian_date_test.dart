@@ -635,4 +635,13 @@ void main() {
       }
     });
   });
+
+  test('Latin month and weekday names', () {
+    expect(PersianDate(1403, 1, 1).monthNameLatin, 'Farvardin');
+    expect(PersianDate(1403, 12, 1).monthNameLatin, 'Esfand');
+    expect(PersianDate(1403, 1, 4).weekdayNameLatin, 'Shanbeh');
+    expect(PersianDate(1403, 1, 3).weekdayNameLatin, 'Jomeh');
+    expect(PersianDate.monthNamesLatin, hasLength(12));
+    expect(PersianDate.weekdayNamesLatin, hasLength(7));
+  });
 }

@@ -411,8 +411,39 @@ class PersianDate implements Comparable<PersianDate> {
     'یکشنبه',
   ];
 
+  /// Latin transliterations of [monthNames], from Farvardin to Esfand.
+  static const List<String> monthNamesLatin = [
+    'Farvardin',
+    'Ordibehesht',
+    'Khordad',
+    'Tir',
+    'Mordad',
+    'Shahrivar',
+    'Mehr',
+    'Aban',
+    'Azar',
+    'Dey',
+    'Bahman',
+    'Esfand',
+  ];
+
+  /// Latin transliterations of [weekdayNames], indexed by ISO weekday minus
+  /// one (Monday first).
+  static const List<String> weekdayNamesLatin = [
+    'Doshanbeh',
+    'Seshanbeh',
+    'Chaharshanbeh',
+    'Panjshanbeh',
+    'Jomeh',
+    'Shanbeh',
+    'Yekshanbeh',
+  ];
+
   /// Persian name of [month], for example `فروردین` for month 1.
   String get monthName => monthNames[month - 1];
+
+  /// Latin name of [month], for example `Farvardin` for month 1.
+  String get monthNameLatin => monthNamesLatin[month - 1];
 
   /// One-letter Persian weekday names, indexed like [weekdayNames]
   /// (ISO weekday minus one, Monday first): د، س، چ، پ، ج، ش، ی.
@@ -441,6 +472,9 @@ class PersianDate implements Comparable<PersianDate> {
 
   /// Persian name of [weekday], for example `شنبه` for Saturday.
   String get weekdayName => weekdayNames[weekday - 1];
+
+  /// Latin name of [weekday], for example `Shanbeh` for Saturday.
+  String get weekdayNameLatin => weekdayNamesLatin[weekday - 1];
 
   /// One-letter Persian name of [weekday], for example `ش` for Saturday.
   String get weekdayNameShort => weekdayNamesShort[weekday - 1];
