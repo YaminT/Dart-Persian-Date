@@ -77,6 +77,39 @@ class PersianDate implements Comparable<PersianDate> {
     _checkRange(j2d(year, month, day));
   }
 
+  /// Creates a date from Jalali values with a local time of day.
+  ///
+  /// The date is validated like [PersianDate.new]. Throws [ArgumentError]
+  /// when [hour] is outside 0 to 23, or [minute] or [second] is outside
+  /// 0 to 59. The result carries a local [DateTime], so [hasTime] is true
+  /// and [toDateTime] returns that moment.
+  factory PersianDate.withTime(
+    int year,
+    int month,
+    int day, [
+    int hour = 0,
+    int minute = 0,
+    int second = 0,
+  ]) {
+    final date = PersianDate(year, month, day);
+    if (hour < 0 || hour > 23) {
+      throw ArgumentError.value(hour, 'hour', 'Must be in 0 to 23');
+    }
+    if (minute < 0 || minute > 59) {
+      throw ArgumentError.value(minute, 'minute', 'Must be in 0 to 59');
+    }
+    if (second < 0 || second > 59) {
+      throw ArgumentError.value(second, 'second', 'Must be in 0 to 59');
+    }
+    final g = d2g(date._julianDay);
+    return PersianDate._(
+      year,
+      month,
+      day,
+      DateTime(g.gy, g.gm, g.gd, hour, minute, second),
+    );
+  }
+
   PersianDate._(this.year, this.month, this.day, this._dateTime);
 
   /// Date-only instance for Julian day number [jdn], range-checked.
@@ -149,6 +182,35 @@ class PersianDate implements Comparable<PersianDate> {
   /// Positive when this date is later, so
   /// `date.addDays(n).differenceInDays(date) == n`.
   int differenceInDays(PersianDate other) => _julianDay - other._julianDay;
+
+  /// Whether this instance carries a time of day.
+  ///
+  /// True for dates created from a [DateTime] ([PersianDate.now],
+  /// [PersianDate.fromDateTime], [PersianDate.fromGregorian],
+  /// [PersianDate.fromGregorianString]) and from [PersianDate.withTime].
+  /// False for [PersianDate.new] and for results of date arithmetic.
+  bool get hasTime => _dateTime != null;
+
+  DateTime get _time {
+    final dateTime = _dateTime;
+    if (dateTime == null) {
+      throw StateError(
+        'This PersianDate has no time of day; check hasTime first.',
+      );
+    }
+    return dateTime;
+  }
+
+  /// Hour of the day, 0 to 23. Throws [StateError] when [hasTime] is false.
+  int get hour => _time.hour;
+
+  /// Minute of the hour, 0 to 59. Throws [StateError] when [hasTime] is
+  /// false.
+  int get minute => _time.minute;
+
+  /// Second of the minute, 0 to 59. Throws [StateError] when [hasTime] is
+  /// false.
+  int get second => _time.second;
 
   /// Whether [year] is a Jalali leap year, with 30 days in Esfand.
   bool get isLeapYear => isLeapJalaliYear(year);

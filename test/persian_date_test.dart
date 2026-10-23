@@ -458,4 +458,44 @@ void main() {
       expect(date.format('yyyy 2', persianDigits: true), '۱۳۹۷ 2');
     });
   });
+
+  group('time of day', () {
+    test('hasTime', () {
+      expect(PersianDate(1403, 1, 1).hasTime, isFalse);
+      expect(PersianDate.now().hasTime, isTrue);
+      expect(PersianDate.fromGregorian(2024, 3, 20).hasTime, isTrue);
+      expect(PersianDate.withTime(1403, 1, 1).hasTime, isTrue);
+      expect(PersianDate.now().addDays(0).hasTime, isFalse);
+    });
+
+    test('hour, minute, second', () {
+      final date = PersianDate.fromGregorianString('2018-07-07T21:43:44.909Z');
+      expect((date.hour, date.minute, date.second), (21, 43, 44));
+      expect(() => PersianDate(1403, 1, 1).hour, throwsStateError);
+      expect(() => PersianDate(1403, 1, 1).minute, throwsStateError);
+      expect(() => PersianDate(1403, 1, 1).second, throwsStateError);
+    });
+
+    test('withTime builds a local DateTime', () {
+      final date = PersianDate.withTime(1357, 11, 22, 9, 5, 7);
+      expect(date, PersianDate(1357, 11, 22));
+      expect(date.toDateTime(), DateTime(1979, 2, 11, 9, 5, 7));
+      expect(date.toDateTime().isUtc, isFalse);
+      expect(date.toString(showTime: true), '1357/11/22 09:05:07');
+      expect(
+          PersianDate.withTime(1400, 1, 1).toDateTime(), DateTime(2021, 3, 21));
+    });
+
+    test('withTime validates', () {
+      expect(() => PersianDate.withTime(1400, 12, 30), throwsArgumentError);
+      expect(() => PersianDate.withTime(1400, 1, 1, 24), throwsArgumentError);
+      expect(() => PersianDate.withTime(1400, 1, 1, -1), throwsArgumentError);
+      expect(
+          () => PersianDate.withTime(1400, 1, 1, 0, 60), throwsArgumentError);
+      expect(() => PersianDate.withTime(1400, 1, 1, 0, 0, 60),
+          throwsArgumentError);
+      expect(
+          () => PersianDate.withTime(1400, 1, 1, 23, 59, 59), returnsNormally);
+    });
+  });
 }
