@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:jalali_date/jalali_date.dart';
 import 'package:test/test.dart';
 
@@ -560,6 +562,26 @@ void main() {
             reason: input);
         expect(PersianDate.tryParse(input), isNull, reason: input);
       }
+    });
+  });
+
+  group('JSON', () {
+    test('toJson and fromJson round trip', () {
+      final date = PersianDate(1403, 1, 4);
+      expect(date.toJson(), '1403-01-04');
+      expect(PersianDate.fromJson(date.toJson()), date);
+      expect(PersianDate(-5, 1, 1).toJson(), '-0005-01-01');
+      expect(PersianDate.fromJson('-0005-01-01'), PersianDate(-5, 1, 1));
+    });
+
+    test('toJson drops the time and works with jsonEncode', () {
+      final date = PersianDate.withTime(1403, 1, 4, 10, 30);
+      expect(date.toJson(), '1403-01-04');
+      expect(jsonEncode({'date': date}), '{"date":"1403-01-04"}');
+    });
+
+    test('fromJson rejects invalid input', () {
+      expect(() => PersianDate.fromJson('1403-13-01'), throwsFormatException);
     });
   });
 }

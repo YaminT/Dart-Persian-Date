@@ -151,6 +151,13 @@ class PersianDate implements Comparable<PersianDate> {
     }
   }
 
+  /// Creates a date from the `yyyy-MM-dd` string written by [toJson].
+  ///
+  /// Accepts everything [parse] accepts and throws [FormatException] for
+  /// invalid input. Use with `json_serializable` through
+  /// `@JsonKey(fromJson: PersianDate.fromJson, toJson: _toJson)`.
+  factory PersianDate.fromJson(String json) => parse(json);
+
   /// Like [parse], but returns null instead of throwing.
   static PersianDate? tryParse(String input) {
     try {
@@ -512,6 +519,12 @@ class PersianDate implements Comparable<PersianDate> {
     final text = parts.join(' ');
     return persianDigits ? toPersianDigits(text) : text;
   }
+
+  /// Returns the date as `yyyy-MM-dd`, for JSON and other storage.
+  ///
+  /// The time of day is not included; store [toDateTime] instead when it
+  /// matters. [PersianDate.fromJson] reads the result back.
+  String toJson() => format('yyyy-MM-dd');
 
   static const _tokens = [
     'yyyy', 'yy', 'MMMM', 'MM', 'M', 'dd', 'd', 'EEEE', //
