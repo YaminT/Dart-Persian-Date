@@ -109,6 +109,44 @@ class PersianDate implements Comparable<PersianDate> {
   PersianDate copyWith({int? year, int? month, int? day}) =>
       PersianDate(year ?? this.year, month ?? this.month, day ?? this.day);
 
+  /// Returns the date [days] days later; negative values go back.
+  ///
+  /// The result is date-only, so the time of day is dropped. Throws
+  /// [ArgumentError] when the result is outside the supported range.
+  PersianDate addDays(int days) =>
+      PersianDate._fromJulianDay(_julianDay + days);
+
+  /// Returns the date [months] months later; negative values go back.
+  ///
+  /// The day is clamped to the length of the target month, so 1403/06/31
+  /// plus one month is 1403/07/30. This differs from [DateTime], which rolls
+  /// over into the next month. The result is date-only. Throws
+  /// [ArgumentError] when the result is outside the supported range.
+  PersianDate addMonths(int months) {
+    final total = year * 12 + (month - 1) + months;
+    // Dart's % is never negative, so this floors for negative totals too.
+    final targetYear = (total - total % 12) ~/ 12;
+    final targetMonth = total % 12 + 1;
+    if (targetYear < -61 || targetYear > 3177) {
+      throw ArgumentError.value(months, 'months', 'Result is out of range');
+    }
+    final length = jalaliMonthLength(targetYear, targetMonth);
+    return PersianDate(targetYear, targetMonth, day > length ? length : day);
+  }
+
+  /// Returns the date [years] years later; negative values go back.
+  ///
+  /// Esfand 30 in a leap year becomes Esfand 29 when the target year is not
+  /// a leap year. The result is date-only. Throws [ArgumentError] when the
+  /// result is outside the supported range.
+  PersianDate addYears(int years) => addMonths(years * 12);
+
+  /// Number of days from [other] to this date, ignoring the time of day.
+  ///
+  /// Positive when this date is later, so
+  /// `date.addDays(n).differenceInDays(date) == n`.
+  int differenceInDays(PersianDate other) => _julianDay - other._julianDay;
+
   /// Whether [year] is a Jalali leap year, with 30 days in Esfand.
   bool get isLeapYear => isLeapJalaliYear(year);
 

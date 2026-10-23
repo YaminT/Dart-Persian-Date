@@ -196,4 +196,67 @@ void main() {
       expect(() => date.copyWith().toString(showTime: true), throwsStateError);
     });
   });
+
+  group('arithmetic', () {
+    test('addDays crosses month and year boundaries', () {
+      expect(PersianDate(1403, 1, 31).addDays(1), PersianDate(1403, 2, 1));
+      expect(PersianDate(1403, 12, 30).addDays(1), PersianDate(1404, 1, 1));
+      expect(PersianDate(1404, 12, 29).addDays(1), PersianDate(1405, 1, 1));
+      expect(PersianDate(1404, 1, 1).addDays(-1), PersianDate(1403, 12, 30));
+      expect(PersianDate(1400, 1, 1).addDays(365), PersianDate(1401, 1, 1));
+      expect(PersianDate(1400, 1, 1).addDays(0), PersianDate(1400, 1, 1));
+    });
+
+    test('addDays drops the time and keeps the day', () {
+      final date = PersianDate.fromDateTime(DateTime.utc(2024, 3, 20, 23));
+      final next = date.addDays(1);
+      expect(next, PersianDate(1403, 1, 2));
+      expect(next.toDateTime(), DateTime(2024, 3, 21));
+    });
+
+    test('addMonths clamps the day', () {
+      expect(PersianDate(1403, 6, 31).addMonths(1), PersianDate(1403, 7, 30));
+      expect(PersianDate(1403, 11, 30).addMonths(1), PersianDate(1403, 12, 30));
+      expect(PersianDate(1404, 11, 30).addMonths(1), PersianDate(1404, 12, 29));
+      expect(PersianDate(1403, 1, 15).addMonths(12), PersianDate(1404, 1, 15));
+      expect(PersianDate(1403, 1, 15).addMonths(-1), PersianDate(1402, 12, 15));
+      expect(
+          PersianDate(1403, 1, 15).addMonths(-13), PersianDate(1401, 12, 15));
+      expect(PersianDate(1403, 5, 1).addMonths(0), PersianDate(1403, 5, 1));
+    });
+
+    test('addMonths works across negative years', () {
+      expect(PersianDate(-1, 12, 1).addMonths(1), PersianDate(0, 1, 1));
+      expect(PersianDate(0, 1, 1).addMonths(-1), PersianDate(-1, 12, 1));
+      expect(PersianDate(-59, 3, 4).addMonths(-25), PersianDate(-61, 2, 4));
+      expect(() => PersianDate(-60, 3, 4).addMonths(-25), throwsArgumentError);
+    });
+
+    test('addYears clamps Esfand 30', () {
+      expect(PersianDate(1403, 12, 30).addYears(1), PersianDate(1404, 12, 29));
+      expect(PersianDate(1403, 12, 30).addYears(5), PersianDate(1408, 12, 30));
+      expect(PersianDate(1403, 7, 1).addYears(-3), PersianDate(1400, 7, 1));
+    });
+
+    test('results outside the range throw', () {
+      expect(() => PersianDate.max.addDays(1), throwsArgumentError);
+      expect(() => PersianDate.min.addDays(-1), throwsArgumentError);
+      expect(() => PersianDate.min.addMonths(-1), throwsArgumentError);
+      expect(() => PersianDate(3177, 11, 1).addDays(0), throwsArgumentError);
+      expect(() => PersianDate(3177, 10, 1).addMonths(1), throwsArgumentError);
+      expect(() => PersianDate(3177, 1, 1).addYears(1), throwsArgumentError);
+    });
+
+    test('differenceInDays', () {
+      final date = PersianDate(1399, 12, 30);
+      for (final n in [-400, -1, 0, 1, 30, 366, 1000]) {
+        expect(date.addDays(n).differenceInDays(date), n, reason: '$n');
+      }
+      expect(PersianDate(1404, 1, 1).differenceInDays(PersianDate(1403, 1, 1)),
+          366);
+      final evening = PersianDate.fromDateTime(DateTime(2021, 3, 21, 23, 59));
+      final morning = PersianDate.fromDateTime(DateTime(2021, 3, 22, 0, 1));
+      expect(morning.differenceInDays(evening), 1);
+    });
+  });
 }
