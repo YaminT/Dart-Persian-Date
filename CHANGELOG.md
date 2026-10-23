@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Homepage moved to https://nodets.com/jalali.
+
 ## 1.0.0
 
 ### Breaking
