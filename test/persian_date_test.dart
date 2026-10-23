@@ -259,4 +259,42 @@ void main() {
       expect(morning.differenceInDays(evening), 1);
     });
   });
+
+  group('comparison helpers', () {
+    final a = PersianDate(1399, 12, 30);
+    final b = PersianDate(1400, 1, 1);
+    final bLate = PersianDate.fromDateTime(DateTime(2021, 3, 21, 23, 59));
+
+    test('isBefore and isAfter', () {
+      expect(a.isBefore(b), isTrue);
+      expect(b.isBefore(a), isFalse);
+      expect(b.isAfter(a), isTrue);
+      expect(b.isAfter(bLate), isFalse);
+      expect(b.isBefore(bLate), isFalse);
+    });
+
+    test('isSameDay, isSameMonth, isSameYear', () {
+      expect(b.isSameDay(bLate), isTrue);
+      expect(a.isSameDay(b), isFalse);
+      expect(b.isSameMonth(PersianDate(1400, 1, 31)), isTrue);
+      expect(b.isSameMonth(PersianDate(1401, 1, 1)), isFalse);
+      expect(b.isSameYear(PersianDate(1400, 12, 29)), isTrue);
+      expect(a.isSameYear(b), isFalse);
+    });
+
+    test('operators', () {
+      expect(a < b, isTrue);
+      expect(a <= b, isTrue);
+      expect(b <= bLate, isTrue);
+      expect(b >= bLate, isTrue);
+      expect(b > a, isTrue);
+      expect(a > b, isFalse);
+      expect(b < bLate, isFalse);
+    });
+
+    test('isToday', () {
+      expect(PersianDate.now().isToday, isTrue);
+      expect(PersianDate.now().addDays(1).isToday, isFalse);
+    });
+  });
 }

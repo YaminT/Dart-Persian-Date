@@ -190,6 +190,37 @@ class PersianDate implements Comparable<PersianDate> {
   @override
   int compareTo(PersianDate other) => _julianDay.compareTo(other._julianDay);
 
+  /// Whether this date is before [other], ignoring the time of day.
+  bool isBefore(PersianDate other) => compareTo(other) < 0;
+
+  /// Whether this date is after [other], ignoring the time of day.
+  bool isAfter(PersianDate other) => compareTo(other) > 0;
+
+  /// Whether this date is the same day as [other]; the same as `==`.
+  bool isSameDay(PersianDate other) => this == other;
+
+  /// Whether this date is in the same Jalali month and year as [other].
+  bool isSameMonth(PersianDate other) =>
+      year == other.year && month == other.month;
+
+  /// Whether this date is in the same Jalali year as [other].
+  bool isSameYear(PersianDate other) => year == other.year;
+
+  /// Whether this date is today in local time.
+  bool get isToday => this == PersianDate.now();
+
+  /// Whether this date is before [other]; see [compareTo].
+  bool operator <(PersianDate other) => compareTo(other) < 0;
+
+  /// Whether this date is before or the same day as [other].
+  bool operator <=(PersianDate other) => compareTo(other) <= 0;
+
+  /// Whether this date is after [other]; see [compareTo].
+  bool operator >(PersianDate other) => compareTo(other) > 0;
+
+  /// Whether this date is after or the same day as [other].
+  bool operator >=(PersianDate other) => compareTo(other) >= 0;
+
   /// Persian month names, from Farvardin to Esfand.
   static const List<String> monthNames = [
     'فروردین',
