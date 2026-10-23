@@ -17,3 +17,49 @@ jobs:
       - run: dart format --output=none --set-exit-if-changed .
       - run: dart analyze --fatal-infos
       - run: dart test
+      - name: Benchmark smoke run
+        run: dart run benchmark/jalali_date_benchmark.dart
+
+  jalaali-sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: dart pub get
+      - run: npm ci
+        working-directory: tool/jalaali_sweep
+      - name: Compare every day from 1850 to 2300 with jalaali-js
+        run: dart run tool/jalaali_sweep/dump.dart | node tool/jalaali_sweep/sweep.mjs
+
+  holidays:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/jalali_holidays
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - run: dart pub get
+      - run: dart analyze --fatal-infos
+      - run: dart test
+
+  picker:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/jalali_date_picker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter pub get
+      - run: flutter analyze --fatal-infos
+      - run: flutter test
