@@ -4,10 +4,8 @@ import 'src/jalali_calc.dart';
 
 /// Jalali Date for Dart
 ///
-/// Supports Jalali years -61 to 3177, roughly Gregorian 560-03-20 to
-/// 3798-12-31. Constructing from a Gregorian date after that range throws
-/// [ArgumentError]; dates before it follow jalaali-js and are not
-/// range-checked.
+/// Supports Jalali -61/01/01 to 3177/10/11, which is Gregorian 560-03-20 to
+/// 3798-12-31. Every constructor throws [ArgumentError] outside that range.
 class PersianDate implements Comparable<PersianDate> {
   final int year;
   final int month;
@@ -23,8 +21,12 @@ class PersianDate implements Comparable<PersianDate> {
       PersianDate.fromDateTime(DateTime.parse(datetime));
 
   /// Creates a date from [datetime], keeping its time of day and time zone.
+  ///
+  /// Throws [ArgumentError] when [datetime] is outside the supported range.
   factory PersianDate.fromDateTime(DateTime datetime) {
-    final date = toJalali(datetime.year, datetime.month, datetime.day);
+    final jdn = g2d(datetime.year, datetime.month, datetime.day);
+    _checkRange(jdn);
+    final date = d2j(jdn);
     return PersianDate._(date.jy, date.jm, date.jd, datetime);
   }
 
@@ -38,8 +40,9 @@ class PersianDate implements Comparable<PersianDate> {
 
   /// Creates a date from a Jalali year, month, and day.
   ///
-  /// Throws [ArgumentError] when [year] is outside -61 to 3177, [month] is
-  /// outside 1 to 12, or [day] is outside the length of that month.
+  /// Throws [ArgumentError] when [month] is outside 1 to 12, [day] is
+  /// outside the length of that month, or the date is outside the supported
+  /// range.
   PersianDate(this.year, this.month, this.day) : _dateTime = null {
     if (year < -61 || year > 3177) {
       throw ArgumentError.value(year, 'year', 'Must be in -61 to 3177');
@@ -51,9 +54,22 @@ class PersianDate implements Comparable<PersianDate> {
     if (day < 1 || day > length) {
       throw ArgumentError.value(day, 'day', 'Must be in 1 to $length');
     }
+    _checkRange(j2d(year, month, day));
   }
 
   PersianDate._(this.year, this.month, this.day, this._dateTime);
+
+  static final _firstDay = g2d(560, 3, 20);
+  static final _lastDay = g2d(3798, 12, 31);
+
+  static void _checkRange(int jdn) {
+    if (jdn < _firstDay || jdn > _lastDay) {
+      throw ArgumentError(
+        'Date must be in Jalali -61/01/01 to 3177/10/11 '
+        '(Gregorian 560-03-20 to 3798-12-31)',
+      );
+    }
+  }
 
   /// Whether [year] is a Jalali leap year, with 30 days in Esfand.
   bool get isLeapYear => isLeapJalaliYear(year);
@@ -210,6 +226,8 @@ class PersianDate implements Comparable<PersianDate> {
   /// | `s`    | second                          |
   ///
   /// The longest token wins, and every other character is copied as is.
+  /// There is no escaping, so letters that form a token are always replaced:
+  /// `format('Month')` gives `1onth`.
   /// Throws [StateError] for a time token when this instance was created
   /// from a Jalali date and therefore carries no time of day.
   String format(String pattern) {
@@ -234,7 +252,8 @@ class PersianDate implements Comparable<PersianDate> {
   String _formatToken(String token) {
     switch (token) {
       case 'yyyy':
-        return year.toString().padLeft(4, '0');
+        final digits = year.abs().toString().padLeft(4, '0');
+        return year < 0 ? '-$digits' : digits;
       case 'yy':
         return _twoDigits(year.remainder(100).abs());
       case 'MMMM':

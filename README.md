@@ -130,6 +130,7 @@ print(date.format('EEEE yyyy/MM/dd')); // یکشنبه 1400/01/01
 | `s`    | second                      |
 
 The longest token wins, and every other character is copied as is.
+There is no escaping, so letters that form a token are always replaced: `format('Month')` gives `1onth`.
 Time tokens throw `StateError` for a date created from Jalali values.
 
 ### In fromJson
@@ -156,9 +157,8 @@ class Item {
 
 ## Supported range
 
-Jalali years -61 to 3177, roughly Gregorian 560-03-20 to 3798-12-31.
-`PersianDate(year, month, day)` throws `ArgumentError` outside that range.
-Gregorian dates after 3798 throw `ArgumentError`.
+Jalali -61/01/01 to 3177/10/11, which is Gregorian 560-03-20 to 3798-12-31.
+Every constructor throws `ArgumentError` outside that range.
 
 ## Migrating from 0.1.x
 

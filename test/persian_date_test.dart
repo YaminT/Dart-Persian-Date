@@ -25,6 +25,16 @@ void main() {
       expect(() => PersianDate(3177, 1, 1), returnsNormally);
       expect(() => PersianDate(3178, 1, 1), throwsArgumentError);
     });
+
+    test('range ends match in both directions', () {
+      expect(PersianDate(3177, 10, 11).toDateTime(), DateTime(3798, 12, 31));
+      expect(() => PersianDate(3177, 10, 12), throwsArgumentError);
+      expect(
+          PersianDate.fromGregorian(3798, 12, 31), PersianDate(3177, 10, 11));
+      expect(() => PersianDate.fromGregorian(3799, 1, 1), throwsArgumentError);
+      expect(PersianDate.fromGregorian(560, 3, 20), PersianDate(-61, 1, 1));
+      expect(() => PersianDate.fromGregorian(560, 3, 19), throwsArgumentError);
+    });
   });
 
   group('toDateTime', () {
@@ -150,6 +160,10 @@ void main() {
 
     test('time tokens need a DateTime', () {
       expect(() => PersianDate(1400, 1, 1).format('HH'), throwsStateError);
+    });
+
+    test('negative years keep the sign outside the padding', () {
+      expect(PersianDate(-5, 1, 1).format('yyyy'), '-0005');
     });
 
     test('unknown characters pass through', () {
