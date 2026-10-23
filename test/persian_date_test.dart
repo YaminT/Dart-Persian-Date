@@ -644,4 +644,80 @@ void main() {
     expect(PersianDate.monthNamesLatin, hasLength(12));
     expect(PersianDate.weekdayNamesLatin, hasLength(7));
   });
+
+  group('daysUntil', () {
+    final start = PersianDate(1403, 12, 28);
+    final end = PersianDate(1404, 1, 2);
+
+    test('inclusive and exclusive', () {
+      expect(start.daysUntil(end).toList(), [
+        PersianDate(1403, 12, 28),
+        PersianDate(1403, 12, 29),
+        PersianDate(1403, 12, 30),
+        PersianDate(1404, 1, 1),
+        PersianDate(1404, 1, 2),
+      ]);
+      expect(start.daysUntil(end, inclusive: false).length, 4);
+      expect(start.daysUntil(start).toList(), [start]);
+      expect(start.daysUntil(start, inclusive: false), isEmpty);
+      expect(end.daysUntil(start), isEmpty);
+    });
+
+    test('ignores the time of day and is lazy', () {
+      final late = PersianDate.fromDateTime(DateTime(2025, 3, 18, 23, 59));
+      expect(late.daysUntil(PersianDate(1403, 12, 29)).length, 2);
+      expect(PersianDate.min.daysUntil(PersianDate.max).take(2).length, 2);
+    });
+  });
+
+  group('PersianDateRange', () {
+    final range =
+        PersianDateRange(PersianDate(1403, 1, 1), PersianDate(1403, 1, 10));
+
+    test('length, days, contains', () {
+      expect(range.length, 10);
+      expect(range.days.length, 10);
+      expect(range.days.first, PersianDate(1403, 1, 1));
+      expect(range.days.last, PersianDate(1403, 1, 10));
+      expect(range.contains(PersianDate(1403, 1, 1)), isTrue);
+      expect(range.contains(PersianDate(1403, 1, 10)), isTrue);
+      expect(
+        range.contains(PersianDate.fromDateTime(DateTime(2024, 3, 29, 23))),
+        isTrue,
+      );
+      expect(range.contains(PersianDate(1403, 1, 11)), isFalse);
+      expect(range.contains(PersianDate(1402, 12, 29)), isFalse);
+    });
+
+    test('one-day range and invalid order', () {
+      final day = PersianDate(1403, 1, 1);
+      expect(PersianDateRange(day, day).length, 1);
+      expect(
+        () => PersianDateRange(PersianDate(1403, 1, 2), day),
+        throwsArgumentError,
+      );
+    });
+
+    test('overlaps', () {
+      PersianDateRange r(int a, int b) =>
+          PersianDateRange(PersianDate(1403, 1, a), PersianDate(1403, 1, b));
+      expect(range.overlaps(r(10, 15)), isTrue);
+      expect(range.overlaps(r(5, 6)), isTrue);
+      expect(r(5, 6).overlaps(range), isTrue);
+      expect(range.overlaps(r(11, 15)), isFalse);
+      expect(r(11, 15).overlaps(range), isFalse);
+    });
+
+    test('equality and toString', () {
+      expect(
+        range,
+        PersianDateRange(PersianDate(1403, 1, 1), PersianDate(1403, 1, 10)),
+      );
+      expect(
+          range.hashCode,
+          PersianDateRange(PersianDate(1403, 1, 1), PersianDate(1403, 1, 10))
+              .hashCode);
+      expect(range.toString(), '1403/01/01 - 1403/01/10');
+    });
+  });
 }

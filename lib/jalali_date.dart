@@ -16,6 +16,7 @@ import 'src/digits.dart';
 import 'src/jalali_calc.dart';
 
 export 'src/digits.dart';
+export 'src/persian_date_range.dart';
 
 /// An immutable Jalali (Persian) calendar date.
 ///
@@ -231,6 +232,19 @@ class PersianDate implements Comparable<PersianDate> {
   /// a leap year. The result is date-only. Throws [ArgumentError] when the
   /// result is outside the supported range.
   PersianDate addYears(int years) => addMonths(years * 12);
+
+  /// Every day from this date to [end] in order, date-only.
+  ///
+  /// [end] is included unless [inclusive] is false. Empty when [end] is
+  /// before this date. The sequence is lazy, so a long span costs nothing
+  /// until it is iterated.
+  Iterable<PersianDate> daysUntil(PersianDate end,
+      {bool inclusive = true}) sync* {
+    final last = end._julianDay - (inclusive ? 0 : 1);
+    for (var jdn = _julianDay; jdn <= last; jdn++) {
+      yield PersianDate._fromJulianDay(jdn);
+    }
+  }
 
   /// Number of days from [other] to this date, ignoring the time of day.
   ///
