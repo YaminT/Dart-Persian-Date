@@ -9,7 +9,7 @@ Persian (Jalali, Shamsi) date picker and range picker for Flutter, built on [jal
 - Right-to-left layout by default, even inside a left-to-right app.
 - Day, month, and year views for quick jumps.
 - Limits with `firstDate`, `lastDate`, and `selectableDayPredicate`.
-- Persian labels by default, all overridable.
+- Persian labels; the dialog texts can be changed with `helpText`, `confirmText`, and `cancelText`.
 
 ## Installation
 

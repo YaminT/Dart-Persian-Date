@@ -123,6 +123,15 @@ class _PersianCalendarRangePickerState
     _end = widget.initialRange?.end;
   }
 
+  @override
+  void didUpdateWidget(PersianCalendarRangePicker oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialRange != oldWidget.initialRange) {
+      _start = widget.initialRange?.start;
+      _end = widget.initialRange?.end;
+    }
+  }
+
   void _tap(PersianDate day) {
     setState(() {
       final start = _start;
@@ -219,6 +228,7 @@ class _PersianCalendarState extends State<PersianCalendar> {
 
   late PersianDate _month;
   var _view = _View.days;
+  ScrollController? _yearScroll;
 
   PersianDate get _first => widget.firstDate ?? PersianDate.min;
   PersianDate get _last => widget.lastDate ?? PersianDate.max;
@@ -227,6 +237,32 @@ class _PersianCalendarState extends State<PersianCalendar> {
   void initState() {
     super.initState();
     _month = _clampMonth(widget.initialMonth ?? PersianDate.now());
+  }
+
+  @override
+  void didUpdateWidget(PersianCalendar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final initial = widget.initialMonth;
+    if (initial != null && initial != oldWidget.initialMonth) {
+      _month = _clampMonth(initial);
+    } else if (widget.firstDate != oldWidget.firstDate ||
+        widget.lastDate != oldWidget.lastDate) {
+      _month = _clampMonth(_month);
+    }
+  }
+
+  @override
+  void dispose() {
+    _yearScroll?.dispose();
+    super.dispose();
+  }
+
+  void _setView(_View view) {
+    if (view != _View.years) {
+      _yearScroll?.dispose();
+      _yearScroll = null;
+    }
+    _view = view;
   }
 
   PersianDate _clampMonth(PersianDate date) {
@@ -257,7 +293,7 @@ class _PersianCalendarState extends State<PersianCalendar> {
 
   void _showMonth(PersianDate month) => setState(() {
         _month = _clampMonth(month);
-        _view = _View.days;
+        _setView(_View.days);
       });
 
   @override
@@ -295,7 +331,7 @@ class _PersianCalendarState extends State<PersianCalendar> {
               key: const ValueKey('persian-calendar-title'),
               borderRadius: BorderRadius.circular(8),
               onTap: () => setState(() {
-                _view = _view == _View.days ? _View.months : _View.days;
+                _setView(_view == _View.days ? _View.months : _View.days);
               }),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
@@ -323,7 +359,7 @@ class _PersianCalendarState extends State<PersianCalendar> {
           if (_view == _View.months)
             TextButton(
               key: const ValueKey('persian-calendar-years'),
-              onPressed: () => setState(() => _view = _View.years),
+              onPressed: () => setState(() => _setView(_View.years)),
               child: Text(_digits('${_month.year}')),
             ),
           const Spacer(),
@@ -424,7 +460,11 @@ class _PersianCalendarState extends State<PersianCalendar> {
       foreground = scheme.onSurface;
     }
     return Semantics(
-      label: day.format('EEEE d MMMM yyyy'),
+      label: [
+        day.format('EEEE d MMMM yyyy'),
+        if (today) 'امروز',
+        if (inRange) 'در بازه‌ی انتخاب‌شده',
+      ].join('، '),
       selected: selected,
       button: true,
       enabled: enabled,
@@ -506,7 +546,7 @@ class _PersianCalendarState extends State<PersianCalendar> {
     const columns = 3;
     const itemHeight = 52.0;
     final row = (_month.year - firstYear) ~/ columns;
-    final controller = ScrollController(
+    final controller = _yearScroll ??= ScrollController(
       initialScrollOffset: row > 2 ? (row - 2) * itemHeight : 0,
     );
     return GridView.builder(
@@ -535,7 +575,7 @@ class _PersianCalendarState extends State<PersianCalendar> {
                 _monthStart(year, _month.month) ??
                     PersianDate.max.firstDayOfMonth,
               );
-              _view = _View.months;
+              _setView(_View.months);
             }),
             child: Text(_digits('$year')),
           ),

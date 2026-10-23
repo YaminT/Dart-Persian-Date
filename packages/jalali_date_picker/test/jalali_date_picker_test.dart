@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jalali_date_picker/jalali_date_picker.dart';
 
@@ -297,5 +298,94 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('persian-calendar-years')));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('follows a new selectedDate and new limits from the parent',
+      (tester) async {
+    Widget build(PersianDate selected, {PersianDate? first}) =>
+        _app(PersianCalendarDatePicker(
+          selectedDate: selected,
+          firstDate: first,
+          onDateChanged: (_) {},
+        ));
+    await tester.pumpWidget(build(PersianDate(1403, 1, 10)));
+    expect(find.text('فروردین ۱۴۰۳'), findsOneWidget);
+    await tester.pumpWidget(build(PersianDate(1403, 7, 5)));
+    expect(find.text('مهر ۱۴۰۳'), findsOneWidget);
+    await tester.pumpWidget(
+        build(PersianDate(1403, 7, 5), first: PersianDate(1405, 2, 1)));
+    expect(find.text('اردیبهشت ۱۴۰۵'), findsOneWidget);
+  });
+
+  testWidgets('range picker shows a new initialRange from the parent',
+      (tester) async {
+    Widget build(PersianDateRange range) => _app(PersianCalendarRangePicker(
+          initialRange: range,
+          onRangeChanged: (_) {},
+        ));
+    SemanticsProperties day(PersianDate date) => tester
+        .widget<Semantics>(find
+            .ancestor(
+              of: _day(date),
+              matching: find.byWidgetPredicate((w) =>
+                  w is Semantics && (w.properties.label ?? '').contains('مهر')),
+            )
+            .first)
+        .properties;
+    await tester.pumpWidget(build(
+        PersianDateRange(PersianDate(1403, 7, 2), PersianDate(1403, 7, 4))));
+    expect(day(PersianDate(1403, 7, 2)).selected, isTrue);
+    await tester.pumpWidget(build(
+        PersianDateRange(PersianDate(1403, 7, 10), PersianDate(1403, 7, 12))));
+    expect(day(PersianDate(1403, 7, 2)).selected, isFalse);
+    expect(day(PersianDate(1403, 7, 10)).selected, isTrue);
+    expect(day(PersianDate(1403, 7, 12)).selected, isTrue);
+    expect(day(PersianDate(1403, 7, 11)).label,
+        'چهارشنبه 11 مهر 1403، در بازه‌ی انتخاب‌شده');
+  });
+
+  testWidgets('year list keeps its scroll position across rebuilds',
+      (tester) async {
+    var counter = 0;
+    late StateSetter rebuild;
+    await tester.pumpWidget(_app(StatefulBuilder(builder: (context, setState) {
+      rebuild = setState;
+      return Column(children: [
+        Text('$counter'),
+        PersianCalendarDatePicker(
+          initialMonth: PersianDate(1403, 7, 1),
+          onDateChanged: (_) {},
+        ),
+      ]);
+    })));
+    await tester.tap(find.byKey(const ValueKey('persian-calendar-title')));
+    await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('persian-calendar-years')));
+    await tester.pump();
+    final scrollable = find.byType(Scrollable).last;
+    await tester.drag(scrollable, const Offset(0, -300));
+    await tester.pump();
+    final offset = tester.state<ScrollableState>(scrollable).position.pixels;
+    rebuild(() => counter++);
+    await tester.pump();
+    expect(tester.state<ScrollableState>(scrollable).position.pixels, offset);
+  });
+
+  testWidgets('initialDate must pass selectableDayPredicate', (tester) async {
+    late BuildContext captured;
+    await tester.pumpWidget(MaterialApp(
+      home: Builder(builder: (context) {
+        captured = context;
+        return const SizedBox();
+      }),
+    ));
+    expect(
+      () => showPersianDatePicker(
+        context: captured,
+        initialDate: PersianDate(1403, 1, 3),
+        selectableDayPredicate: (day) => !day.isWeekend,
+      ),
+      throwsArgumentError,
+    );
   });
 }

@@ -12,7 +12,9 @@ import 'calendar.dart';
 /// change them.
 ///
 /// Throws [ArgumentError] when [lastDate] is before [firstDate], or when
-/// [initialDate] is outside them.
+/// [initialDate] is outside them or rejected by [selectableDayPredicate].
+/// Without [initialDate] today is used, so pass one when the predicate may
+/// reject today.
 Future<PersianDate?> showPersianDatePicker({
   required BuildContext context,
   PersianDate? initialDate,
@@ -31,6 +33,10 @@ Future<PersianDate?> showPersianDatePicker({
   final initial = initialDate ?? _clamp(PersianDate.now(), first, last);
   if (initial.isBefore(first) || initial.isAfter(last)) {
     throw ArgumentError.value('$initial', 'initialDate', 'Outside the limits');
+  }
+  if (selectableDayPredicate != null && !selectableDayPredicate(initial)) {
+    throw ArgumentError.value(
+        '$initial', 'initialDate', 'Rejected by selectableDayPredicate');
   }
   return showDialog<PersianDate>(
     context: context,
