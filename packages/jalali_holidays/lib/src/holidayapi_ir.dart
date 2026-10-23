@@ -6,6 +6,7 @@ import 'package:jalali_date/jalali_date.dart';
 
 import 'holiday.dart';
 import 'holiday_source.dart';
+import 'pool.dart';
 
 /// Holidays from [holidayapi.ir](https://holidayapi.ir), a free service
 /// with no API key.
@@ -67,6 +68,12 @@ class HolidayApiIrSource implements HolidaySource {
       throw HolidaySourceException('Request timed out', uri: uri);
     } on http.ClientException catch (error) {
       throw HolidaySourceException(error.message, uri: uri);
+    } on Object catch (error, stack) {
+      // TLS, socket, and other platform errors.
+      Error.throwWithStackTrace(
+        HolidaySourceException('$error', uri: uri),
+        stack,
+      );
     }
     if (response.statusCode != 200) {
       throw HolidaySourceException(
@@ -99,20 +106,13 @@ class HolidayApiIrSource implements HolidaySource {
   }
 
   @override
-  Future<List<HolidayDay>> month(int year, int month) async {
+  Future<List<HolidayDay>> month(int year, int month) {
     final first = PersianDate(year, month, 1);
-    final days = first.daysUntil(first.lastDayOfMonth).toList();
-    final results = List<HolidayDay?>.filled(days.length, null);
-    var next = 0;
-    Future<void> worker() async {
-      while (next < days.length) {
-        final index = next++;
-        results[index] = await day(days[index]);
-      }
-    }
-
-    await Future.wait([for (var i = 0; i < _concurrency; i++) worker()]);
-    return results.cast<HolidayDay>();
+    return mapWithConcurrency(
+      first.daysUntil(first.lastDayOfMonth).toList(),
+      _concurrency,
+      day,
+    );
   }
 
   /// Closes the HTTP client, including one passed to the constructor.

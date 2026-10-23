@@ -6,6 +6,9 @@
 # published in place. The copy drops pubspec_overrides.yaml, so the package
 # resolves its jalali_date dependency from pub.dev like a user would.
 #
+# Publish jalali_date first: the sub-packages depend on the jalali_date
+# version in their pubspec, and pub resolves it from pub.dev.
+#
 # Usage: tool/publish_package.sh <name> [--dry-run]
 set -euo pipefail
 
@@ -17,9 +20,9 @@ src="$root/packages/$name"
 
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
-rsync -a --exclude .dart_tool --exclude build --exclude pubspec.lock \
-  --exclude pubspec_overrides.yaml "$src/" "$tmp/$name/"
+cp -R "$src" "$tmp/$name"
 cd "$tmp/$name"
+rm -rf .dart_tool build pubspec.lock pubspec_overrides.yaml
 
 if grep -q 'sdk: flutter' pubspec.yaml; then
   flutter pub publish "$@"

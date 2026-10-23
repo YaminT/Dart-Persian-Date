@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -155,5 +156,62 @@ void main() {
     expect(source.website.host, 'holidayapi.ir');
     expect(source.notice, contains('time.ir'));
     source.close();
+  });
+
+  test('CachedHolidaySource.month respects its concurrency', () async {
+    var active = 0;
+    var peak = 0;
+    final cached = CachedHolidaySource(
+      HolidayApiIrSource(
+        client: MockClient((_) async {
+          active++;
+          if (active > peak) peak = active;
+          await Future<void>.delayed(const Duration(milliseconds: 2));
+          active--;
+          return _json(_workday);
+        }),
+      ),
+      concurrency: 2,
+    );
+    expect(await cached.month(1403, 1), hasLength(31));
+    expect(peak, lessThanOrEqualTo(2));
+  });
+
+  test('other client errors become HolidaySourceException', () async {
+    final source = HolidayApiIrSource(
+      client: MockClient((_) async => throw const FormatException('tls')),
+    );
+    await expectLater(
+      source.day(PersianDate(1403, 1, 1)),
+      throwsA(isA<HolidaySourceException>()
+          .having((e) => e.message, 'message', contains('tls'))),
+    );
+  });
+
+  test('a failure after clear() keeps the newer cache entry', () async {
+    final gates = <Completer<http.Response>>[];
+    var calls = 0;
+    final cached = CachedHolidaySource(
+      HolidayApiIrSource(
+        client: MockClient((_) {
+          calls++;
+          final gate = Completer<http.Response>();
+          gates.add(gate);
+          return gate.future;
+        }),
+      ),
+    );
+    final date = PersianDate(1403, 1, 1);
+    final first = cached.day(date);
+    await Future<void>.delayed(Duration.zero);
+    cached.clear();
+    final second = cached.day(date);
+    await Future<void>.delayed(Duration.zero);
+    gates[1].complete(_json(_workday));
+    await second;
+    gates[0].complete(http.Response('down', 503));
+    await expectLater(first, throwsA(isA<HolidaySourceException>()));
+    await cached.day(date);
+    expect(calls, 2);
   });
 }
