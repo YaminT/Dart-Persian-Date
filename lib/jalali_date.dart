@@ -614,3 +614,10 @@ class PersianDate implements Comparable<PersianDate> {
 
   static String _twoDigits(int value) => value.toString().padLeft(2, '0');
 }
+
+/// Converts a [DateTime] to a [PersianDate].
+extension PersianDateTime on DateTime {
+  /// Returns this moment as a [PersianDate], keeping the time of day; the
+  /// same as [PersianDate.fromDateTime].
+  PersianDate toPersianDate() => PersianDate.fromDateTime(this);
+}

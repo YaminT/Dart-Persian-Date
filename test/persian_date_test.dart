@@ -584,4 +584,11 @@ void main() {
       expect(() => PersianDate.fromJson('1403-13-01'), throwsFormatException);
     });
   });
+
+  test('DateTime.toPersianDate extension', () {
+    final moment = DateTime.utc(2021, 3, 21, 8, 15);
+    final date = moment.toPersianDate();
+    expect(date, PersianDate(1400, 1, 1));
+    expect(date.toDateTime(), moment);
+  });
 }
