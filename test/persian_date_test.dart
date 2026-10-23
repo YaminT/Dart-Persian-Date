@@ -424,4 +424,38 @@ void main() {
       expect(first.monthLength, 30);
     });
   });
+
+  group('Persian digits', () {
+    test('toPersianDigits converts every digit and keeps other text', () {
+      expect(toPersianDigits('0123456789'), '۰۱۲۳۴۵۶۷۸۹');
+      expect(toPersianDigits('1403/01/01 ساعت 9'), '۱۴۰۳/۰۱/۰۱ ساعت ۹');
+      expect(toPersianDigits('۱۲'), '۱۲');
+      expect(toPersianDigits(''), '');
+    });
+
+    test('toLatinDigits handles Persian and Arabic-Indic digits', () {
+      expect(toLatinDigits('۰۱۲۳۴۵۶۷۸۹'), '0123456789');
+      expect(toLatinDigits('٠١٢٣٤٥٦٧٨٩'), '0123456789');
+      expect(toLatinDigits('۱۴۰۳-۰۱-۰۱ abc 7'), '1403-01-01 abc 7');
+    });
+
+    test('round trip', () {
+      const text = 'Date 1357/11/22, 21:43';
+      expect(toLatinDigits(toPersianDigits(text)), text);
+    });
+
+    test('toString and format with persianDigits', () {
+      final date = PersianDate.fromGregorianString('2018-07-07T21:43:44.909Z');
+      expect(date.toString(persianDigits: true), '۱۳۹۷/۰۴/۱۶');
+      expect(
+        date.toString(showTime: true, persianDigits: true),
+        '۱۳۹۷/۰۴/۱۶ ۲۱:۴۳:۴۴',
+      );
+      expect(
+        date.format('d MMMM yyyy, HH:mm', persianDigits: true),
+        '۱۶ تیر ۱۳۹۷, ۲۱:۴۳',
+      );
+      expect(date.format('yyyy 2', persianDigits: true), '۱۳۹۷ 2');
+    });
+  });
 }

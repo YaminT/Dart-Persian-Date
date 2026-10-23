@@ -12,7 +12,10 @@
 /// ```
 library jalali_date;
 
+import 'src/digits.dart';
 import 'src/jalali_calc.dart';
+
+export 'src/digits.dart';
 
 /// An immutable Jalali (Persian) calendar date.
 ///
@@ -358,6 +361,8 @@ class PersianDate implements Comparable<PersianDate> {
   /// when [showTime] is true and every time part is disabled. Throws
   /// [StateError] when [showTime] is true but this instance was created from
   /// a Jalali date and therefore carries no time of day.
+  ///
+  /// With [persianDigits], the digits are written as ۰ to ۹.
   @override
   String toString({
     bool showDate = true,
@@ -365,6 +370,7 @@ class PersianDate implements Comparable<PersianDate> {
     bool showHour = true,
     bool showMinute = true,
     bool showSecond = true,
+    bool persianDigits = false,
   }) {
     if (!showDate && !showTime) {
       throw ArgumentError('At least one of showDate or showTime must be true.');
@@ -393,7 +399,8 @@ class PersianDate implements Comparable<PersianDate> {
         ].join(':'),
       );
     }
-    return parts.join(' ');
+    final text = parts.join(' ');
+    return persianDigits ? toPersianDigits(text) : text;
   }
 
   static const _tokens = [
@@ -425,7 +432,10 @@ class PersianDate implements Comparable<PersianDate> {
   /// `format('Month')` gives `1onth`.
   /// Throws [StateError] for a time token when this instance was created
   /// from a Jalali date and therefore carries no time of day.
-  String format(String pattern) {
+  ///
+  /// With [persianDigits], numbers produced by tokens are written as ۰ to ۹;
+  /// literal text in [pattern] is copied unchanged.
+  String format(String pattern, {bool persianDigits = false}) {
     final out = StringBuffer();
     var i = 0;
     while (i < pattern.length) {
@@ -438,7 +448,8 @@ class PersianDate implements Comparable<PersianDate> {
         i++;
         continue;
       }
-      out.write(_formatToken(token));
+      final value = _formatToken(token);
+      out.write(persianDigits ? toPersianDigits(value) : value);
       i += token.length;
     }
     return out.toString();
