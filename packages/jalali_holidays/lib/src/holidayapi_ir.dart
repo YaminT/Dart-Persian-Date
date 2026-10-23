@@ -1,11 +1,9 @@
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 import 'package:jalali_date/jalali_date.dart';
 
 import 'holiday.dart';
 import 'holiday_source.dart';
+import 'http_json.dart';
 import 'pool.dart';
 
 /// Holidays from [holidayapi.ir](https://holidayapi.ir), a free service
@@ -61,31 +59,11 @@ class HolidayApiIrSource implements HolidaySource {
   @override
   Future<HolidayDay> day(PersianDate date) async {
     final uri = uriFor(date);
-    final http.Response response;
-    try {
-      response = await _client.get(uri).timeout(_timeout);
-    } on TimeoutException {
-      throw HolidaySourceException('Request timed out', uri: uri);
-    } on http.ClientException catch (error) {
-      throw HolidaySourceException(error.message, uri: uri);
-    } on Object catch (error, stack) {
-      // TLS, socket, and other platform errors.
-      Error.throwWithStackTrace(
-        HolidaySourceException('$error', uri: uri),
-        stack,
-      );
-    }
-    if (response.statusCode != 200) {
-      throw HolidaySourceException(
-        'Unexpected response',
-        uri: uri,
-        statusCode: response.statusCode,
-      );
-    }
-    try {
-      final json = jsonDecode(utf8.decode(response.bodyBytes)) as Map;
+    final json = await getJson(_client, uri, _timeout);
+    return readResponse(uri, () {
+      final body = json as Map;
       final events = [
-        for (final event in json['events'] as List)
+        for (final event in body['events'] as List)
           HolidayEvent(
             description: (event as Map)['description'] as String,
             additionalDescription:
@@ -96,13 +74,10 @@ class HolidayApiIrSource implements HolidaySource {
       ]..sort((a, b) => (b.isHoliday ? 1 : 0) - (a.isHoliday ? 1 : 0));
       return HolidayDay(
         date: PersianDate(date.year, date.month, date.day),
-        isHoliday: json['is_holiday'] as bool,
+        isHoliday: body['is_holiday'] as bool,
         events: events,
       );
-    } on Object catch (error) {
-      if (error is HolidaySourceException) rethrow;
-      throw HolidaySourceException('Unreadable response: $error', uri: uri);
-    }
+    });
   }
 
   @override

@@ -1,7 +1,8 @@
 /// Iranian holidays and events for `jalali_date` dates.
 ///
 /// Pick a [HolidaySource] explicitly; none is built in by default. Read its
-/// [HolidaySource.notice] first.
+/// [HolidaySource.notice] first. [HolidayApiIrSource] needs no key;
+/// [CalendarificSource] and [GoogleCalendarSource] need your own API key.
 ///
 /// ```dart
 /// final source = CachedHolidaySource(HolidayApiIrSource());
@@ -12,6 +13,8 @@
 library jalali_holidays;
 
 export 'src/cached_holiday_source.dart';
+export 'src/calendarific.dart';
 export 'src/holiday.dart';
 export 'src/holiday_source.dart';
+export 'src/google_calendar.dart';
 export 'src/holidayapi_ir.dart';
