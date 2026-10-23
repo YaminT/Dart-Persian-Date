@@ -462,8 +462,31 @@ class PersianDate implements Comparable<PersianDate> {
     'Yekshanbeh',
   ];
 
+  /// Dari month names used in Afghanistan, from Hamal to Hut.
+  ///
+  /// The months line up one to one with [monthNames]: حمل is Farvardin and
+  /// حوت is Esfand.
+  static const List<String> monthNamesDari = [
+    'حمل',
+    'ثور',
+    'جوزا',
+    'سرطان',
+    'اسد',
+    'سنبله',
+    'میزان',
+    'عقرب',
+    'قوس',
+    'جدی',
+    'دلو',
+    'حوت',
+  ];
+
   /// Persian name of [month], for example `فروردین` for month 1.
   String get monthName => monthNames[month - 1];
+
+  /// Dari name of [month] used in Afghanistan, for example `حمل` for
+  /// month 1.
+  String get monthNameDari => monthNamesDari[month - 1];
 
   /// Latin name of [month], for example `Farvardin` for month 1.
   String get monthNameLatin => monthNamesLatin[month - 1];

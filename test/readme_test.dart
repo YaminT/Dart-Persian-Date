@@ -67,6 +67,7 @@ void main() {
     final date = PersianDate.fromGregorian(1979, 2, 11);
     expect(date.monthName, 'بهمن');
     expect(date.monthNameLatin, 'Bahman');
+    expect(date.monthNameDari, 'دلو');
     expect(date.weekday, 7);
     expect(date.weekdayPersian, 2);
     expect(date.weekdayName, 'یکشنبه');

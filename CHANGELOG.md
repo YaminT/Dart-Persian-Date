@@ -14,6 +14,7 @@
 * `DateTime.toPersianDate()` extension.
 * `format` tokens `E`, `D`, `Q`, `hh`, `h`, and `a`, and single-quote escaping for literal text.
 * Latin names: `monthNameLatin`, `weekdayNameLatin`, `monthNamesLatin`, and `weekdayNamesLatin`.
+* Dari month names used in Afghanistan: `monthNameDari` and `monthNamesDari`.
 * `daysUntil` and `PersianDateRange` for day sequences and range pickers.
 * README: Persian introduction, search keywords, a full quick reference, a date picker recipe, and notes for code generators.
 

@@ -753,4 +753,12 @@ void main() {
     }
     expect(PersianDate.withTime(1399, 1, 2, 2, 0).hour, 2);
   });
+
+  test('Dari month names', () {
+    expect(PersianDate(1403, 1, 1).monthNameDari, 'حمل');
+    expect(PersianDate(1403, 6, 1).monthNameDari, 'سنبله');
+    expect(PersianDate(1403, 7, 1).monthNameDari, 'میزان');
+    expect(PersianDate(1403, 12, 1).monthNameDari, 'حوت');
+    expect(PersianDate.monthNamesDari, hasLength(12));
+  });
 }

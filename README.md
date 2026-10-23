@@ -75,14 +75,14 @@ Everything is exported from `package:jalali_date/jalali_date.dart`: the immutabl
 | `monthLength` | 31, 30, or 29 |
 | `dayOfYear` | 1 to 366 |
 | `quarter`, `season`, `seasonName` | 1 to 4, and `بهار` to `زمستان` |
-| `monthName`, `monthNameLatin` | `فروردین`, `Farvardin` |
+| `monthName`, `monthNameLatin`, `monthNameDari` | `فروردین`, `Farvardin`, `حمل` (Afghanistan) |
 | `weekday` | ISO weekday, 1 is Monday and 7 is Sunday, like `DateTime.weekday` |
 | `weekdayPersian` | 1 is Saturday and 7 is Friday, the column in a Persian calendar grid |
 | `weekdayName`, `weekdayNameShort`, `weekdayNameLatin` | `شنبه`, `ش`, `Shanbeh` |
 | `weekOfYear` | Saturday-first week number, week 1 contains 1 Farvardin |
 | `isWeekend` | Friday |
 | `isToday` | Same day as `PersianDate.now()` |
-| `monthNames`, `monthNamesLatin`, `weekdayNames`, `weekdayNamesShort`, `weekdayNamesLatin`, `seasonNames` | Static name lists; weekday lists are indexed by ISO weekday minus one |
+| `monthNames`, `monthNamesLatin`, `monthNamesDari`, `weekdayNames`, `weekdayNamesShort`, `weekdayNamesLatin`, `seasonNames` | Static name lists; weekday lists are indexed by ISO weekday minus one |
 
 ### Calculating
 
@@ -223,6 +223,7 @@ print(date.lastDayOfYear); // 1403/12/30
 final date = PersianDate.fromGregorian(1979, 2, 11);
 print(date.monthName); // بهمن
 print(date.monthNameLatin); // Bahman
+print(date.monthNameDari); // دلو, the Dari name used in Afghanistan
 print(date.weekday); // 7 (DateTime.sunday)
 print(date.weekdayPersian); // 2, Sunday is the second day of the Persian week
 print(date.weekdayName); // یکشنبه
