@@ -16,7 +16,8 @@ class PersianDateRange {
   /// has the same [start] and [end].
   PersianDateRange(this.start, this.end) {
     if (end.isBefore(start)) {
-      throw ArgumentError.value(end, 'end', 'Must not be before start $start');
+      throw ArgumentError.value(
+          '$end', 'end', 'Must not be before start $start');
     }
   }
 

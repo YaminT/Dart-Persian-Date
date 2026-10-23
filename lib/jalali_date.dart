@@ -85,8 +85,10 @@ class PersianDate implements Comparable<PersianDate> {
   ///
   /// The date is validated like [PersianDate.new]. Throws [ArgumentError]
   /// when [hour] is outside 0 to 23, or [minute] or [second] is outside
-  /// 0 to 59. The result carries a local [DateTime], so [hasTime] is true
-  /// and [toDateTime] returns that moment.
+  /// 0 to 59, and when that wall-clock time does not exist in the local
+  /// time zone because of a daylight saving change. The result carries a
+  /// local [DateTime], so [hasTime] is true and [toDateTime] returns that
+  /// moment.
   factory PersianDate.withTime(
     int year,
     int month,
@@ -106,25 +108,29 @@ class PersianDate implements Comparable<PersianDate> {
       throw ArgumentError.value(second, 'second', 'Must be in 0 to 59');
     }
     final g = d2g(date._julianDay);
-    return PersianDate._(
-      year,
-      month,
-      day,
-      DateTime(g.gy, g.gm, g.gd, hour, minute, second),
-    );
+    final dateTime = DateTime(g.gy, g.gm, g.gd, hour, minute, second);
+    if (dateTime.day != g.gd ||
+        dateTime.hour != hour ||
+        dateTime.minute != minute) {
+      throw ArgumentError(
+        '$date $hour:$minute does not exist in the local time zone',
+      );
+    }
+    return PersianDate._(year, month, day, dateTime);
   }
 
   PersianDate._(this.year, this.month, this.day, this._dateTime);
 
   static final _parsePattern = RegExp(
-    r'^\s*(-?\d{1,4})[/-](\d{1,2})[/-](\d{1,2})'
+    r'^\s*(-?\d{1,4})([/-])(\d{1,2})\2(\d{1,2})'
     r'(?:[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?\s*$',
   );
 
   /// Parses a Jalali date such as `1403/01/01`, `1403-1-1`, or
   /// `۱۴۰۳/۰۱/۰۱ ۱۴:۳۰`.
   ///
-  /// Accepts `/` or `-` between year, month, and day, an optional time of
+  /// Accepts `/` or `-` between year, month, and day (the same one twice),
+  /// an optional time of
   /// `HH:mm` or `HH:mm:ss` after a space or `T`, and ASCII, Persian, or
   /// Arabic-Indic digits. With a time the result is a local
   /// [PersianDate.withTime]; without one it is date-only like
@@ -139,16 +145,16 @@ class PersianDate implements Comparable<PersianDate> {
     }
     int part(int group) => int.parse(match.group(group)!);
     try {
-      if (match.group(4) == null) {
-        return PersianDate(part(1), part(2), part(3));
+      if (match.group(5) == null) {
+        return PersianDate(part(1), part(3), part(4));
       }
       return PersianDate.withTime(
         part(1),
-        part(2),
         part(3),
         part(4),
         part(5),
-        match.group(6) == null ? 0 : part(6),
+        part(6),
+        match.group(7) == null ? 0 : part(7),
       );
     } on ArgumentError catch (error) {
       throw FormatException('Invalid Jalali date: ${error.message}', input);
@@ -512,10 +518,11 @@ class PersianDate implements Comparable<PersianDate> {
   /// Throws [ArgumentError] when that Friday is after [PersianDate.max].
   PersianDate endOfWeek() => addDays(7 - weekdayPersian);
 
-  /// Week of the year with Saturday-first weeks, 1 to 53.
+  /// Week of the year with Saturday-first weeks, 1 to 54.
   ///
   /// Week 1 is the week that contains 1 Farvardin, even when it starts in
-  /// Esfand of the previous year.
+  /// Esfand of the previous year. Week 54 only happens in a leap year that
+  /// starts on a Friday, such as 1399.
   int get weekOfYear =>
       (dayOfYear - 1 + firstDayOfYear.weekdayPersian - 1) ~/ 7 + 1;
 

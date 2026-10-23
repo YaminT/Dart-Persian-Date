@@ -408,6 +408,11 @@ void main() {
       expect(PersianDate(1403, 1, 10).weekOfYear, 2);
       expect(PersianDate(1403, 1, 11).weekOfYear, 3);
       expect(PersianDate(1403, 12, 30).weekOfYear, 53);
+      // 1399 is a leap year that starts on Friday.
+      expect(PersianDate(1399, 1, 1).weekdayPersian, 7);
+      expect(PersianDate(1399, 1, 1).weekOfYear, 1);
+      expect(PersianDate(1399, 1, 2).weekOfYear, 2);
+      expect(PersianDate(1399, 12, 30).weekOfYear, 54);
       final first = PersianDate(1404, 1, 1);
       for (var i = 0; i < first.daysInYear; i++) {
         final date = first.addDays(i);
@@ -557,6 +562,8 @@ void main() {
         '1403/01/01 12:60',
         '1403/01/01 12',
         '1403/01/01x',
+        '1403/01-01',
+        '1403-01/01',
       ]) {
         expect(() => PersianDate.parse(input), throwsFormatException,
             reason: input);
@@ -719,5 +726,31 @@ void main() {
               .hashCode);
       expect(range.toString(), '1403/01/01 - 1403/01/10');
     });
+  });
+
+  test('PersianDateRange error names the dates', () {
+    expect(
+      () => PersianDateRange(PersianDate(1403, 1, 2), PersianDate(1403, 1, 1)),
+      throwsA(isA<ArgumentError>().having(
+        (e) => e.toString(),
+        'message',
+        allOf(contains('1403/01/01'), contains('1403/01/02')),
+      )),
+    );
+  });
+
+  test('withTime rejects a wall-clock time skipped by daylight saving', () {
+    // Iran moved clocks from 00:00 to 01:00 on 2020-03-21 (1399/01/02).
+    // The check only bites when the local zone has that gap, like
+    // TZ=Asia/Tehran; elsewhere the time exists and is accepted.
+    final skipped = DateTime(2020, 3, 21, 0, 30).hour != 0;
+    if (skipped) {
+      expect(
+          () => PersianDate.withTime(1399, 1, 2, 0, 30), throwsArgumentError);
+      expect(PersianDate.tryParse('1399/01/02 00:30'), isNull);
+    } else {
+      expect(PersianDate.withTime(1399, 1, 2, 0, 30).hour, 0);
+    }
+    expect(PersianDate.withTime(1399, 1, 2, 2, 0).hour, 2);
   });
 }

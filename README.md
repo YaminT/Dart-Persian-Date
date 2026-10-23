@@ -172,7 +172,7 @@ PersianDate.parse('1403-01-01T14:30:15'); // with seconds
 PersianDate.tryParse('1400/12/30'); // null, 1400 is not a leap year
 ```
 
-`parse` accepts `/` or `-` between the parts, one- or two-digit month and day, an optional `HH:mm` or `HH:mm:ss`, and ASCII, Persian, or Arabic-Indic digits.
+`parse` accepts `/` or `-` between the parts (the same one twice), one- or two-digit month and day, an optional `HH:mm` or `HH:mm:ss`, and ASCII, Persian, or Arabic-Indic digits.
 It throws `FormatException` for anything else, including invalid dates; `tryParse` returns null instead.
 The output of `toString`, `toJson`, and `format('yyyy/MM/dd')` parses back.
 
