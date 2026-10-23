@@ -98,7 +98,46 @@ class PersianDate implements Comparable<PersianDate> {
   @override
   int compareTo(PersianDate other) => _julianDay.compareTo(other._julianDay);
 
-  /// Returns the date as `year/month/day`, optionally followed by the time.
+  /// Persian month names, from Farvardin to Esfand.
+  static const List<String> monthNames = [
+    'فروردین',
+    'اردیبهشت',
+    'خرداد',
+    'تیر',
+    'مرداد',
+    'شهریور',
+    'مهر',
+    'آبان',
+    'آذر',
+    'دی',
+    'بهمن',
+    'اسفند',
+  ];
+
+  /// Persian weekday names, indexed by ISO weekday minus one (Monday first).
+  static const List<String> weekdayNames = [
+    'دوشنبه',
+    'سه\u200cشنبه',
+    'چهارشنبه',
+    'پنجشنبه',
+    'جمعه',
+    'شنبه',
+    'یکشنبه',
+  ];
+
+  /// Persian name of [month], for example `فروردین` for month 1.
+  String get monthName => monthNames[month - 1];
+
+  /// ISO weekday, 1 = Monday to 7 = Sunday, the same as [DateTime.weekday].
+  ///
+  /// The Persian week starts on Saturday, but the number follows [DateTime]
+  /// so it can be compared with [DateTime.monday] and friends directly.
+  int get weekday => toDateTime().weekday;
+
+  /// Persian name of [weekday], for example `شنبه` for Saturday.
+  String get weekdayName => weekdayNames[weekday - 1];
+
+  /// Returns the date as `yyyy/MM/dd`, optionally followed by the time.
   ///
   /// The time is `HH:mm:ss`, zero-padded. [showHour], [showMinute], and
   /// [showSecond] drop the matching part and only apply when [showTime] is
@@ -126,7 +165,7 @@ class PersianDate implements Comparable<PersianDate> {
     }
     final parts = <String>[];
     if (showDate) {
-      parts.add('$year/$month/$day');
+      parts.add('$year/${_twoDigits(month)}/${_twoDigits(day)}');
     }
     if (showTime) {
       final dateTime = _dateTime;

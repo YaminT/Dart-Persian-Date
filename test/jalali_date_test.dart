@@ -5,17 +5,17 @@ import 'package:test/test.dart';
 void main() {
   test('Gregorian to Jalali conversion', () {
     final farv961 = PersianDate.fromGregorian(2017, 03, 21);
-    expect(farv961.toString(), "1396/1/1");
+    expect(farv961.toString(), "1396/01/01");
     final khord8812 = PersianDate.fromGregorian(2009, 06, 02);
-    expect(khord8812.toString(), "1388/3/12");
+    expect(khord8812.toString(), "1388/03/12");
     final ordi7128 = PersianDate.fromGregorian(1992, 05, 18);
-    expect(ordi7128.toString(), "1371/2/28");
+    expect(ordi7128.toString(), "1371/02/28");
     final farv001 = PersianDate.fromGregorian(2021, 03, 21);
-    expect(farv001.toString(showTime: true), "1400/1/1 00:00:00");
+    expect(farv001.toString(showTime: true), "1400/01/01 00:00:00");
 
     final stringFormat =
         PersianDate.fromGregorianString('2018-07-07T21:43:44.909Z');
-    expect(stringFormat.toString(showTime: true), '1397/4/16 21:43:44');
+    expect(stringFormat.toString(showTime: true), '1397/04/16 21:43:44');
   });
 
   group('toString time parts', () {
@@ -24,13 +24,13 @@ void main() {
         PersianDate.fromGregorianString('2018-07-07T01:02:03.000Z');
 
     test('pads hour, minute, and second to two digits', () {
-      expect(earlyMorning.toString(showTime: true), '1397/4/16 01:02:03');
+      expect(earlyMorning.toString(showTime: true), '1397/04/16 01:02:03');
     });
 
     test('hides seconds', () {
       expect(
         date.toString(showTime: true, showSecond: false),
-        '1397/4/16 21:43',
+        '1397/04/16 21:43',
       );
     });
 
@@ -41,11 +41,11 @@ void main() {
     test('shows only the selected parts without stray separators', () {
       expect(
         date.toString(showTime: true, showHour: false),
-        '1397/4/16 43:44',
+        '1397/04/16 43:44',
       );
       expect(
         date.toString(showTime: true, showMinute: false),
-        '1397/4/16 21:44',
+        '1397/04/16 21:44',
       );
       expect(
         date.toString(
@@ -69,7 +69,7 @@ void main() {
 
     test('uses the wall-clock time of a local DateTime', () {
       final local = PersianDate.fromDateTime(DateTime(2018, 7, 7, 5, 6, 7));
-      expect(local.toString(showTime: true), '1397/4/16 05:06:07');
+      expect(local.toString(showTime: true), '1397/04/16 05:06:07');
     });
 
     test('rejects a time with every part hidden', () {
@@ -92,7 +92,7 @@ void main() {
     });
 
     test('part flags are ignored when time is hidden', () {
-      expect(date.toString(showSecond: false), '1397/4/16');
+      expect(date.toString(showSecond: false), '1397/04/16');
     });
 
     test('still fails without a Gregorian time source', () {
@@ -119,7 +119,8 @@ void main() {
       test('$gy-$gm-$gd -> $jy/$jm/$jd', () {
         final date = PersianDate.fromGregorian(gy, gm, gd);
         expect((date.year, date.month, date.day), (jy, jm, jd));
-        expect(date.toString(), '$jy/$jm/$jd');
+        expect(date.toString(),
+            '$jy/${'$jm'.padLeft(2, '0')}/${'$jd'.padLeft(2, '0')}');
       });
     }
   });

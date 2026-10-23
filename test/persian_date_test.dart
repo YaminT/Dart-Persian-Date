@@ -90,4 +90,30 @@ void main() {
       expect(sorted, [PersianDate(1399, 12, 29), last, first]);
     });
   });
+
+  group('Persian names', () {
+    test('monthName', () {
+      expect(PersianDate(1400, 1, 1).monthName, 'فروردین');
+      expect(PersianDate(1400, 6, 1).monthName, 'شهریور');
+      expect(PersianDate(1400, 7, 1).monthName, 'مهر');
+      expect(PersianDate(1400, 12, 1).monthName, 'اسفند');
+      expect(PersianDate.monthNames, hasLength(12));
+    });
+
+    test('weekday follows DateTime and weekdayName is Persian', () {
+      final revolution = PersianDate.fromGregorian(1979, 2, 11);
+      expect(revolution.weekday, DateTime.sunday);
+      expect(revolution.weekdayName, 'یکشنبه');
+      final nowruz = PersianDate(1400, 1, 1);
+      expect(nowruz.weekday, DateTime.sunday);
+      expect(nowruz.weekdayName, 'یکشنبه');
+      expect(PersianDate(1403, 1, 4).weekdayName, 'شنبه');
+      expect(PersianDate(1403, 1, 7).weekdayName, 'سه\u200cشنبه');
+    });
+  });
+
+  test('toString pads the date part', () {
+    expect(PersianDate(1400, 1, 1).toString(), '1400/01/01');
+    expect(PersianDate(1357, 11, 22).toString(), '1357/11/22');
+  });
 }
