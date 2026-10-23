@@ -351,4 +351,77 @@ void main() {
       expect(PersianDate.max.firstDayOfMonth, PersianDate(3177, 10, 1));
     });
   });
+
+  group('Persian week', () {
+    test('weekday from the day number matches DateTime for a long span', () {
+      var date = PersianDate(1390, 1, 1);
+      for (var i = 0; i < 3000; i++) {
+        expect(date.weekday, date.toDateTime().weekday, reason: '$date');
+        date = date.addDays(1);
+      }
+      final utcLate = PersianDate.fromDateTime(DateTime.utc(2024, 3, 23, 23));
+      expect(utcLate.weekday, DateTime.saturday);
+    });
+
+    test('weekdayPersian starts on Saturday', () {
+      // 1403/01/04 is Saturday 2024-03-23.
+      final saturday = PersianDate(1403, 1, 4);
+      for (var i = 0; i < 7; i++) {
+        expect(saturday.addDays(i).weekdayPersian, i + 1);
+      }
+      expect(saturday.addDays(7).weekdayPersian, 1);
+    });
+
+    test('short weekday names', () {
+      final saturday = PersianDate(1403, 1, 4);
+      expect(
+        [for (var i = 0; i < 7; i++) saturday.addDays(i).weekdayNameShort],
+        ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'],
+      );
+      expect(PersianDate.weekdayNamesShort, hasLength(7));
+    });
+
+    test('isWeekend is Friday only', () {
+      final saturday = PersianDate(1403, 1, 4);
+      expect(saturday.addDays(6).isWeekend, isTrue);
+      expect(saturday.addDays(5).isWeekend, isFalse);
+      expect(saturday.isWeekend, isFalse);
+    });
+
+    test('startOfWeek and endOfWeek', () {
+      final wednesday = PersianDate(1403, 1, 1);
+      expect(wednesday.weekday, DateTime.wednesday);
+      expect(wednesday.startOfWeek(), PersianDate(1402, 12, 26));
+      expect(wednesday.endOfWeek(), PersianDate(1403, 1, 3));
+      final saturday = PersianDate(1403, 1, 4);
+      expect(saturday.startOfWeek(), saturday);
+      expect(saturday.addDays(6).endOfWeek(), saturday.addDays(6));
+    });
+
+    test('weekOfYear', () {
+      // 1403/01/01 is Wednesday, so its week runs to Friday 1403/01/03.
+      expect(PersianDate(1403, 1, 1).weekOfYear, 1);
+      expect(PersianDate(1403, 1, 3).weekOfYear, 1);
+      expect(PersianDate(1403, 1, 4).weekOfYear, 2);
+      expect(PersianDate(1403, 1, 10).weekOfYear, 2);
+      expect(PersianDate(1403, 1, 11).weekOfYear, 3);
+      expect(PersianDate(1403, 12, 30).weekOfYear, 53);
+      final first = PersianDate(1404, 1, 1);
+      for (var i = 0; i < first.daysInYear; i++) {
+        final date = first.addDays(i);
+        if (date.weekdayPersian == 1 && i > 0) {
+          expect(date.weekOfYear, date.addDays(-1).weekOfYear + 1);
+        } else if (i > 0) {
+          expect(date.weekOfYear, date.addDays(-1).weekOfYear);
+        }
+      }
+    });
+
+    test('month grid recipe from the README', () {
+      // 1403/07 starts on Sunday 2024-09-22, the second Persian column.
+      final first = PersianDate(1403, 7, 1);
+      expect(first.weekdayPersian - 1, 1);
+      expect(first.monthLength, 30);
+    });
+  });
 }

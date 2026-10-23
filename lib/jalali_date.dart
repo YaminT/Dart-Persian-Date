@@ -294,14 +294,59 @@ class PersianDate implements Comparable<PersianDate> {
   /// Persian name of [month], for example `فروردین` for month 1.
   String get monthName => monthNames[month - 1];
 
+  /// One-letter Persian weekday names, indexed like [weekdayNames]
+  /// (ISO weekday minus one, Monday first): د، س، چ، پ، ج، ش، ی.
+  static const List<String> weekdayNamesShort = [
+    'د',
+    'س',
+    'چ',
+    'پ',
+    'ج',
+    'ش',
+    'ی',
+  ];
+
   /// ISO weekday, 1 = Monday to 7 = Sunday, the same as [DateTime.weekday].
   ///
   /// The Persian week starts on Saturday, but the number follows [DateTime]
-  /// so it can be compared with [DateTime.monday] and friends directly.
-  int get weekday => toDateTime().weekday;
+  /// so it can be compared with [DateTime.monday] and friends directly. Use
+  /// [weekdayPersian] for the Saturday-first number.
+  int get weekday => _julianDay % 7 + 1;
+
+  /// Persian weekday, 1 = Saturday to 7 = Friday.
+  ///
+  /// This is the column of the date in a Persian calendar grid, so the first
+  /// row of a month has `firstDayOfMonth.weekdayPersian - 1` empty cells.
+  int get weekdayPersian => (weekday + 1) % 7 + 1;
 
   /// Persian name of [weekday], for example `شنبه` for Saturday.
   String get weekdayName => weekdayNames[weekday - 1];
+
+  /// One-letter Persian name of [weekday], for example `ش` for Saturday.
+  String get weekdayNameShort => weekdayNamesShort[weekday - 1];
+
+  /// Whether this date is a Friday, the weekly holiday in Iran.
+  ///
+  /// Thursday is a half working day for many offices but not a weekend, so
+  /// it returns false; check [weekday] directly for other conventions.
+  bool get isWeekend => weekday == DateTime.friday;
+
+  /// Saturday of this date's Persian week, date-only.
+  ///
+  /// Throws [ArgumentError] when that Saturday is before [PersianDate.min].
+  PersianDate startOfWeek() => addDays(1 - weekdayPersian);
+
+  /// Friday of this date's Persian week, date-only.
+  ///
+  /// Throws [ArgumentError] when that Friday is after [PersianDate.max].
+  PersianDate endOfWeek() => addDays(7 - weekdayPersian);
+
+  /// Week of the year with Saturday-first weeks, 1 to 53.
+  ///
+  /// Week 1 is the week that contains 1 Farvardin, even when it starts in
+  /// Esfand of the previous year.
+  int get weekOfYear =>
+      (dayOfYear - 1 + firstDayOfYear.weekdayPersian - 1) ~/ 7 + 1;
 
   /// Returns the date as `yyyy/MM/dd`, optionally followed by the time.
   ///
