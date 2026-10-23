@@ -185,5 +185,84 @@ class PersianDate implements Comparable<PersianDate> {
     return parts.join(' ');
   }
 
+  static const _tokens = [
+    'yyyy', 'yy', 'MMMM', 'MM', 'M', 'dd', 'd', 'EEEE', //
+    'HH', 'H', 'mm', 'm', 'ss', 's',
+  ];
+
+  /// Formats this date with [pattern].
+  ///
+  /// | Token  | Output                          |
+  /// | ------ | ------------------------------- |
+  /// | `yyyy` | year, at least four digits      |
+  /// | `yy`   | last two digits of the year     |
+  /// | `MMMM` | Persian month name              |
+  /// | `MM`   | month, two digits               |
+  /// | `M`    | month                           |
+  /// | `dd`   | day, two digits                 |
+  /// | `d`    | day                             |
+  /// | `EEEE` | Persian weekday name            |
+  /// | `HH`   | hour (0 to 23), two digits      |
+  /// | `H`    | hour (0 to 23)                  |
+  /// | `mm`   | minute, two digits              |
+  /// | `m`    | minute                          |
+  /// | `ss`   | second, two digits              |
+  /// | `s`    | second                          |
+  ///
+  /// The longest token wins, and every other character is copied as is.
+  /// Throws [StateError] for a time token when this instance was created
+  /// from a Jalali date and therefore carries no time of day.
+  String format(String pattern) {
+    final out = StringBuffer();
+    var i = 0;
+    while (i < pattern.length) {
+      final token = _tokens.firstWhere(
+        (t) => pattern.startsWith(t, i),
+        orElse: () => '',
+      );
+      if (token.isEmpty) {
+        out.write(pattern[i]);
+        i++;
+        continue;
+      }
+      out.write(_formatToken(token));
+      i += token.length;
+    }
+    return out.toString();
+  }
+
+  String _formatToken(String token) {
+    switch (token) {
+      case 'yyyy':
+        return year.toString().padLeft(4, '0');
+      case 'yy':
+        return _twoDigits(year.remainder(100).abs());
+      case 'MMMM':
+        return monthName;
+      case 'MM':
+        return _twoDigits(month);
+      case 'M':
+        return '$month';
+      case 'dd':
+        return _twoDigits(day);
+      case 'd':
+        return '$day';
+      case 'EEEE':
+        return weekdayName;
+    }
+    final dateTime = _dateTime;
+    if (dateTime == null) {
+      throw StateError(
+        'Cannot format time for a PersianDate created without a Gregorian DateTime.',
+      );
+    }
+    final value = switch (token[0]) {
+      'H' => dateTime.hour,
+      'm' => dateTime.minute,
+      _ => dateTime.second,
+    };
+    return token.length == 2 ? _twoDigits(value) : '$value';
+  }
+
   static String _twoDigits(int value) => value.toString().padLeft(2, '0');
 }

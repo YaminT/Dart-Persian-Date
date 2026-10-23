@@ -116,4 +116,44 @@ void main() {
     expect(PersianDate(1400, 1, 1).toString(), '1400/01/01');
     expect(PersianDate(1357, 11, 22).toString(), '1357/11/22');
   });
+
+  group('format', () {
+    test('yyyy/MM/dd matches toString', () {
+      final date = PersianDate.fromGregorian(2009, 6, 2);
+      expect(date.format('yyyy/MM/dd'), date.toString());
+    });
+
+    test('Persian month name', () {
+      expect(
+        PersianDate.fromGregorian(2021, 3, 21).format('d MMMM yyyy'),
+        '1 فروردین 1400',
+      );
+    });
+
+    test('Persian weekday name', () {
+      expect(
+        PersianDate.fromGregorian(1979, 2, 11).format('EEEE d MMMM'),
+        'یکشنبه 22 بهمن',
+      );
+    });
+
+    test('short year, month, and day', () {
+      expect(PersianDate(1403, 1, 4).format('yy-M-d'), '03-1-4');
+    });
+
+    test('time tokens', () {
+      final date = PersianDate.fromGregorianString('2018-07-07T21:43:44.909Z');
+      expect(date.format('HH:mm'), '21:43');
+      final early = PersianDate.fromDateTime(DateTime(2018, 7, 7, 1, 2, 3));
+      expect(early.format('H:m:s HH:mm:ss'), '1:2:3 01:02:03');
+    });
+
+    test('time tokens need a DateTime', () {
+      expect(() => PersianDate(1400, 1, 1).format('HH'), throwsStateError);
+    });
+
+    test('unknown characters pass through', () {
+      expect(PersianDate(1400, 1, 1).format('Q yyyy! T'), 'Q 1400! T');
+    });
+  });
 }
