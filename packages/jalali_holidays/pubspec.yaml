@@ -1,0 +1,23 @@
+name: jalali_holidays
+description: "Iranian holidays and events for jalali_date dates, from a holiday source you choose explicitly. No source is built in by default."
+version: 0.1.0
+homepage: https://nodets.com/jalali
+repository: https://github.com/YaminT/Dart-Persian-Date/tree/master/packages/jalali_holidays
+issue_tracker: https://github.com/YaminT/Dart-Persian-Date/issues
+topics:
+  - jalali
+  - shamsi
+  - persian
+  - holidays
+  - calendar
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  http: ^1.1.0
+  jalali_date: ^1.1.0
+
+dev_dependencies:
+  lints: ^3.0.0
+  test: ^1.24.0
