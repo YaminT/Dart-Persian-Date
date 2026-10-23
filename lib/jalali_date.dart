@@ -8,38 +8,95 @@ import 'src/jalali_calc.dart';
 /// 3798-12-31. Constructing from a Gregorian date after that range throws
 /// [ArgumentError]; dates before it follow jalaali-js and are not
 /// range-checked.
-class PersianDate {
-  late int day;
-  late int month;
-  late int year;
+class PersianDate implements Comparable<PersianDate> {
+  final int year;
+  final int month;
+  final int day;
 
-  DateTime? _dateTime;
+  final DateTime? _dateTime;
 
-  //TODO: Jalali to Gregorian
-  //TODO: From
+  /// Creates a date from the current local date and time.
+  factory PersianDate.now() => PersianDate.fromDateTime(DateTime.now());
 
-  ///Constructor from current date and time
-  PersianDate.now() {
-    _dateTime = DateTime.now();
-    greToJal();
+  /// Creates a date from an ISO 8601 string, parsed with [DateTime.parse].
+  factory PersianDate.fromGregorianString(String datetime) =>
+      PersianDate.fromDateTime(DateTime.parse(datetime));
+
+  /// Creates a date from [datetime], keeping its time of day and time zone.
+  factory PersianDate.fromDateTime(DateTime datetime) {
+    final date = toJalali(datetime.year, datetime.month, datetime.day);
+    return PersianDate._(date.jy, date.jm, date.jd, datetime);
   }
 
-  PersianDate.fromGregorianString(String datetime) {
-    _dateTime = DateTime.parse(datetime);
-    greToJal();
+  /// Creates a date from a Gregorian year, month, and day.
+  ///
+  /// Out-of-range values roll over like [DateTime], so
+  /// `PersianDate.fromGregorian(2021, 2, 30)` is the same day as
+  /// 2021-03-02.
+  factory PersianDate.fromGregorian(int year, int month, int day) =>
+      PersianDate.fromDateTime(DateTime(year, month, day));
+
+  /// Creates a date from a Jalali year, month, and day.
+  ///
+  /// Throws [ArgumentError] when [year] is outside -61 to 3177, [month] is
+  /// outside 1 to 12, or [day] is outside the length of that month.
+  PersianDate(this.year, this.month, this.day) : _dateTime = null {
+    if (year < -61 || year > 3177) {
+      throw ArgumentError.value(year, 'year', 'Must be in -61 to 3177');
+    }
+    if (month < 1 || month > 12) {
+      throw ArgumentError.value(month, 'month', 'Must be in 1 to 12');
+    }
+    final length = jalaliMonthLength(year, month);
+    if (day < 1 || day > length) {
+      throw ArgumentError.value(day, 'day', 'Must be in 1 to $length');
+    }
   }
 
-  PersianDate.fromDateTime(DateTime datetime) : _dateTime = datetime {
-    greToJal();
+  PersianDate._(this.year, this.month, this.day, this._dateTime);
+
+  /// Whether [year] is a Jalali leap year, with 30 days in Esfand.
+  bool get isLeapYear => isLeapJalaliYear(year);
+
+  /// Number of days in [month] of [year].
+  int get monthLength => jalaliMonthLength(year, month);
+
+  /// Returns the Gregorian [DateTime] for this date.
+  ///
+  /// A date created from a [DateTime] (including [PersianDate.now],
+  /// [PersianDate.fromGregorian], and [PersianDate.fromGregorianString])
+  /// returns that exact [DateTime], with its time and time zone. A date
+  /// created from Jalali values returns local midnight of that day.
+  DateTime toDateTime() {
+    final dateTime = _dateTime;
+    if (dateTime != null) return dateTime;
+    final g = d2g(j2d(year, month, day));
+    return DateTime(g.gy, g.gm, g.gd);
   }
 
-  PersianDate.fromGregorian(int year, int month, int day) {
-    _dateTime = DateTime(year, month, day);
-    greToJal();
+  int get _julianDay {
+    final dateTime = _dateTime;
+    if (dateTime != null) {
+      return g2d(dateTime.year, dateTime.month, dateTime.day);
+    }
+    return j2d(year, month, day);
   }
 
-  ///Default constructor from Jalali date
-  PersianDate(this.year, this.month, this.day);
+  /// Equal when [year], [month], and [day] match; the time of day is
+  /// ignored.
+  @override
+  bool operator ==(Object other) =>
+      other is PersianDate &&
+      other.year == year &&
+      other.month == month &&
+      other.day == day;
+
+  @override
+  int get hashCode => Object.hash(year, month, day);
+
+  /// Orders dates by day; the time of day is ignored.
+  @override
+  int compareTo(PersianDate other) => _julianDay.compareTo(other._julianDay);
 
   /// Returns the date as `year/month/day`, optionally followed by the time.
   ///
@@ -90,14 +147,4 @@ class PersianDate {
   }
 
   static String _twoDigits(int value) => value.toString().padLeft(2, '0');
-
-  /// Gregorian to Jalali converter, backed by the jalaali-js port in
-  /// `src/jalali_calc.dart`.
-  void greToJal() {
-    final dateTime = _dateTime!;
-    final date = toJalali(dateTime.year, dateTime.month, dateTime.day);
-    year = date.jy;
-    month = date.jm;
-    day = date.jd;
-  }
 }
