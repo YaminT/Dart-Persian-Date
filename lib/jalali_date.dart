@@ -153,6 +153,49 @@ class PersianDate implements Comparable<PersianDate> {
   /// Number of days in [month] of [year].
   int get monthLength => jalaliMonthLength(year, month);
 
+  /// Number of days in [year], 365 or 366.
+  int get daysInYear => isLeapYear ? 366 : 365;
+
+  /// Day of the year, 1 for 1 Farvardin up to [daysInYear] for the last
+  /// day of Esfand.
+  int get dayOfYear =>
+      month <= 7 ? (month - 1) * 31 + day : 186 + (month - 7) * 30 + day;
+
+  /// Quarter of the year, 1 to 4: months 1 to 3 are quarter 1.
+  int get quarter => (month - 1) ~/ 3 + 1;
+
+  /// Season, 1 (spring) to 4 (winter). The Jalali year starts at the March
+  /// equinox, so every season is exactly three months and equals [quarter].
+  int get season => quarter;
+
+  /// Persian season names, from spring (بهار) to winter (زمستان).
+  static const List<String> seasonNames = [
+    'بهار',
+    'تابستان',
+    'پاییز',
+    'زمستان'
+  ];
+
+  /// Persian name of [season], for example `بهار` for months 1 to 3.
+  String get seasonName => seasonNames[season - 1];
+
+  /// First day of this month, date-only.
+  PersianDate get firstDayOfMonth => PersianDate._(year, month, 1, null);
+
+  /// Last day of this month, date-only.
+  ///
+  /// Throws [ArgumentError] for Dey 3177, whose last day is past
+  /// [PersianDate.max].
+  PersianDate get lastDayOfMonth => PersianDate(year, month, monthLength);
+
+  /// First day of this year (1 Farvardin), date-only.
+  PersianDate get firstDayOfYear => PersianDate._(year, 1, 1, null);
+
+  /// Last day of this year (the last day of Esfand), date-only.
+  ///
+  /// Throws [ArgumentError] for 3177, whose Esfand is past [PersianDate.max].
+  PersianDate get lastDayOfYear => PersianDate(year, 12, isLeapYear ? 30 : 29);
+
   /// Returns the Gregorian [DateTime] for this date.
   ///
   /// A date created from a [DateTime] (including [PersianDate.now],

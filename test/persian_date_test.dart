@@ -297,4 +297,58 @@ void main() {
       expect(PersianDate.now().addDays(1).isToday, isFalse);
     });
   });
+
+  group('calendar anchors', () {
+    test('dayOfYear and daysInYear', () {
+      expect(PersianDate(1403, 1, 1).dayOfYear, 1);
+      expect(PersianDate(1403, 6, 31).dayOfYear, 186);
+      expect(PersianDate(1403, 7, 1).dayOfYear, 187);
+      expect(PersianDate(1403, 12, 30).dayOfYear, 366);
+      expect(PersianDate(1404, 12, 29).dayOfYear, 365);
+      expect(PersianDate(1403, 1, 1).daysInYear, 366);
+      expect(PersianDate(1404, 1, 1).daysInYear, 365);
+    });
+
+    test('dayOfYear matches day arithmetic for a whole year', () {
+      final first = PersianDate(1403, 1, 1);
+      for (var i = 0; i < 366; i++) {
+        expect(first.addDays(i).dayOfYear, i + 1);
+      }
+    });
+
+    test('quarter, season, and seasonName', () {
+      expect(PersianDate(1403, 1, 1).quarter, 1);
+      expect(PersianDate(1403, 3, 31).quarter, 1);
+      expect(PersianDate(1403, 4, 1).quarter, 2);
+      expect(PersianDate(1403, 12, 1).quarter, 4);
+      expect(PersianDate(1403, 7, 1).season, 3);
+      expect(PersianDate(1403, 1, 1).seasonName, 'بهار');
+      expect(PersianDate(1403, 4, 1).seasonName, 'تابستان');
+      expect(PersianDate(1403, 7, 1).seasonName, 'پاییز');
+      expect(PersianDate(1403, 10, 1).seasonName, 'زمستان');
+    });
+
+    test('first and last days of month and year', () {
+      final date = PersianDate.fromDateTime(DateTime(2024, 8, 10, 12));
+      expect(date, PersianDate(1403, 5, 20));
+      expect(date.firstDayOfMonth, PersianDate(1403, 5, 1));
+      expect(date.lastDayOfMonth, PersianDate(1403, 5, 31));
+      expect(PersianDate(1403, 7, 9).lastDayOfMonth, PersianDate(1403, 7, 30));
+      expect(
+          PersianDate(1404, 12, 9).lastDayOfMonth, PersianDate(1404, 12, 29));
+      expect(date.firstDayOfYear, PersianDate(1403, 1, 1));
+      expect(date.lastDayOfYear, PersianDate(1403, 12, 30));
+      expect(PersianDate(1404, 5, 5).lastDayOfYear, PersianDate(1404, 12, 29));
+      expect(
+        () => date.firstDayOfMonth.toString(showTime: true),
+        throwsStateError,
+      );
+    });
+
+    test('last days past max throw', () {
+      expect(() => PersianDate.max.lastDayOfMonth, throwsArgumentError);
+      expect(() => PersianDate.max.lastDayOfYear, throwsArgumentError);
+      expect(PersianDate.max.firstDayOfMonth, PersianDate(3177, 10, 1));
+    });
+  });
 }
