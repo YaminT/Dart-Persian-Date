@@ -347,6 +347,13 @@ Other building blocks:
 - Labels: `monthName`, `weekdayNameShort`, `format('MMMM yyyy', persianDigits: true)`.
 - Right-to-left layout is the widget's job; in Flutter, wrap the grid in `Directionality(textDirection: TextDirection.rtl, ...)`.
 
+## Related packages
+
+These live in this repository under `packages/` and are released separately.
+
+- [jalali_date_picker](packages/jalali_date_picker): Material 3 date picker and range picker for Flutter, Saturday-first, Persian digits, right-to-left.
+- [jalali_holidays](packages/jalali_holidays): Iranian holidays and events from a holiday source you choose explicitly.
+
 ## Notes for code generators and AI assistants
 
 - Import only `package:jalali_date/jalali_date.dart`; never import from `src/`.

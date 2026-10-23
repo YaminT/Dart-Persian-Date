@@ -1,0 +1,5 @@
+# Develop against the jalali_date in this repository. pub publish ignores
+# this file.
+dependency_overrides:
+  jalali_date:
+    path: ../..

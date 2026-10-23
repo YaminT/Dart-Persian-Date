@@ -1,0 +1,4 @@
+# Sub-packages are published on their own with tool/publish_package.sh,
+# never inside jalali_date. pub reads this file for every package below it,
+# which is why the script publishes from a copy outside the repository.
+*

@@ -1,1 +1,8 @@
 include: package:lints/recommended.yaml
+
+analyzer:
+  exclude:
+    # Sub-packages have their own pubspec and analysis_options and are
+    # analyzed from their own directories.
+    - packages/**
+    - tool/jalaali_sweep/node_modules/**

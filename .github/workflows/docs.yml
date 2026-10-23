@@ -1,0 +1,48 @@
+name: API docs
+
+# Builds the dartdoc site on every release tag and deploys it to
+# https://nodets.com/jalali/api/ over SSH. Without the DOCS_SSH_* secrets the
+# site is only built and attached to the run as an artifact.
+#
+# Repository secrets used for the deploy:
+#   DOCS_SSH_HOST         server name, for example nodets.com
+#   DOCS_SSH_USER         SSH user allowed to write the docs directory
+#   DOCS_SSH_KEY          private key for that user (no passphrase)
+#   DOCS_SSH_KNOWN_HOSTS  output of `ssh-keyscan <host>`
+#   DOCS_SSH_PATH         target directory, for example /var/www/nodets.com/jalali/api
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    env:
+      DOCS_SSH_HOST: ${{ secrets.DOCS_SSH_HOST }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - run: dart pub get
+      - run: dart doc --output doc/api
+      - uses: actions/upload-artifact@v4
+        with:
+          name: api-docs
+          path: doc/api
+      - name: Deploy to nodets.com
+        if: env.DOCS_SSH_HOST != ''
+        env:
+          DOCS_SSH_USER: ${{ secrets.DOCS_SSH_USER }}
+          DOCS_SSH_KEY: ${{ secrets.DOCS_SSH_KEY }}
+          DOCS_SSH_KNOWN_HOSTS: ${{ secrets.DOCS_SSH_KNOWN_HOSTS }}
+          DOCS_SSH_PATH: ${{ secrets.DOCS_SSH_PATH }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DOCS_SSH_KEY" > ~/.ssh/docs_key
+          chmod 600 ~/.ssh/docs_key
+          printf '%s\n' "$DOCS_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          rsync -az --delete -e "ssh -i ~/.ssh/docs_key" \
+            doc/api/ "$DOCS_SSH_USER@$DOCS_SSH_HOST:$DOCS_SSH_PATH/"

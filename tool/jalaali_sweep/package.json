@@ -1,0 +1,9 @@
+{
+  "name": "jalaali-sweep",
+  "private": true,
+  "type": "module",
+  "description": "Compares jalali_date conversions with jalaali-js for every day from 1850 to 2300.",
+  "dependencies": {
+    "jalaali-js": "1.2.8"
+  }
+}
