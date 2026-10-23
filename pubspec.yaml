@@ -1,7 +1,7 @@
 name: jalali_date
 description: "Persian (Jalali) calendar for Dart: convert between Gregorian and Jalali dates, leap years, month lengths, formatting. Pure Dart, works on Web, Flutter and the Dart VM."
 version: 1.0.0
-homepage: https://github.com/YaminT/Dart-Persian-Date
+homepage: https://nodets.com/jalali
 repository: https://github.com/YaminT/Dart-Persian-Date
 issue_tracker: https://github.com/YaminT/Dart-Persian-Date/issues
 topics:
