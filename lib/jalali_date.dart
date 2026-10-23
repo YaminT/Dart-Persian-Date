@@ -112,6 +112,54 @@ class PersianDate implements Comparable<PersianDate> {
 
   PersianDate._(this.year, this.month, this.day, this._dateTime);
 
+  static final _parsePattern = RegExp(
+    r'^\s*(-?\d{1,4})[/-](\d{1,2})[/-](\d{1,2})'
+    r'(?:[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?\s*$',
+  );
+
+  /// Parses a Jalali date such as `1403/01/01`, `1403-1-1`, or
+  /// `۱۴۰۳/۰۱/۰۱ ۱۴:۳۰`.
+  ///
+  /// Accepts `/` or `-` between year, month, and day, an optional time of
+  /// `HH:mm` or `HH:mm:ss` after a space or `T`, and ASCII, Persian, or
+  /// Arabic-Indic digits. With a time the result is a local
+  /// [PersianDate.withTime]; without one it is date-only like
+  /// [PersianDate.new].
+  ///
+  /// Throws [FormatException] when [input] does not match or is not a valid
+  /// date, like [DateTime.parse].
+  static PersianDate parse(String input) {
+    final match = _parsePattern.firstMatch(toLatinDigits(input));
+    if (match == null) {
+      throw FormatException('Invalid Jalali date', input);
+    }
+    int part(int group) => int.parse(match.group(group)!);
+    try {
+      if (match.group(4) == null) {
+        return PersianDate(part(1), part(2), part(3));
+      }
+      return PersianDate.withTime(
+        part(1),
+        part(2),
+        part(3),
+        part(4),
+        part(5),
+        match.group(6) == null ? 0 : part(6),
+      );
+    } on ArgumentError catch (error) {
+      throw FormatException('Invalid Jalali date: ${error.message}', input);
+    }
+  }
+
+  /// Like [parse], but returns null instead of throwing.
+  static PersianDate? tryParse(String input) {
+    try {
+      return parse(input);
+    } on FormatException {
+      return null;
+    }
+  }
+
   /// Date-only instance for Julian day number [jdn], range-checked.
   factory PersianDate._fromJulianDay(int jdn) {
     _checkRange(jdn);

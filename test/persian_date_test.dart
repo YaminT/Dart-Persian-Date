@@ -498,4 +498,68 @@ void main() {
           () => PersianDate.withTime(1400, 1, 1, 23, 59, 59), returnsNormally);
     });
   });
+
+  group('parse', () {
+    test('date-only formats', () {
+      for (final input in [
+        '1403/01/01',
+        '1403-01-01',
+        '1403/1/1',
+        ' 1403-1-01 ',
+        '۱۴۰۳/۰۱/۰۱',
+        '١٤٠٣/٠١/٠١',
+      ]) {
+        final date = PersianDate.parse(input);
+        expect(date, PersianDate(1403, 1, 1), reason: input);
+        expect(date.hasTime, isFalse, reason: input);
+      }
+      expect(PersianDate.parse('-5/1/1'), PersianDate(-5, 1, 1));
+    });
+
+    test('with a time of day', () {
+      final date = PersianDate.parse('1403/01/01 14:30');
+      expect(date.toDateTime(), DateTime(2024, 3, 20, 14, 30));
+      expect(
+        PersianDate.parse('1403-01-01T14:30:15').toDateTime(),
+        DateTime(2024, 3, 20, 14, 30, 15),
+      );
+      expect(
+        PersianDate.parse('۱۴۰۳/۰۱/۰۱ ۰۹:۰۵').toString(showTime: true),
+        '1403/01/01 09:05:00',
+      );
+    });
+
+    test('round trips toString and format', () {
+      final date = PersianDate.withTime(1357, 11, 22, 21, 43, 44);
+      expect(PersianDate.parse(date.toString()), date);
+      expect(
+        PersianDate.parse(date.toString(showTime: true)).toDateTime(),
+        date.toDateTime(),
+      );
+      expect(
+        PersianDate.parse(date.toString(persianDigits: true)),
+        date,
+      );
+    });
+
+    test('invalid input throws FormatException', () {
+      for (final input in [
+        '',
+        '1403',
+        '1403/01',
+        '1403.01.01',
+        '01/01/1403',
+        '1403/13/01',
+        '1400/12/30',
+        '1403/01/01 24:00',
+        '1403/01/01 12:60',
+        '1403/01/01 12',
+        '1403/01/01x',
+      ]) {
+        expect(() => PersianDate.parse(input), throwsFormatException,
+            reason: input);
+        expect(PersianDate.tryParse(input), isNull, reason: input);
+      }
+    });
+  });
 }
