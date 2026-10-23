@@ -1,6 +1,7 @@
 ## 1.0.1
 
 * Homepage moved to https://nodets.com/jalali.
+* Persian description, search keywords, and a README quick reference.
 
 ## 1.0.0
 

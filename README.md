@@ -8,6 +8,23 @@ It converts between Gregorian and Jalali dates in both directions, knows leap ye
 The conversion is a port of [jalaali-js](https://github.com/jalaali/jalaali-js), so century years and leap cycles are handled correctly.
 It is pure Dart and works on the Web, Flutter, and the Dart VM.
 
+Also known as the Shamsi, Khorshidi, Solar Hijri, Hijri Shamsi, or Iranian calendar.
+Keywords: تقویم شمسی، تقویم جلالی، تقویم خورشیدی، هجری شمسی، تاریخ فارسی، تبدیل تاریخ میلادی به شمسی و شمسی به میلادی.
+
+## معرفی به فارسی
+
+`jalali_date` یک بسته‌ی خالص Dart برای تقویم هجری شمسی (جلالی، خورشیدی) است.
+تاریخ میلادی را به شمسی و شمسی را به میلادی تبدیل می‌کند، سال کبیسه و طول ماه‌ها را می‌داند و تاریخ را با نام فارسی ماه‌ها و روزهای هفته نمایش می‌دهد.
+الگوریتم تبدیل از [jalaali-js](https://github.com/jalaali/jalaali-js) گرفته شده و برای سال‌های قرن میلادی و چرخه‌های کبیسه درست کار می‌کند.
+به Flutter وابسته نیست و روی وب، Flutter و Dart VM اجرا می‌شود.
+
+```dart
+final date = PersianDate.fromGregorian(2021, 3, 21);
+print(date); // 1400/01/01
+print(date.format('EEEE d MMMM yyyy')); // یکشنبه 1 فروردین 1400
+print(PersianDate(1357, 11, 22).toDateTime()); // 1979-02-11 00:00:00.000
+```
+
 ## Installation
 
 ```sh
@@ -19,6 +36,31 @@ Or with Flutter:
 ```sh
 flutter pub add jalali_date
 ```
+
+## Quick reference
+
+The whole public API is one immutable class, `PersianDate`, in `package:jalali_date/jalali_date.dart`.
+
+| Member | Description |
+| ------ | ----------- |
+| `PersianDate(int year, int month, int day)` | From Jalali values; throws `ArgumentError` for an invalid date |
+| `PersianDate.now()` | Current local date and time |
+| `PersianDate.fromDateTime(DateTime)` | From a `DateTime`; keeps time of day and time zone |
+| `PersianDate.fromGregorian(int year, int month, int day)` | From Gregorian values; overflow rolls over like `DateTime` |
+| `PersianDate.fromGregorianString(String)` | From an ISO 8601 string, via `DateTime.parse` |
+| `year`, `month`, `day` | Jalali year, month (1 to 12), and day of month |
+| `isLeapYear` | Whether `year` has 30 days in Esfand |
+| `monthLength` | 31, 30, or 29 |
+| `monthName` | Persian month name, for example `فروردین` |
+| `weekday` | ISO weekday, 1 is Monday and 7 is Sunday, like `DateTime.weekday` |
+| `weekdayName` | Persian weekday name, for example `شنبه` |
+| `PersianDate.monthNames`, `PersianDate.weekdayNames` | The full name lists |
+| `toDateTime()` | Gregorian `DateTime` |
+| `toString({showDate, showTime, showHour, showMinute, showSecond})` | `yyyy/MM/dd`, optionally with `HH:mm:ss` |
+| `format(String pattern)` | Custom string, tokens listed below |
+| `==`, `hashCode`, `compareTo` | By day only; the time of day is ignored |
+
+Supported range: Jalali -61/01/01 to 3177/10/11, which is Gregorian 560-03-20 to 3798-12-31.
 
 ## Usage
 

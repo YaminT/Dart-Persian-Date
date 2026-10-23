@@ -1,10 +1,20 @@
-/// Persian (Jalali) calendar: conversion between Gregorian and Jalali dates,
-/// leap years, month lengths, and formatting with Persian names.
+/// Persian (Jalali, Shamsi, Khorshidi) calendar: conversion between
+/// Gregorian and Jalali dates, leap years, month lengths, and formatting with
+/// Persian month and weekday names.
+///
+/// The whole public API is the [PersianDate] class:
+///
+/// ```dart
+/// final date = PersianDate.fromGregorian(2021, 3, 21);
+/// print(date); // 1400/01/01
+/// print(date.format('EEEE d MMMM yyyy')); // یکشنبه 1 فروردین 1400
+/// print(PersianDate(1357, 11, 22).toDateTime()); // 1979-02-11 00:00:00.000
+/// ```
 library jalali_date;
 
 import 'src/jalali_calc.dart';
 
-/// Jalali Date for Dart
+/// An immutable Jalali (Persian) calendar date.
 ///
 /// Supports Jalali -61/01/01 to 3177/10/11, which is Gregorian 560-03-20 to
 /// 3798-12-31. Every constructor throws [ArgumentError] outside that range.
