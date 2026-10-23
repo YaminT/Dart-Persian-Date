@@ -2,13 +2,16 @@
 /// Gregorian and Jalali dates, leap years, month lengths, and formatting with
 /// Persian month and weekday names.
 ///
-/// The whole public API is the [PersianDate] class:
+/// The main type is the immutable [PersianDate]. [PersianDateRange] holds an
+/// inclusive range of days, [toPersianDigits] and [toLatinDigits] convert
+/// digits, and `DateTime.toPersianDate()` converts a [DateTime].
 ///
 /// ```dart
 /// final date = PersianDate.fromGregorian(2021, 3, 21);
 /// print(date); // 1400/01/01
 /// print(date.format('EEEE d MMMM yyyy')); // یکشنبه 1 فروردین 1400
-/// print(PersianDate(1357, 11, 22).toDateTime()); // 1979-02-11 00:00:00.000
+/// print(date.addMonths(1).toString(persianDigits: true)); // ۱۴۰۰/۰۲/۰۱
+/// print(PersianDate.parse('1357/11/22').toDateTime()); // 1979-02-11 00:00:00.000
 /// ```
 library jalali_date;
 
@@ -155,8 +158,8 @@ class PersianDate implements Comparable<PersianDate> {
   /// Creates a date from the `yyyy-MM-dd` string written by [toJson].
   ///
   /// Accepts everything [parse] accepts and throws [FormatException] for
-  /// invalid input. Use with `json_serializable` through
-  /// `@JsonKey(fromJson: PersianDate.fromJson, toJson: _toJson)`.
+  /// invalid input. `json_serializable` uses it, together with [toJson], for
+  /// `PersianDate` fields without any annotation.
   factory PersianDate.fromJson(String json) => parse(json);
 
   /// Like [parse], but returns null instead of throwing.

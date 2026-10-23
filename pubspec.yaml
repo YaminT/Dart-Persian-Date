@@ -1,6 +1,6 @@
 name: jalali_date
-description: "Persian (Jalali, Shamsi, Khorshidi, Solar Hijri) calendar for Dart and Flutter: Gregorian to Jalali conversion, leap years, month lengths, formatting with Persian names. Pure Dart."
-version: 1.0.1
+description: "Persian (Jalali, Shamsi, Khorshidi, Solar Hijri) calendar for Dart and Flutter: conversion, date arithmetic, parsing, formatting with Persian names and digits. Pure Dart."
+version: 1.1.0
 homepage: https://nodets.com/jalali
 repository: https://github.com/YaminT/Dart-Persian-Date
 issue_tracker: https://github.com/YaminT/Dart-Persian-Date/issues
