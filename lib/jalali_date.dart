@@ -527,34 +527,42 @@ class PersianDate implements Comparable<PersianDate> {
   String toJson() => format('yyyy-MM-dd');
 
   static const _tokens = [
-    'yyyy', 'yy', 'MMMM', 'MM', 'M', 'dd', 'd', 'EEEE', //
-    'HH', 'H', 'mm', 'm', 'ss', 's',
+    'yyyy', 'yy', 'MMMM', 'MM', 'M', 'dd', 'd', 'EEEE', 'E', 'D', 'Q', //
+    'HH', 'H', 'hh', 'h', 'mm', 'm', 'ss', 's', 'a',
   ];
 
   /// Formats this date with [pattern].
   ///
-  /// | Token  | Output                          |
-  /// | ------ | ------------------------------- |
-  /// | `yyyy` | year, at least four digits      |
-  /// | `yy`   | last two digits of the year     |
-  /// | `MMMM` | Persian month name              |
-  /// | `MM`   | month, two digits               |
-  /// | `M`    | month                           |
-  /// | `dd`   | day, two digits                 |
-  /// | `d`    | day                             |
-  /// | `EEEE` | Persian weekday name            |
-  /// | `HH`   | hour (0 to 23), two digits      |
-  /// | `H`    | hour (0 to 23)                  |
-  /// | `mm`   | minute, two digits              |
-  /// | `m`    | minute                          |
-  /// | `ss`   | second, two digits              |
-  /// | `s`    | second                          |
+  /// | Token  | Output                                   |
+  /// | ------ | ---------------------------------------- |
+  /// | `yyyy` | year, at least four digits               |
+  /// | `yy`   | last two digits of the year              |
+  /// | `MMMM` | Persian month name                       |
+  /// | `MM`   | month, two digits                        |
+  /// | `M`    | month                                    |
+  /// | `dd`   | day, two digits                          |
+  /// | `d`    | day                                      |
+  /// | `EEEE` | Persian weekday name                     |
+  /// | `E`    | one-letter Persian weekday name          |
+  /// | `D`    | day of the year                          |
+  /// | `Q`    | quarter, 1 to 4                          |
+  /// | `HH`   | hour (0 to 23), two digits               |
+  /// | `H`    | hour (0 to 23)                           |
+  /// | `hh`   | hour (1 to 12), two digits               |
+  /// | `h`    | hour (1 to 12)                           |
+  /// | `mm`   | minute, two digits                       |
+  /// | `m`    | minute                                   |
+  /// | `ss`   | second, two digits                       |
+  /// | `s`    | second                                   |
+  /// | `a`    | ق.ظ before noon, ب.ظ from noon           |
   ///
   /// The longest token wins, and every other character is copied as is.
-  /// There is no escaping, so letters that form a token are always replaced:
-  /// `format('Month')` gives `1onth`.
-  /// Throws [StateError] for a time token when this instance was created
-  /// from a Jalali date and therefore carries no time of day.
+  /// Text in single quotes is copied without looking for tokens, and two
+  /// single quotes write one: `format("'ساعت' HH:mm")` gives `ساعت 14:30`,
+  /// and `format("d 'o''clock'")` gives `1 o'clock`. An unclosed quote runs
+  /// to the end of the pattern.
+  ///
+  /// Throws [StateError] for a time token when [hasTime] is false.
   ///
   /// With [persianDigits], numbers produced by tokens are written as ۰ to ۹;
   /// literal text in [pattern] is copied unchanged.
@@ -562,6 +570,10 @@ class PersianDate implements Comparable<PersianDate> {
     final out = StringBuffer();
     var i = 0;
     while (i < pattern.length) {
+      if (pattern[i] == "'") {
+        i = _copyQuoted(pattern, i, out);
+        continue;
+      }
       final token = _tokens.firstWhere(
         (t) => pattern.startsWith(t, i),
         orElse: () => '',
@@ -576,6 +588,27 @@ class PersianDate implements Comparable<PersianDate> {
       i += token.length;
     }
     return out.toString();
+  }
+
+  /// Copies the quoted section starting at [start] and returns the index
+  /// after it.
+  static int _copyQuoted(String pattern, int start, StringBuffer out) {
+    if (pattern.startsWith("''", start)) {
+      out.write("'");
+      return start + 2;
+    }
+    var i = start + 1;
+    while (i < pattern.length) {
+      if (pattern[i] == "'") {
+        if (!pattern.startsWith("''", i)) return i + 1;
+        out.write("'");
+        i += 2;
+        continue;
+      }
+      out.write(pattern[i]);
+      i++;
+    }
+    return i;
   }
 
   String _formatToken(String token) {
@@ -597,17 +630,20 @@ class PersianDate implements Comparable<PersianDate> {
         return '$day';
       case 'EEEE':
         return weekdayName;
+      case 'E':
+        return weekdayNameShort;
+      case 'D':
+        return '$dayOfYear';
+      case 'Q':
+        return '$quarter';
     }
-    final dateTime = _dateTime;
-    if (dateTime == null) {
-      throw StateError(
-        'Cannot format time for a PersianDate created without a Gregorian DateTime.',
-      );
-    }
+    final time = _time;
+    if (token == 'a') return time.hour < 12 ? 'ق.ظ' : 'ب.ظ';
     final value = switch (token[0]) {
-      'H' => dateTime.hour,
-      'm' => dateTime.minute,
-      _ => dateTime.second,
+      'H' => time.hour,
+      'h' => time.hour % 12 == 0 ? 12 : time.hour % 12,
+      'm' => time.minute,
+      _ => time.second,
     };
     return token.length == 2 ? _twoDigits(value) : '$value';
   }

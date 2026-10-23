@@ -169,7 +169,7 @@ void main() {
     });
 
     test('unknown characters pass through', () {
-      expect(PersianDate(1400, 1, 1).format('Q yyyy! T'), 'Q 1400! T');
+      expect(PersianDate(1400, 1, 1).format('X yyyy! T'), 'X 1400! T');
     });
   });
 
@@ -590,5 +590,49 @@ void main() {
     final date = moment.toPersianDate();
     expect(date, PersianDate(1400, 1, 1));
     expect(date.toDateTime(), moment);
+  });
+
+  group('format tokens and quoting', () {
+    final afternoon = PersianDate.withTime(1403, 1, 4, 14, 5, 9);
+    final midnight = PersianDate.withTime(1403, 1, 4, 0, 0, 0);
+    final noon = PersianDate.withTime(1403, 1, 4, 12, 0, 0);
+
+    test('12-hour clock and am/pm', () {
+      expect(afternoon.format('h:mm a'), '2:05 ب.ظ');
+      expect(afternoon.format('hh:mm:ss'), '02:05:09');
+      expect(midnight.format('h a'), '12 ق.ظ');
+      expect(noon.format('hh a'), '12 ب.ظ');
+      expect(PersianDate.withTime(1403, 1, 4, 11).format('h a'), '11 ق.ظ');
+    });
+
+    test('short weekday, day of year, quarter', () {
+      expect(afternoon.format('E'), 'ش');
+      expect(PersianDate(1403, 7, 1).format('D'), '187');
+      expect(PersianDate(1403, 7, 1).format('Q'), '3');
+    });
+
+    test('quoted literals', () {
+      expect(afternoon.format("'ساعت' HH:mm"), 'ساعت 14:05');
+      expect(afternoon.format("'Month' M"), 'Month 1');
+      expect(afternoon.format("d 'o''clock'"), "4 o'clock");
+      expect(afternoon.format("yyyy''MM"), "1403'01");
+      expect(afternoon.format("'yyyy"), 'yyyy');
+      expect(afternoon.format("''"), "'");
+      expect(PersianDate(1403, 1, 4).format("'HH:mm'"), 'HH:mm');
+    });
+
+    test('persianDigits leaves quoted text alone', () {
+      expect(
+        afternoon.format("'1' yyyy", persianDigits: true),
+        '1 ۱۴۰۳',
+      );
+    });
+
+    test('time tokens need a time of day', () {
+      for (final token in ['a', 'h', 'hh']) {
+        expect(() => PersianDate(1403, 1, 4).format(token), throwsStateError,
+            reason: token);
+      }
+    });
   });
 }
