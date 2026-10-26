@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:jalali_date/jalali_date.dart';
-import 'package:jalali_holidays/jalali_holidays.dart';
+import 'package:iranian_holidays/iranian_holidays.dart';
 import 'package:test/test.dart';
 
 // A trimmed real response of https://holidayapi.ir/jalali/1403/01/03.

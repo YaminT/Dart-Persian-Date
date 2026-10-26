@@ -1,5 +1,5 @@
 import 'package:jalali_date/jalali_date.dart';
-import 'package:jalali_holidays/jalali_holidays.dart';
+import 'package:iranian_holidays/iranian_holidays.dart';
 
 Future<void> main() async {
   // Offline: calculated on the device, no network.

@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: packages/jalali_holidays
+        working-directory: packages/iranian_holidays
     steps:
       - uses: actions/checkout@v4
       - uses: dart-lang/setup-dart@v1

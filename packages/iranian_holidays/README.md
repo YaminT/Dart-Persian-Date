@@ -1,4 +1,4 @@
-# jalali_holidays
+# iranian_holidays
 
 Iranian holidays and events for [jalali_date](https://pub.dev/packages/jalali_date) dates.
 تعطیلات و مناسبت‌های تقویم رسمی ایران برای تاریخ‌های `jalali_date`.
@@ -29,14 +29,14 @@ Tell your users where holiday data comes from, for example on an about or settin
 ## Installation
 
 ```sh
-dart pub add jalali_holidays
+dart pub add iranian_holidays
 ```
 
 ## Offline holidays
 
 ```dart
 import 'package:jalali_date/jalali_date.dart';
-import 'package:jalali_holidays/jalali_holidays.dart';
+import 'package:iranian_holidays/iranian_holidays.dart';
 
 void main() {
   final offline = OfflineHolidaySource();
@@ -186,7 +186,7 @@ A Hijri holiday falls twice in one Jalali year when the lunar year (354 or 355 d
 
 ```dart
 import 'package:jalali_date/jalali_date.dart';
-import 'package:jalali_holidays/jalali_holidays.dart';
+import 'package:iranian_holidays/iranian_holidays.dart';
 
 Future<void> main() async {
   final api = HolidayApiIrSource();

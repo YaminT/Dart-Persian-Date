@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:jalali_date/jalali_date.dart';
-import 'package:jalali_holidays/jalali_holidays.dart';
+import 'package:iranian_holidays/iranian_holidays.dart';
 import 'package:test/test.dart';
 
 // Official holidays of 1405 from the calendar published on time.ir, without

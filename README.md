@@ -423,7 +423,7 @@ Other building blocks:
 
 These live in this repository under `packages/` and are released separately.
 
-- [jalali_holidays](https://pub.dev/packages/jalali_holidays): Iranian official holidays, calculated offline including the lunar Hijri ones, or from an online source you choose (holidayapi.ir, Calendarific, or Google Calendar).
+- [iranian_holidays](https://pub.dev/packages/iranian_holidays): Iranian official holidays, calculated offline including the lunar Hijri ones, or from an online source you choose (holidayapi.ir, Calendarific, or Google Calendar).
 - [jalali_date_picker](packages/jalali_date_picker): Material 3 date picker and range picker for Flutter. In development and not published yet.
 
 ## Notes for code generators and AI assistants

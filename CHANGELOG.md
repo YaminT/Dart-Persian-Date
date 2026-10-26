@@ -5,7 +5,7 @@
 * `JalaliEra` with `solarHijri` and `shahanshahi`, and an `era` parameter on `format`, `toString`, `PersianDate.parse`, and `PersianDate.tryParse`: the year is written and read as Solar Hijri (1405) or Shahanshahi (2585). The stored `year` stays Solar Hijri.
 * `shahanshahiYear`: `year` plus 1180.
 * `HijriDate`: the lunar Hijri date as Iran's official calendar counts it, with validation (`ArgumentError`), equality, ordering, `monthName`, `monthLength`, `weekday`, `weekdayName`, `format`, `toPersianDate`, `toDateTime`, `HijriDate.min`, and `HijriDate.max`.
-* `IranianHijri`: the calendar behind `HijriDate`, moved from `jalali_holidays`, with `monthStart`, `monthLength`, `date`, and `monthStarts` for announced month starts.
+* `IranianHijri`: the calendar behind `HijriDate`, moved from `jalali_holidays` (now `iranian_holidays`), with `monthStart`, `monthLength`, `date`, and `monthStarts` for announced month starts.
 * `PersianDate.toHijri()`, `HijriDate.fromPersianDate`, `HijriDate.fromDateTime`, and `DateTime.toHijriDate()`.
 
 ## 1.1.0

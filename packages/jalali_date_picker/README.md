@@ -69,7 +69,7 @@ For other selection rules, such as several separate days, use `PersianCalendar` 
 
 ## Holidays
 
-Iranian holidays need a data source; see [jalali_holidays](https://github.com/YaminT/Dart-Persian-Date/tree/master/packages/jalali_holidays).
+Iranian holidays need a data source; see [iranian_holidays](https://github.com/YaminT/Dart-Persian-Date/tree/master/packages/iranian_holidays).
 Load a month with `HolidaySource.month` and pass a `selectableDayPredicate`, or mark the days in your own `PersianCalendar` cells.
 
 ## License

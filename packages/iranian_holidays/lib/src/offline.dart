@@ -107,7 +107,7 @@ class OfflineHolidaySource implements HolidaySource {
   String get name => 'Offline calculation';
 
   @override
-  Uri get website => Uri.parse('https://pub.dev/packages/jalali_holidays');
+  Uri get website => Uri.parse('https://pub.dev/packages/iranian_holidays');
 
   @override
   String get notice => 'Calculated on the device, no network. Hijri holidays '

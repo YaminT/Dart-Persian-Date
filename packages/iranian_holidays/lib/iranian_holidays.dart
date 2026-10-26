@@ -16,7 +16,7 @@
 /// print(day.isHoliday); // true
 /// print(day.holidays.first.description); // جشن نوروز/جشن سال نو
 /// ```
-library jalali_holidays;
+library iranian_holidays;
 
 export 'package:jalali_date/jalali_date.dart' show HijriDate;
 

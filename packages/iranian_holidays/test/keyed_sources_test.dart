@@ -5,8 +5,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:jalali_date/jalali_date.dart';
-import 'package:jalali_holidays/jalali_holidays.dart';
-import 'package:jalali_holidays/src/http_json.dart' show redactUri;
+import 'package:iranian_holidays/iranian_holidays.dart';
+import 'package:iranian_holidays/src/http_json.dart' show redactUri;
 import 'package:test/test.dart';
 
 http.Response _json(Object body, [int status = 200]) =>

@@ -2,6 +2,8 @@
 
 ### Breaking
 
+* The package is renamed from `jalali_holidays` to `iranian_holidays`.
+  Depend on `iranian_holidays` and import `package:iranian_holidays/iranian_holidays.dart`; the API is otherwise the same.
 * `HijriDate` comes from `jalali_date` 1.2.0 and is re-exported unchanged in name: the constructor is no longer `const` and throws `ArgumentError` for a day that does not exist on Iran's official calendar.
   Use `HijriDate(1448, 1, 10)` instead of `const HijriDate(1448, 1, 10)`.
 
