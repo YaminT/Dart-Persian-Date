@@ -1,3 +1,9 @@
+## 1.2.1
+
+### Changed
+
+* The package description and the README introduction mention the lunar Hijri calendar and Shahanshahi years.
+
 ## 1.2.0
 
 ### Added
