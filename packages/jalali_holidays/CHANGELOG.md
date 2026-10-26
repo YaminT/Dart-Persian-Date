@@ -1,3 +1,13 @@
+## 0.2.0
+
+* `OfflineHolidaySource`: Iran's 26 official holidays and Fridays, calculated on the device with no network.
+  Hijri holidays come from a predicted crescent sighting in Iran (Meeus positions, Yallop criterion), corrected to the published calendar from 1387 to 1406.
+  `hijriMonthStarts` takes announced month starts, `holidays` a changed holiday list.
+* `OfficialHoliday` and `OfficialHoliday.iran`, the list of official holidays.
+* `HijriDate` and `OfflineHolidaySource.hijriDate` for the Iranian Hijri date of a day.
+* `FallbackHolidaySource`: an online source first, another source when it fails.
+* README lists the offline holidays of 1405 and 1406.
+
 ## 0.1.0
 
 * `HolidaySource` interface, `HolidayDay`, and `HolidayEvent`.
