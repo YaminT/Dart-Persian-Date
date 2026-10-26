@@ -64,6 +64,7 @@ The package computes the new moon and the positions of the Sun and the Moon at s
 Months where the calendar published by the Iranian calendar authority differs are corrected from a table.
 Checked against the published calendar for every month with a holiday from 1387 to 1406, the result matches all of them.
 Without the table, the calculation alone matches 174 of these 186 months, and 109 of the 112 from 1395 on.
+The calendar itself lives in `jalali_date` as `HijriDate` and `IranianHijri`; use it directly when you need Hijri dates without holidays.
 
 What the offline mode cannot do:
 

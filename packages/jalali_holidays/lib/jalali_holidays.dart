@@ -18,12 +18,13 @@
 /// ```
 library jalali_holidays;
 
+export 'package:jalali_date/jalali_date.dart' show HijriDate;
+
 export 'src/cached_holiday_source.dart';
 export 'src/calendarific.dart';
 export 'src/fallback_holiday_source.dart';
 export 'src/holiday.dart';
 export 'src/holiday_source.dart';
 export 'src/google_calendar.dart';
-export 'src/hijri_calendar.dart' show HijriDate;
 export 'src/holidayapi_ir.dart';
 export 'src/offline.dart';

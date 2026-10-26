@@ -1,7 +1,6 @@
 import 'package:jalali_date/jalali_date.dart';
 
 import 'day_builder.dart';
-import 'hijri_calendar.dart';
 import 'holiday.dart';
 import 'holiday_source.dart';
 
@@ -102,11 +101,7 @@ class OfflineHolidaySource implements HolidaySource {
     Map<(int, int), PersianDate> hijriMonthStarts = const {},
   })  : holidays = List.unmodifiable(holidays),
         _fridays = fridaysAreHolidays,
-        _hijri = IranianHijri({
-          for (final MapEntry(key: (year, month), :value)
-              in hijriMonthStarts.entries)
-            year * 12 + month - 1: _julianDay(value),
-        });
+        _hijri = IranianHijri(monthStarts: hijriMonthStarts);
 
   @override
   String get name => 'Offline calculation';
@@ -120,8 +115,7 @@ class OfflineHolidaySource implements HolidaySource {
       'the official announcement; announcements are not picked up.';
 
   /// The Hijri date of [date] on Iran's official calendar, calculated.
-  HijriDate hijriDate(PersianDate date) =>
-      _hijri.fromJulianDay(_julianDay(date));
+  HijriDate hijriDate(PersianDate date) => _hijri.fromPersianDate(date);
 
   /// Synchronous [day].
   HolidayDay dayOf(PersianDate date) {
@@ -158,7 +152,6 @@ class OfflineHolidaySource implements HolidaySource {
         final last = year == PersianDate.max.year
             ? PersianDate.max
             : first.lastDayOfYear;
-        final firstJdn = _julianDay(first), lastJdn = _julianDay(last);
         final events = <PersianDate, List<HolidayEvent>>{};
         void add(PersianDate date, OfficialHoliday holiday, String when) {
           (events[date] ??= []).add(HolidayEvent(
@@ -169,8 +162,13 @@ class OfflineHolidaySource implements HolidaySource {
           ));
         }
 
-        final firstHijri = _hijri.fromJulianDay(_julianDay(first)).year;
-        final lastHijri = _hijri.fromJulianDay(_julianDay(last)).year;
+        final firstHijri = _hijri.fromPersianDate(first);
+        final lastHijri = _hijri.fromPersianDate(last);
+        // Orders Hijri days without creating them, so days outside the
+        // supported range are never built.
+        int key(int year, int month, int day) => (year * 12 + month) * 31 + day;
+        final firstKey = key(firstHijri.year, firstHijri.month, firstHijri.day);
+        final lastKey = key(lastHijri.year, lastHijri.month, lastHijri.day);
         for (final holiday in holidays) {
           if (!holiday.isHijri) {
             if (holiday.month > last.month ||
@@ -186,30 +184,14 @@ class OfflineHolidaySource implements HolidaySource {
             }
             continue;
           }
-          for (var hy = firstHijri; hy <= lastHijri; hy++) {
-            final start = _hijri.monthStart(hy, holiday.month);
-            final next = holiday.month == 12
-                ? _hijri.monthStart(hy + 1, 1)
-                : _hijri.monthStart(hy, holiday.month + 1);
-            if (holiday.day > next - start) continue;
-            final jdn = start + holiday.day - 1;
-            if (jdn >= firstJdn && jdn <= lastJdn) {
-              final date = _fromJulianDay(jdn);
-              add(date, holiday,
-                  '${HijriDate(hy, holiday.month, holiday.day)}');
-            }
+          for (var hy = firstHijri.year; hy <= lastHijri.year; hy++) {
+            if (holiday.day > _hijri.monthLength(hy, holiday.month)) continue;
+            final k = key(hy, holiday.month, holiday.day);
+            if (k < firstKey || k > lastKey) continue;
+            final hijri = _hijri.date(hy, holiday.month, holiday.day);
+            add(hijri.toPersianDate(), holiday, '$hijri');
           }
         }
         return events;
       });
-
-  // Julian day number of 1400/1/1.
-  static final _epoch = PersianDate(1400, 1, 1);
-  static const _epochJulianDay = 2459295;
-
-  static int _julianDay(PersianDate date) =>
-      date.differenceInDays(_epoch) + _epochJulianDay;
-
-  static PersianDate _fromJulianDay(int jdn) =>
-      _epoch.addDays(jdn - _epochJulianDay);
 }

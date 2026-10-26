@@ -47,7 +47,7 @@ import 'package:jalali_date/jalali_date.dart';
 
 ## Quick reference
 
-Everything is exported from `package:jalali_date/jalali_date.dart`: the immutable `PersianDate` class, the `PersianDateRange` class, the `toPersianDigits` and `toLatinDigits` functions, the `JalaliEra` enum, and the `DateTime.toPersianDate()` extension.
+Everything is exported from `package:jalali_date/jalali_date.dart`: the immutable `PersianDate` class, the `PersianDateRange` class, the `HijriDate` and `IranianHijri` classes, the `toPersianDigits` and `toLatinDigits` functions, the `JalaliEra` enum, and the `DateTime.toPersianDate()` and `DateTime.toHijriDate()` extensions.
 
 ### Creating
 
@@ -103,6 +103,7 @@ Everything is exported from `package:jalali_date/jalali_date.dart`: the immutabl
 | `==`, `compareTo`, `<`, `<=`, `>`, `>=` | By day only; the time of day is ignored |
 | `isBefore`, `isAfter`, `isSameDay`, `isSameMonth`, `isSameYear` | Readable comparisons |
 | `toDateTime()` | Gregorian `DateTime` |
+| `toHijri()` | Lunar Hijri date, see [Hijri calendar](#hijri-calendar) |
 | `toString({showDate, showTime, showHour, showMinute, showSecond, persianDigits, era})` | `yyyy/MM/dd`, optionally with `HH:mm:ss` |
 | `format(String pattern, {persianDigits, era})` | Custom string, tokens listed below |
 | `toPersianDigits(String)`, `toLatinDigits(String)` | Digit conversion, Persian and Arabic-Indic input |
@@ -324,6 +325,59 @@ print(PersianDate.fromJson('1403-01-04')); // 1403/01/04
 `toJson` writes `yyyy-MM-dd` and drops the time of day; store `toDateTime().toIso8601String()` when the time matters.
 `json_serializable` uses `PersianDate.fromJson` and `toJson` for `PersianDate` fields without any annotation.
 
+### Hijri calendar
+
+```dart
+final ashura = PersianDate(1405, 4, 4).toHijri();
+print(ashura); // 10 محرم 1448
+print(ashura.format('EEEE d MMMM yyyy')); // پنجشنبه 10 محرم 1448
+print(HijriDate(1447, 10, 1).toPersianDate()); // 1405/01/01
+print(DateTime(2026, 6, 25).toHijriDate().format('yyyy/MM/dd')); // 1448/01/10
+print(HijriDate(1447, 12, 1).monthLength); // 29
+```
+
+`HijriDate` is the lunar Hijri (قمری) date as Iran's official calendar counts it.
+A month starts the day after the evening its new crescent can be seen in Iran.
+The start is calculated from the positions of the Sun and the Moon with Yallop's visibility criterion at eight Iranian cities, and a built-in table corrects the months where the published calendar differs.
+Checked against the calendar published on time.ir for every month with a holiday from Jalali 1387 to 1406, the result matches all of them.
+
+What it cannot do:
+
+- A month officially starts when the crescent is actually seen, which is announced only days before.
+  The calculation can be one day off from that announcement.
+  Pass the announced start to an `IranianHijri` of your own:
+
+  ```dart
+  final announced = IranianHijri(
+    // 1 Muharram 1448 announced for 1405/03/27.
+    monthStarts: {(1448, 1): PersianDate(1405, 3, 27)},
+  );
+  print(announced.fromPersianDate(PersianDate(1405, 4, 5))); // 10 محرم 1448
+  ```
+
+- Only Iran's calendar is implemented; Umm al-Qura and the tabular Islamic calendar are not.
+- Far from today the dates are a calculation only, with nothing to check them against.
+
+| Member | Description |
+| ------ | ----------- |
+| `HijriDate(int year, int month, int day)` | From Hijri values; throws `ArgumentError` for a day that does not exist |
+| `HijriDate.fromPersianDate(PersianDate)`, `PersianDate.toHijri()` | From a Jalali date |
+| `HijriDate.fromDateTime(DateTime)`, `DateTime.toHijriDate()` | From the calendar day of a `DateTime` |
+| `year`, `month`, `day` | Hijri year, month (1 is Muharram), and day |
+| `monthName`, `monthNames` | `محرم` to `ذوالحجه` |
+| `monthLength` | 29 or 30 |
+| `weekday`, `weekdayName`, `weekdayNameShort` | ISO weekday and Persian names, like `PersianDate` |
+| `toPersianDate()`, `toDateTime()` | Jalali date, and local midnight of the day |
+| `==`, `compareTo`, `<`, `<=`, `>`, `>=`, `isBefore`, `isAfter` | By year, month, and day |
+| `format(String pattern, {persianDigits})` | Tokens `yyyy`, `yy`, `MMMM`, `MM`, `M`, `dd`, `d`, `EEEE`, `E`, quoting like `PersianDate.format` |
+| `toString()` | `day monthName year`, for example `10 محرم 1448` |
+| `HijriDate.min`, `HijriDate.max` | The Hijri dates of `PersianDate.min` and `PersianDate.max` |
+| `IranianHijri.official` | The calendar every `HijriDate` conversion uses |
+| `IranianHijri({monthStarts})` | A calendar with announced month starts; `fromPersianDate`, `fromDateTime`, `date`, `monthStart`, `monthLength` |
+
+A `HijriDate` created by a calendar with announced starts keeps that calendar's day in `toPersianDate`, `toDateTime`, and `weekday`.
+Equality and ordering compare year, month, and day only.
+
 ### Ranges
 
 ```dart
@@ -388,7 +442,7 @@ These live in this repository under `packages/` and are released separately.
 ## Supported range
 
 Jalali -61/01/01 to 3177/10/11, which is Gregorian 560-03-20 to 3798-12-31.
-In the Shahanshahi numbering that is 1119/01/01 to 4357/10/11.
+In the Shahanshahi numbering that is 1119/01/01 to 4357/10/11, and in the lunar Hijri calendar -64/10/05 to 3274/12/10.
 Every constructor, `parse`, and the arithmetic methods throw outside that range.
 
 ## Migrating

@@ -1,3 +1,15 @@
+## 0.3.0
+
+### Breaking
+
+* `HijriDate` comes from `jalali_date` 1.2.0 and is re-exported unchanged in name: the constructor is no longer `const` and throws `ArgumentError` for a day that does not exist on Iran's official calendar.
+  Use `HijriDate(1448, 1, 10)` instead of `const HijriDate(1448, 1, 10)`.
+
+### Changed
+
+* The Hijri calendar moved to `jalali_date` as `HijriDate` and `IranianHijri`; holiday dates are unchanged.
+* Requires `jalali_date` ^1.2.0.
+
 ## 0.2.0
 
 * `OfflineHolidaySource`: Iran's 26 official holidays and Fridays, calculated on the device with no network.

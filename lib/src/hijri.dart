@@ -1,88 +1,64 @@
 import 'dart:math' as math;
 
-/// A day of the lunar Hijri calendar as Iran's official calendar counts it.
-class HijriDate {
-  /// Hijri year, for example 1447.
+import '../jalali_date.dart';
+import 'jalali_calc.dart';
+import 'pattern.dart';
+
+/// A day of the lunar Hijri (Islamic) calendar as Iran's official calendar
+/// counts it.
+///
+/// Create one from Hijri values with [HijriDate.new], or convert with
+/// [HijriDate.fromPersianDate], [HijriDate.fromDateTime],
+/// `PersianDate.toHijri()`, or `DateTime.toHijriDate()`. All of them use
+/// [IranianHijri.official]; use an [IranianHijri] with announced month
+/// starts when the calculation is a day off.
+///
+/// Supports the Hijri dates of [PersianDate.min] to [PersianDate.max],
+/// [HijriDate.min] to [HijriDate.max].
+class HijriDate implements Comparable<HijriDate> {
+  /// Hijri year, for example 1447. Years before the Hijra are 0 or negative.
   final int year;
 
   /// Month, 1 (Muharram) to 12 (Dhu al-Hijjah).
   final int month;
 
-  /// Day of the month, 1 to 30.
+  /// Day of the month, 1 to [monthLength].
   final int day;
 
-  /// Creates a Hijri date. It is not validated.
-  const HijriDate(this.year, this.month, this.day);
+  /// Julian day number, fixed by the calendar that created this date.
+  final int _julianDay;
 
-  /// Persian name of [month], as the Iranian calendar writes it.
-  String get monthName => IranianHijri.monthNames[month - 1];
+  HijriDate._(this.year, this.month, this.day, this._julianDay);
 
-  @override
-  bool operator ==(Object other) =>
-      other is HijriDate &&
-      other.year == year &&
-      other.month == month &&
-      other.day == day;
+  /// Creates a date from a Hijri year, month, and day on
+  /// [IranianHijri.official].
+  ///
+  /// Throws [ArgumentError] when [month] is outside 1 to 12, [day] is
+  /// outside the length of that month (29 or 30), or the date is outside
+  /// [HijriDate.min] to [HijriDate.max].
+  factory HijriDate(int year, int month, int day) =>
+      IranianHijri.official.date(year, month, day);
 
-  @override
-  int get hashCode => Object.hash(year, month, day);
+  /// The Hijri date of [date] on [IranianHijri.official]; the time of day
+  /// is ignored.
+  factory HijriDate.fromPersianDate(PersianDate date) =>
+      IranianHijri.official.fromPersianDate(date);
 
-  /// `day monthName year`, for example `1 شوال 1447`.
-  @override
-  String toString() => '$day $monthName $year';
-}
+  /// The Hijri date of the calendar day of [dateTime] on
+  /// [IranianHijri.official]; the time of day is ignored.
+  ///
+  /// Throws [ArgumentError] outside the supported range.
+  factory HijriDate.fromDateTime(DateTime dateTime) =>
+      IranianHijri.official.fromDateTime(dateTime);
 
-/// The lunar Hijri calendar as Iran's official calendar uses it.
-///
-/// A month starts the day after the evening its new crescent can be seen in
-/// Iran. The crescent is predicted from the positions of the Sun and the Moon
-/// (truncated Meeus series) with Yallop's criterion at the optical-aid limit
-/// (q >= -0.232), checked at several Iranian cities. Months where the
-/// published calendar differs from the prediction are fixed by
-/// [_officialStarts], and callers can add [corrections] of their own.
-///
-/// The prediction is a calculation, not an announcement: a month can still
-/// move by a day when the crescent is or is not actually seen.
-class IranianHijri {
-  /// Creates the calendar. [corrections] maps `year * 12 + month - 1` to the
-  /// Julian day number of that month's first day and wins over everything
-  /// else.
-  IranianHijri([this.corrections = const {}]);
+  /// First supported date, the Hijri date of [PersianDate.min].
+  static final HijriDate min = HijriDate.fromPersianDate(PersianDate.min);
 
-  /// Month starts given by the caller.
-  final Map<int, int> corrections;
+  /// Last supported date, the Hijri date of [PersianDate.max].
+  static final HijriDate max = HijriDate.fromPersianDate(PersianDate.max);
 
-  static final _predicted = <int, int>{};
-
-  /// Julian day number of the first day of [month] (1 to 12) of Hijri
-  /// [year].
-  int monthStart(int year, int month) {
-    final index = year * 12 + month - 1;
-    return corrections[index] ??
-        _officialStarts[index] ??
-        _predicted.putIfAbsent(
-          index,
-          () => _predictedStart((index / 12).floor(), index % 12 + 1),
-        );
-  }
-
-  /// The Hijri date of Julian day number [jdn].
-  HijriDate fromJulianDay(int jdn) {
-    // The tabular calendar is never more than a few days off.
-    final tabular = _tabularFromJulianDay(jdn);
-    var index = tabular.year * 12 + tabular.month - 1;
-    while (jdn < monthStart((index / 12).floor(), index % 12 + 1)) {
-      index--;
-    }
-    while (
-        jdn >= monthStart(((index + 1) / 12).floor(), (index + 1) % 12 + 1)) {
-      index++;
-    }
-    final year = (index / 12).floor(), month = index % 12 + 1;
-    return HijriDate(year, month, jdn - monthStart(year, month) + 1);
-  }
-
-  /// Persian names of the Hijri months, as the Iranian calendar writes them.
+  /// Persian names of the Hijri months, as the Iranian calendar writes them,
+  /// from Muharram to Dhu al-Hijjah.
   static const List<String> monthNames = [
     'محرم',
     'صفر',
@@ -97,6 +73,235 @@ class IranianHijri {
     'ذوالقعده',
     'ذوالحجه',
   ];
+
+  /// Persian name of [month], for example `محرم` for month 1.
+  String get monthName => monthNames[month - 1];
+
+  /// Number of days in [month] of [year], 29 or 30, on
+  /// [IranianHijri.official].
+  int get monthLength => IranianHijri.official.monthLength(year, month);
+
+  /// ISO weekday, 1 = Monday to 7 = Sunday, the same as
+  /// [PersianDate.weekday].
+  int get weekday => _julianDay % 7 + 1;
+
+  /// Persian name of [weekday], for example `جمعه` for Friday.
+  String get weekdayName => PersianDate.weekdayNames[weekday - 1];
+
+  /// One-letter Persian name of [weekday], for example `ج` for Friday.
+  String get weekdayNameShort => PersianDate.weekdayNamesShort[weekday - 1];
+
+  /// The same day on the Jalali calendar, date-only.
+  ///
+  /// A date created by an [IranianHijri] with announced month starts keeps
+  /// that calendar's day.
+  PersianDate toPersianDate() => _persianDate(_julianDay);
+
+  /// Local midnight of the same day.
+  DateTime toDateTime() {
+    final g = d2g(_julianDay);
+    return DateTime(g.gy, g.gm, g.gd);
+  }
+
+  /// Equal when [year], [month], and [day] match.
+  @override
+  bool operator ==(Object other) =>
+      other is HijriDate &&
+      other.year == year &&
+      other.month == month &&
+      other.day == day;
+
+  @override
+  int get hashCode => Object.hash(year, month, day);
+
+  /// Orders dates by [year], then [month], then [day].
+  @override
+  int compareTo(HijriDate other) {
+    if (year != other.year) return year.compareTo(other.year);
+    if (month != other.month) return month.compareTo(other.month);
+    return day.compareTo(other.day);
+  }
+
+  /// Whether this date is before [other].
+  bool isBefore(HijriDate other) => compareTo(other) < 0;
+
+  /// Whether this date is after [other].
+  bool isAfter(HijriDate other) => compareTo(other) > 0;
+
+  /// Whether this date is before [other]; see [compareTo].
+  bool operator <(HijriDate other) => compareTo(other) < 0;
+
+  /// Whether this date is before or the same day as [other].
+  bool operator <=(HijriDate other) => compareTo(other) <= 0;
+
+  /// Whether this date is after [other]; see [compareTo].
+  bool operator >(HijriDate other) => compareTo(other) > 0;
+
+  /// Whether this date is after or the same day as [other].
+  bool operator >=(HijriDate other) => compareTo(other) >= 0;
+
+  static const _tokens = [
+    'yyyy', 'yy', 'MMMM', 'MM', 'M', 'dd', 'd', 'EEEE', 'E', //
+  ];
+
+  /// Formats this date with [pattern].
+  ///
+  /// | Token  | Output                          |
+  /// | ------ | ------------------------------- |
+  /// | `yyyy` | year, at least four digits      |
+  /// | `yy`   | last two digits of the year     |
+  /// | `MMMM` | Persian month name              |
+  /// | `MM`   | month, two digits               |
+  /// | `M`    | month                           |
+  /// | `dd`   | day, two digits                 |
+  /// | `d`    | day                             |
+  /// | `EEEE` | Persian weekday name            |
+  /// | `E`    | one-letter Persian weekday name |
+  ///
+  /// The longest token wins, every other character is copied as is, and
+  /// quoting works like [PersianDate.format]: `format("d MMMM yyyy 'ق'")`
+  /// gives `10 محرم 1448 ق`.
+  ///
+  /// With [persianDigits], numbers produced by tokens are written as ۰ to ۹;
+  /// literal text in [pattern] is copied unchanged.
+  String format(String pattern, {bool persianDigits = false}) =>
+      formatPattern(pattern, _tokens, _formatToken,
+          persianDigits: persianDigits);
+
+  String _formatToken(String token) => switch (token) {
+        'yyyy' => fourDigitYear(year),
+        'yy' => twoDigits(year.remainder(100).abs()),
+        'MMMM' => monthName,
+        'MM' => twoDigits(month),
+        'M' => '$month',
+        'dd' => twoDigits(day),
+        'd' => '$day',
+        'EEEE' => weekdayName,
+        _ => weekdayNameShort,
+      };
+
+  /// `day monthName year`, for example `1 شوال 1447`.
+  @override
+  String toString() => '$day $monthName $year';
+}
+
+/// The lunar Hijri calendar as Iran's official calendar uses it.
+///
+/// A month starts the day after the evening its new crescent can be seen in
+/// Iran. The crescent is predicted from the positions of the Sun and the Moon
+/// (truncated Meeus series) with Yallop's criterion at the optical-aid limit
+/// (q >= -0.232), checked at several Iranian cities. Months where the
+/// published calendar differs from the prediction are fixed by a table
+/// checked against time.ir for Jalali 1387 to 1406, and [monthStarts] add
+/// announcements of your own.
+///
+/// The prediction is a calculation, not an announcement: a month can still
+/// move by a day when the crescent is or is not actually seen.
+class IranianHijri {
+  /// Creates the calendar. [monthStarts] maps a Hijri `(year, month)` to
+  /// the Jalali day it starts on, for months where an announcement differs
+  /// from the calculation; it wins over everything else.
+  IranianHijri({Map<(int, int), PersianDate> monthStarts = const {}})
+      : monthStarts = Map.unmodifiable(monthStarts),
+        _corrections = {
+          for (final MapEntry(key: (year, month), :value)
+              in monthStarts.entries)
+            year * 12 + month - 1: j2d(value.year, value.month, value.day),
+        };
+
+  /// The calendar with the built-in table and no announcements of your own.
+  /// [HijriDate] uses it.
+  static final IranianHijri official = IranianHijri();
+
+  /// Announced month starts given to the constructor.
+  final Map<(int, int), PersianDate> monthStarts;
+
+  final Map<int, int> _corrections;
+
+  static final _predicted = <int, int>{};
+
+  /// Jalali day [month] (1 to 12) of Hijri [year] starts on.
+  ///
+  /// Throws [ArgumentError] when [month] is outside 1 to 12 or that day is
+  /// outside the supported range.
+  PersianDate monthStart(int year, int month) {
+    _checkMonth(year, month);
+    return _persianDate(_start(year, month));
+  }
+
+  /// Number of days in [month] (1 to 12) of Hijri [year], 29 or 30.
+  ///
+  /// Throws [ArgumentError] when [month] is outside 1 to 12 or [year] is
+  /// outside the supported range.
+  int monthLength(int year, int month) {
+    _checkMonth(year, month);
+    return _start(year + month ~/ 12, month % 12 + 1) - _start(year, month);
+  }
+
+  /// Creates a Hijri date on this calendar.
+  ///
+  /// Throws [ArgumentError] when [month] is outside 1 to 12, [day] is
+  /// outside the length of that month, or the date is outside the supported
+  /// range.
+  HijriDate date(int year, int month, int day) {
+    final length = monthLength(year, month);
+    if (day < 1 || day > length) {
+      throw ArgumentError.value(day, 'day', 'Must be in 1 to $length');
+    }
+    final jdn = _start(year, month) + day - 1;
+    _checkRange(jdn);
+    return HijriDate._(year, month, day, jdn);
+  }
+
+  /// The Hijri date of [date] on this calendar; the time of day is ignored.
+  HijriDate fromPersianDate(PersianDate date) =>
+      _fromJulianDay(j2d(date.year, date.month, date.day));
+
+  /// The Hijri date of the calendar day of [dateTime] on this calendar; the
+  /// time of day is ignored.
+  ///
+  /// Throws [ArgumentError] outside the supported range.
+  HijriDate fromDateTime(DateTime dateTime) {
+    final jdn = g2d(dateTime.year, dateTime.month, dateTime.day);
+    _checkRange(jdn);
+    return _fromJulianDay(jdn);
+  }
+
+  void _checkMonth(int year, int month) {
+    if (month < 1 || month > 12) {
+      throw ArgumentError.value(month, 'month', 'Must be in 1 to 12');
+    }
+    final first = HijriDate.min.year, last = HijriDate.max.year;
+    if (year < first || year > last) {
+      throw ArgumentError.value(year, 'year', 'Must be in $first to $last');
+    }
+  }
+
+  /// Julian day number of the first day of [month] (1 to 12) of Hijri
+  /// [year].
+  int _start(int year, int month) {
+    final index = year * 12 + month - 1;
+    return _corrections[index] ??
+        _officialStarts[index] ??
+        _predicted.putIfAbsent(
+          index,
+          () => _predictedStart((index / 12).floor(), index % 12 + 1),
+        );
+  }
+
+  HijriDate _fromJulianDay(int jdn) {
+    // The tabular calendar is never more than a few days off.
+    final tabular = _tabularFromJulianDay(jdn);
+    var index = tabular.year * 12 + tabular.month - 1;
+    while (jdn < _start((index / 12).floor(), index % 12 + 1)) {
+      index--;
+    }
+    while (jdn >= _start(((index + 1) / 12).floor(), (index + 1) % 12 + 1)) {
+      index++;
+    }
+    final year = (index / 12).floor(), month = index % 12 + 1;
+    return HijriDate._(year, month, jdn - _start(year, month) + 1, jdn);
+  }
 
   /// Julian day number of [day]/[month]/[year] on the arithmetic (tabular)
   /// Islamic calendar.
@@ -417,3 +622,21 @@ double _sin(double degrees) => math.sin(degrees * _rad);
 double _cos(double degrees) => math.cos(degrees * _rad);
 double _asinDeg(double x) => math.asin(x.clamp(-1.0, 1.0)) / _rad;
 double _acosDeg(double x) => math.acos(x.clamp(-1.0, 1.0)) / _rad;
+
+final _firstDay = j2d(-61, 1, 1);
+final _lastDay = j2d(3177, 10, 11);
+
+void _checkRange(int jdn) {
+  if (jdn < _firstDay || jdn > _lastDay) {
+    throw ArgumentError(
+      'Date must be in Jalali -61/01/01 to 3177/10/11 '
+      '(Gregorian 560-03-20 to 3798-12-31)',
+    );
+  }
+}
+
+PersianDate _persianDate(int jdn) {
+  _checkRange(jdn);
+  final date = d2j(jdn);
+  return PersianDate(date.jy, date.jm, date.jd);
+}

@@ -104,6 +104,23 @@ void main() {
         '2585 شاهنشاهی');
   });
 
+  test('Hijri calendar', () {
+    final ashura = PersianDate(1405, 4, 4).toHijri();
+    expect('$ashura', '10 محرم 1448');
+    expect(ashura.format('EEEE d MMMM yyyy'), 'پنجشنبه 10 محرم 1448');
+    expect('${HijriDate(1447, 10, 1).toPersianDate()}', '1405/01/01');
+    expect(
+        DateTime(2026, 6, 25).toHijriDate().format('yyyy/MM/dd'), '1448/01/10');
+    expect(HijriDate(1447, 12, 1).monthLength, 29);
+    final announced = IranianHijri(
+      monthStarts: {(1448, 1): PersianDate(1405, 3, 27)},
+    );
+    expect('${announced.fromPersianDate(PersianDate(1405, 4, 5))}',
+        '10 محرم 1448');
+    expect(HijriDate.min.format('yyyy/MM/dd'), '-0064/10/05');
+    expect(HijriDate.max.format('yyyy/MM/dd'), '3274/12/10');
+  });
+
   test('JSON', () {
     final date = PersianDate(1403, 1, 4);
     expect(jsonEncode({'date': date}), '{"date":"1403-01-04"}');

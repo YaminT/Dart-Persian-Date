@@ -5,7 +5,9 @@
 /// The main type is the immutable [PersianDate]. [PersianDateRange] holds an
 /// inclusive range of days, [toPersianDigits] and [toLatinDigits] convert
 /// digits, [JalaliEra] picks Solar Hijri or Shahanshahi year numbers for
-/// text, and `DateTime.toPersianDate()` converts a [DateTime].
+/// text, [HijriDate] and [IranianHijri] give the lunar Hijri date as Iran's
+/// official calendar counts it, and `DateTime.toPersianDate()` and
+/// `DateTime.toHijriDate()` convert a [DateTime].
 ///
 /// ```dart
 /// final date = PersianDate.fromGregorian(2021, 3, 21);
@@ -18,10 +20,13 @@ library jalali_date;
 
 import 'src/digits.dart';
 import 'src/era.dart';
+import 'src/hijri.dart';
 import 'src/jalali_calc.dart';
+import 'src/pattern.dart';
 
 export 'src/digits.dart';
 export 'src/era.dart';
+export 'src/hijri.dart';
 export 'src/persian_date_range.dart';
 
 /// An immutable Jalali (Persian) calendar date.
@@ -373,6 +378,10 @@ class PersianDate implements Comparable<PersianDate> {
     return DateTime(g.gy, g.gm, g.gd);
   }
 
+  /// The lunar Hijri date of this day on [IranianHijri.official]; the same
+  /// as [HijriDate.fromPersianDate].
+  HijriDate toHijri() => HijriDate.fromPersianDate(this);
+
   int get _julianDay {
     final dateTime = _dateTime;
     if (dateTime != null) {
@@ -603,7 +612,7 @@ class PersianDate implements Comparable<PersianDate> {
     }
     final parts = <String>[];
     if (showDate) {
-      parts.add('${year + era.offset}/${_twoDigits(month)}/${_twoDigits(day)}');
+      parts.add('${year + era.offset}/${twoDigits(month)}/${twoDigits(day)}');
     }
     if (showTime) {
       final dateTime = _dateTime;
@@ -614,9 +623,9 @@ class PersianDate implements Comparable<PersianDate> {
       }
       parts.add(
         [
-          if (showHour) _twoDigits(dateTime.hour),
-          if (showMinute) _twoDigits(dateTime.minute),
-          if (showSecond) _twoDigits(dateTime.second),
+          if (showHour) twoDigits(dateTime.hour),
+          if (showMinute) twoDigits(dateTime.minute),
+          if (showSecond) twoDigits(dateTime.second),
         ].join(':'),
       );
     }
@@ -677,66 +686,28 @@ class PersianDate implements Comparable<PersianDate> {
     String pattern, {
     bool persianDigits = false,
     JalaliEra era = JalaliEra.solarHijri,
-  }) {
-    final out = StringBuffer();
-    var i = 0;
-    while (i < pattern.length) {
-      if (pattern[i] == "'") {
-        i = _copyQuoted(pattern, i, out);
-        continue;
-      }
-      final token = _tokens.firstWhere(
-        (t) => pattern.startsWith(t, i),
-        orElse: () => '',
+  }) =>
+      formatPattern(
+        pattern,
+        _tokens,
+        (token) => _formatToken(token, year + era.offset),
+        persianDigits: persianDigits,
       );
-      if (token.isEmpty) {
-        out.write(pattern[i]);
-        i++;
-        continue;
-      }
-      final value = _formatToken(token, year + era.offset);
-      out.write(persianDigits ? toPersianDigits(value) : value);
-      i += token.length;
-    }
-    return out.toString();
-  }
-
-  /// Copies the quoted section starting at [start] and returns the index
-  /// after it.
-  static int _copyQuoted(String pattern, int start, StringBuffer out) {
-    if (pattern.startsWith("''", start)) {
-      out.write("'");
-      return start + 2;
-    }
-    var i = start + 1;
-    while (i < pattern.length) {
-      if (pattern[i] == "'") {
-        if (!pattern.startsWith("''", i)) return i + 1;
-        out.write("'");
-        i += 2;
-        continue;
-      }
-      out.write(pattern[i]);
-      i++;
-    }
-    return i;
-  }
 
   String _formatToken(String token, int eraYear) {
     switch (token) {
       case 'yyyy':
-        final digits = eraYear.abs().toString().padLeft(4, '0');
-        return eraYear < 0 ? '-$digits' : digits;
+        return fourDigitYear(eraYear);
       case 'yy':
-        return _twoDigits(eraYear.remainder(100).abs());
+        return twoDigits(eraYear.remainder(100).abs());
       case 'MMMM':
         return monthName;
       case 'MM':
-        return _twoDigits(month);
+        return twoDigits(month);
       case 'M':
         return '$month';
       case 'dd':
-        return _twoDigits(day);
+        return twoDigits(day);
       case 'd':
         return '$day';
       case 'EEEE':
@@ -756,15 +727,17 @@ class PersianDate implements Comparable<PersianDate> {
       'm' => time.minute,
       _ => time.second,
     };
-    return token.length == 2 ? _twoDigits(value) : '$value';
+    return token.length == 2 ? twoDigits(value) : '$value';
   }
-
-  static String _twoDigits(int value) => value.toString().padLeft(2, '0');
 }
 
-/// Converts a [DateTime] to a [PersianDate].
+/// Converts a [DateTime] to a [PersianDate] or a [HijriDate].
 extension PersianDateTime on DateTime {
   /// Returns this moment as a [PersianDate], keeping the time of day; the
   /// same as [PersianDate.fromDateTime].
   PersianDate toPersianDate() => PersianDate.fromDateTime(this);
+
+  /// Returns the lunar Hijri date of this calendar day; the same as
+  /// [HijriDate.fromDateTime].
+  HijriDate toHijriDate() => HijriDate.fromDateTime(this);
 }

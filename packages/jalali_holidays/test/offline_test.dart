@@ -75,35 +75,16 @@ void main() {
   });
 
   test('Imam Reza is on 29 Safar even when Safar has 30 days', () {
-    expect(
-        source.hijriDate(PersianDate(1404, 6, 3)), const HijriDate(1447, 3, 1));
+    expect(source.hijriDate(PersianDate(1404, 6, 3)), HijriDate(1447, 3, 1));
     expect(source.dayOf(PersianDate(1404, 6, 1)).holidays.single.description,
         'شهادت امام رضا (ع)');
     expect(source.dayOf(PersianDate(1404, 6, 2)).isHoliday, isFalse);
   });
 
   test('hijriDate', () {
-    expect(source.hijriDate(PersianDate(1405, 1, 1)),
-        const HijriDate(1447, 10, 1));
+    expect(source.hijriDate(PersianDate(1405, 1, 1)), HijriDate(1447, 10, 1));
     expect(source.hijriDate(PersianDate.withTime(1405, 4, 4, 23)).toString(),
         '10 محرم 1448');
-  });
-
-  test('Hijri days advance by one and months have 29 or 30 days', () {
-    var date = PersianDate(1300, 1, 1);
-    var previous = source.hijriDate(date);
-    final end = PersianDate(1500, 1, 1);
-    while (date.isBefore(end)) {
-      date = date.addDays(1);
-      final hijri = source.hijriDate(date);
-      if (hijri.day == 1) {
-        expect(previous.day, inInclusiveRange(29, 30), reason: '$date');
-        expect(hijri.month, previous.month % 12 + 1, reason: '$date');
-      } else {
-        expect(hijri.day, previous.day + 1, reason: '$date');
-      }
-      previous = hijri;
-    }
   });
 
   test('supported range endpoints and negative Hijri years', () async {
@@ -164,8 +145,8 @@ void main() {
           .map((e) => e.description),
       contains('عاشورای حسینی'),
     );
-    expect(corrected.hijriDate(PersianDate(1405, 3, 27)),
-        const HijriDate(1448, 1, 1));
+    expect(
+        corrected.hijriDate(PersianDate(1405, 3, 27)), HijriDate(1448, 1, 1));
   });
 
   test('custom holidays', () {

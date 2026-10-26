@@ -1,6 +1,6 @@
 name: jalali_holidays
 description: "Iranian holidays for jalali_date dates: calculated offline, including the lunar Hijri holidays, or from an online holiday source you choose."
-version: 0.2.0
+version: 0.3.0
 homepage: https://nodets.com/jalali
 repository: https://github.com/YaminT/Dart-Persian-Date/tree/master/packages/jalali_holidays
 issue_tracker: https://github.com/YaminT/Dart-Persian-Date/issues
@@ -16,7 +16,7 @@ environment:
 
 dependencies:
   http: ^1.1.0
-  jalali_date: ^1.1.0
+  jalali_date: ^1.2.0
 
 dev_dependencies:
   lints: ^3.0.0
