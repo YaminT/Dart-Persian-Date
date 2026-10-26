@@ -1,3 +1,10 @@
+## 1.2.0
+
+### Added
+
+* `JalaliEra` with `solarHijri` and `shahanshahi`, and an `era` parameter on `format`, `toString`, `PersianDate.parse`, and `PersianDate.tryParse`: the year is written and read as Solar Hijri (1405) or Shahanshahi (2585). The stored `year` stays Solar Hijri.
+* `shahanshahiYear`: `year` plus 1180.
+
 ## 1.1.0
 
 ### Added

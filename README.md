@@ -47,7 +47,7 @@ import 'package:jalali_date/jalali_date.dart';
 
 ## Quick reference
 
-Everything is exported from `package:jalali_date/jalali_date.dart`: the immutable `PersianDate` class, the `PersianDateRange` class, the `toPersianDigits` and `toLatinDigits` functions, and the `DateTime.toPersianDate()` extension.
+Everything is exported from `package:jalali_date/jalali_date.dart`: the immutable `PersianDate` class, the `PersianDateRange` class, the `toPersianDigits` and `toLatinDigits` functions, the `JalaliEra` enum, and the `DateTime.toPersianDate()` extension.
 
 ### Creating
 
@@ -60,7 +60,7 @@ Everything is exported from `package:jalali_date/jalali_date.dart`: the immutabl
 | `DateTime.toPersianDate()` | Extension, the same as `fromDateTime` |
 | `PersianDate.fromGregorian(int year, int month, int day)` | From Gregorian values; overflow rolls over like `DateTime` |
 | `PersianDate.fromGregorianString(String)` | From an ISO 8601 Gregorian string, via `DateTime.parse` |
-| `PersianDate.parse(String)`, `tryParse(String)` | From a Jalali string such as `1403/01/01` or `۱۴۰۳-۱-۱ ۱۴:۳۰` |
+| `PersianDate.parse(String, {era})`, `tryParse(String, {era})` | From a Jalali string such as `1403/01/01` or `۱۴۰۳-۱-۱ ۱۴:۳۰` |
 | `PersianDate.fromJson(String)`, `toJson()` | `yyyy-MM-dd` for storage and `jsonEncode` |
 | `PersianDate.min`, `PersianDate.max` | First and last supported day |
 | `copyWith({year, month, day})` | Copy with fields replaced; validates, never clamps |
@@ -70,6 +70,7 @@ Everything is exported from `package:jalali_date/jalali_date.dart`: the immutabl
 | Member | Description |
 | ------ | ----------- |
 | `year`, `month`, `day` | Jalali year, month (1 to 12), and day of month |
+| `shahanshahiYear` | `year` plus 1180, the Shahanshahi (Imperial) year |
 | `hasTime`, `hour`, `minute`, `second` | Time of day; the getters throw `StateError` when `hasTime` is false |
 | `isLeapYear`, `daysInYear` | Whether Esfand has 30 days; 365 or 366 |
 | `monthLength` | 31, 30, or 29 |
@@ -102,8 +103,8 @@ Everything is exported from `package:jalali_date/jalali_date.dart`: the immutabl
 | `==`, `compareTo`, `<`, `<=`, `>`, `>=` | By day only; the time of day is ignored |
 | `isBefore`, `isAfter`, `isSameDay`, `isSameMonth`, `isSameYear` | Readable comparisons |
 | `toDateTime()` | Gregorian `DateTime` |
-| `toString({showDate, showTime, showHour, showMinute, showSecond, persianDigits})` | `yyyy/MM/dd`, optionally with `HH:mm:ss` |
-| `format(String pattern, {persianDigits})` | Custom string, tokens listed below |
+| `toString({showDate, showTime, showHour, showMinute, showSecond, persianDigits, era})` | `yyyy/MM/dd`, optionally with `HH:mm:ss` |
+| `format(String pattern, {persianDigits, era})` | Custom string, tokens listed below |
 | `toPersianDigits(String)`, `toLatinDigits(String)` | Digit conversion, Persian and Arabic-Indic input |
 
 Supported range: Jalali -61/01/01 to 3177/10/11, which is Gregorian 560-03-20 to 3798-12-31.
@@ -295,6 +296,23 @@ The longest token wins, and every other character is copied as is.
 Put literal text in single quotes, and write two single quotes for one: `format("d 'o''clock'")` gives `1 o'clock`.
 Time tokens throw `StateError` on a date-only instance.
 
+### Shahanshahi years
+
+```dart
+final date = PersianDate(1405, 1, 4);
+print(date.shahanshahiYear); // 2585
+print(date.format('d MMMM yyyy', era: JalaliEra.shahanshahi)); // 4 فروردین 2585
+print(date.toString(era: JalaliEra.shahanshahi)); // 2585/01/04
+print(PersianDate.parse('2585/01/04', era: JalaliEra.shahanshahi)); // 1405/01/04
+```
+
+The Shahanshahi (شاهنشاهی, Imperial) numbering is the Solar Hijri year plus 1180.
+Pass `era: JalaliEra.shahanshahi` to `format`, `toString`, `parse`, or `tryParse` to write or read years that way.
+Only the year tokens `yyyy` and `yy` change; months, days, and names are the same in both eras.
+`year` always holds the Solar Hijri year, and `toJson` always writes it.
+No era name is printed; add one as quoted text, for example `format("yyyy 'شاهنشاهی'", era: JalaliEra.shahanshahi)`.
+`parse` with the Shahanshahi era accepts years 1119 to 4357 and throws `FormatException` outside them.
+
 ### JSON
 
 ```dart
@@ -370,6 +388,7 @@ These live in this repository under `packages/` and are released separately.
 ## Supported range
 
 Jalali -61/01/01 to 3177/10/11, which is Gregorian 560-03-20 to 3798-12-31.
+In the Shahanshahi numbering that is 1119/01/01 to 4357/10/11.
 Every constructor, `parse`, and the arithmetic methods throw outside that range.
 
 ## Migrating

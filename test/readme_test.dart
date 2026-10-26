@@ -92,6 +92,18 @@ void main() {
     expect(date.format("'Q' Q"), 'Q 1');
   });
 
+  test('Shahanshahi years', () {
+    final date = PersianDate(1405, 1, 4);
+    expect(date.shahanshahiYear, 2585);
+    expect(date.format('d MMMM yyyy', era: JalaliEra.shahanshahi),
+        '4 فروردین 2585');
+    expect(date.toString(era: JalaliEra.shahanshahi), '2585/01/04');
+    expect('${PersianDate.parse('2585/01/04', era: JalaliEra.shahanshahi)}',
+        '1405/01/04');
+    expect(date.format("yyyy 'شاهنشاهی'", era: JalaliEra.shahanshahi),
+        '2585 شاهنشاهی');
+  });
+
   test('JSON', () {
     final date = PersianDate(1403, 1, 4);
     expect(jsonEncode({'date': date}), '{"date":"1403-01-04"}');

@@ -4,7 +4,8 @@
 ///
 /// The main type is the immutable [PersianDate]. [PersianDateRange] holds an
 /// inclusive range of days, [toPersianDigits] and [toLatinDigits] convert
-/// digits, and `DateTime.toPersianDate()` converts a [DateTime].
+/// digits, [JalaliEra] picks Solar Hijri or Shahanshahi year numbers for
+/// text, and `DateTime.toPersianDate()` converts a [DateTime].
 ///
 /// ```dart
 /// final date = PersianDate.fromGregorian(2021, 3, 21);
@@ -16,9 +17,11 @@
 library jalali_date;
 
 import 'src/digits.dart';
+import 'src/era.dart';
 import 'src/jalali_calc.dart';
 
 export 'src/digits.dart';
+export 'src/era.dart';
 export 'src/persian_date_range.dart';
 
 /// An immutable Jalali (Persian) calendar date.
@@ -136,20 +139,33 @@ class PersianDate implements Comparable<PersianDate> {
   /// [PersianDate.withTime]; without one it is date-only like
   /// [PersianDate.new].
   ///
+  /// The year is read in [era], so with [JalaliEra.shahanshahi] `2585/01/01`
+  /// is Solar Hijri 1405/01/01.
+  ///
   /// Throws [FormatException] when [input] does not match or is not a valid
   /// date, like [DateTime.parse].
-  static PersianDate parse(String input) {
+  static PersianDate parse(String input,
+      {JalaliEra era = JalaliEra.solarHijri}) {
     final match = _parsePattern.firstMatch(toLatinDigits(input));
     if (match == null) {
       throw FormatException('Invalid Jalali date', input);
     }
     int part(int group) => int.parse(match.group(group)!);
+    final firstYear = -61 + era.offset;
+    final lastYear = 3177 + era.offset;
+    if (part(1) < firstYear || part(1) > lastYear) {
+      throw FormatException(
+        'Invalid Jalali date: year must be in $firstYear to $lastYear',
+        input,
+      );
+    }
+    final year = part(1) - era.offset;
     try {
       if (match.group(5) == null) {
-        return PersianDate(part(1), part(3), part(4));
+        return PersianDate(year, part(3), part(4));
       }
       return PersianDate.withTime(
-        part(1),
+        year,
         part(3),
         part(4),
         part(5),
@@ -169,9 +185,10 @@ class PersianDate implements Comparable<PersianDate> {
   factory PersianDate.fromJson(String json) => parse(json);
 
   /// Like [parse], but returns null instead of throwing.
-  static PersianDate? tryParse(String input) {
+  static PersianDate? tryParse(String input,
+      {JalaliEra era = JalaliEra.solarHijri}) {
     try {
-      return parse(input);
+      return parse(input, era: era);
     } on FormatException {
       return null;
     }
@@ -289,6 +306,10 @@ class PersianDate implements Comparable<PersianDate> {
   /// Second of the minute, 0 to 59. Throws [StateError] when [hasTime] is
   /// false.
   int get second => _time.second;
+
+  /// [year] in the Shahanshahi (Imperial) numbering, [year] plus 1180, so
+  /// 1405 is 2585. See [JalaliEra].
+  int get shahanshahiYear => year + JalaliEra.shahanshahi.offset;
 
   /// Whether [year] is a Jalali leap year, with 30 days in Esfand.
   bool get isLeapYear => isLeapJalaliYear(year);
@@ -560,7 +581,8 @@ class PersianDate implements Comparable<PersianDate> {
   /// [StateError] when [showTime] is true but this instance was created from
   /// a Jalali date and therefore carries no time of day.
   ///
-  /// With [persianDigits], the digits are written as ۰ to ۹.
+  /// With [persianDigits], the digits are written as ۰ to ۹. The year is
+  /// numbered in [era], Solar Hijri by default.
   @override
   String toString({
     bool showDate = true,
@@ -569,6 +591,7 @@ class PersianDate implements Comparable<PersianDate> {
     bool showMinute = true,
     bool showSecond = true,
     bool persianDigits = false,
+    JalaliEra era = JalaliEra.solarHijri,
   }) {
     if (!showDate && !showTime) {
       throw ArgumentError('At least one of showDate or showTime must be true.');
@@ -580,7 +603,7 @@ class PersianDate implements Comparable<PersianDate> {
     }
     final parts = <String>[];
     if (showDate) {
-      parts.add('$year/${_twoDigits(month)}/${_twoDigits(day)}');
+      parts.add('${year + era.offset}/${_twoDigits(month)}/${_twoDigits(day)}');
     }
     if (showTime) {
       final dateTime = _dateTime;
@@ -647,7 +670,14 @@ class PersianDate implements Comparable<PersianDate> {
   ///
   /// With [persianDigits], numbers produced by tokens are written as ۰ to ۹;
   /// literal text in [pattern] is copied unchanged.
-  String format(String pattern, {bool persianDigits = false}) {
+  ///
+  /// `yyyy` and `yy` number the year in [era], Solar Hijri by default:
+  /// `format('yyyy', era: JalaliEra.shahanshahi)` gives `2585` for 1405.
+  String format(
+    String pattern, {
+    bool persianDigits = false,
+    JalaliEra era = JalaliEra.solarHijri,
+  }) {
     final out = StringBuffer();
     var i = 0;
     while (i < pattern.length) {
@@ -664,7 +694,7 @@ class PersianDate implements Comparable<PersianDate> {
         i++;
         continue;
       }
-      final value = _formatToken(token);
+      final value = _formatToken(token, year + era.offset);
       out.write(persianDigits ? toPersianDigits(value) : value);
       i += token.length;
     }
@@ -692,13 +722,13 @@ class PersianDate implements Comparable<PersianDate> {
     return i;
   }
 
-  String _formatToken(String token) {
+  String _formatToken(String token, int eraYear) {
     switch (token) {
       case 'yyyy':
-        final digits = year.abs().toString().padLeft(4, '0');
-        return year < 0 ? '-$digits' : digits;
+        final digits = eraYear.abs().toString().padLeft(4, '0');
+        return eraYear < 0 ? '-$digits' : digits;
       case 'yy':
-        return _twoDigits(year.remainder(100).abs());
+        return _twoDigits(eraYear.remainder(100).abs());
       case 'MMMM':
         return monthName;
       case 'MM':
