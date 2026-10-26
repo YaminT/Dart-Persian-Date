@@ -22,13 +22,13 @@ jobs:
     env:
       DOCS_SSH_HOST: ${{ secrets.DOCS_SSH_HOST }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
       - run: dart pub get
       - run: dart doc --output doc/api
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: api-docs
           path: doc/api
