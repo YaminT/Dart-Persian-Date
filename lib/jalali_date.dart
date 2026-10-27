@@ -23,6 +23,7 @@ import 'src/era.dart';
 import 'src/hijri.dart';
 import 'src/jalali_calc.dart';
 import 'src/pattern.dart';
+import 'src/relative_time.dart';
 
 export 'src/digits.dart';
 export 'src/era.dart';
@@ -304,6 +305,62 @@ class PersianDate implements Comparable<PersianDate> {
   /// [differenceInMonths]: someone born on 1370/12/30 is 30 years old on
   /// 1400/12/29, the last day of 1400.
   int differenceInYears(PersianDate other) => differenceInMonths(other) ~/ 12;
+
+  /// This date relative to [other] in Persian, for example `دیروز`,
+  /// `3 روز پیش`, or `ماه آینده`.
+  ///
+  /// When both dates have a time of day and are less than a day apart, the
+  /// result is in hours, minutes, or `اکنون` under a minute. Otherwise it
+  /// counts calendar days: days up to a week, then weeks while less than a
+  /// whole month has passed, then months and years as
+  /// [differenceInMonths] and [differenceInYears] count them.
+  ///
+  /// The words follow CLDR, as `Intl.RelativeTimeFormat('fa')` writes them
+  /// in browsers. With [numeric], a number is always written (`1 روز پیش`
+  /// instead of `دیروز`); with [persianDigits], it is written as ۰ to ۹.
+  String relativeTo(
+    PersianDate other, {
+    bool numeric = false,
+    bool persianDigits = false,
+  }) {
+    final text = _relativeTo(other, numeric);
+    return persianDigits ? toPersianDigits(text) : text;
+  }
+
+  /// This date relative to [PersianDate.now], see [relativeTo].
+  String fromNow({bool numeric = false, bool persianDigits = false}) =>
+      relativeTo(PersianDate.now(),
+          numeric: numeric, persianDigits: persianDigits);
+
+  String _relativeTo(PersianDate other, bool numeric) {
+    final time = _dateTime, otherTime = other._dateTime;
+    if (time != null && otherTime != null) {
+      final elapsed = time.difference(otherTime);
+      if (elapsed.inDays == 0) {
+        if (elapsed.inHours != 0) {
+          return RelativeUnit.hour.format(elapsed.inHours, numeric: numeric);
+        }
+        if (elapsed.inMinutes != 0) {
+          return RelativeUnit.minute
+              .format(elapsed.inMinutes, numeric: numeric);
+        }
+        return RelativeUnit.second.format(
+          numeric ? elapsed.inSeconds : 0,
+          numeric: numeric,
+        );
+      }
+    }
+    final days = differenceInDays(other);
+    if (days.abs() < 7) return RelativeUnit.day.format(days, numeric: numeric);
+    final months = differenceInMonths(other);
+    if (months == 0) {
+      return RelativeUnit.week.format(days ~/ 7, numeric: numeric);
+    }
+    if (months.abs() < 12) {
+      return RelativeUnit.month.format(months, numeric: numeric);
+    }
+    return RelativeUnit.year.format(months ~/ 12, numeric: numeric);
+  }
 
   /// Whether this instance carries a time of day.
   ///
