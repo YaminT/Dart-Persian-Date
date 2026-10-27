@@ -1,3 +1,9 @@
+## 0.5.0
+
+### Added
+
+* `isWorkingDay`, `addWorkingDays`, and `workingDaysBetween` on `OfflineHolidaySource`: working days around official holidays and a weekend you choose, Friday by default.
+
 ## 0.4.1
 
 ### Fixed

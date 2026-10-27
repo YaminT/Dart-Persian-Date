@@ -20,7 +20,7 @@ Each file is one target with its reason, the API it adds, and when it is done.
 
 | # | Target | Kind |
 | - | ------ | ---- |
-| 09 | [Working days](09-working-days.md) | Feature |
+| 09 | [Working days](09-working-days.md) | Feature, done |
 
 ## npm
 

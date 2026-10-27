@@ -57,6 +57,21 @@ void main() {
 `dayOf`, `holidaysOf`, and `hijriDate` are synchronous; `day` and `month` implement `HolidaySource` like the online sources.
 `holidaysOf` lists the official holidays of a Jalali year without Fridays; `dayOf` and `day` count Fridays unless you pass `fridaysAreHolidays: false`.
 
+### Working days
+
+```dart
+final offline = OfflineHolidaySource();
+print(offline.isWorkingDay(PersianDate(1405, 1, 13))); // false, Nature Day
+print(offline.addWorkingDays(PersianDate(1405, 1, 1), 3)); // 1405/01/08
+print(offline.workingDaysBetween(PersianDate(1405, 1, 1), PersianDate(1405, 1, 8))); // 3
+print(offline.isWorkingDay(PersianDate(1405, 1, 20),
+    weekend: {DateTime.thursday, DateTime.friday})); // false, a Thursday
+```
+
+A working day is neither an official holiday nor a day of `weekend`, which is Friday unless you pass other `DateTime` weekdays.
+`addWorkingDays` moves to the nth working day after a date, or before it for negative numbers.
+`workingDaysBetween` counts the working days passed going from the first date to the second, counting the second but not the first, so it undoes `addWorkingDays`.
+
 ### How Hijri holidays are calculated
 
 A Hijri month starts the day after the evening its new crescent is first seen in Iran.
