@@ -1,3 +1,10 @@
+## 1.2.2
+
+### Fixed
+
+* Hijri month starts from Muharram 1265 (1848) to Shawwal 1448 (Jalali 1405/12) follow Iran's official record, the calendars of the University of Tehran's Calendar Center from 1423 on and historical sources before that, as collected by the qamari project. 282 months start a day earlier or later than before, 17 of them since 1423, for example Jumada al-Ula 1448 now starts on 1405/07/20 as on the published calendar instead of 1405/07/21. `HijriDate` values in those months move by a day.
+* Where the crescent was seen on a different day than the calendar had predicted, the day it was seen counts: Ramadan 1432 starts on 1390/05/11.
+
 ## 1.2.1
 
 ### Changed

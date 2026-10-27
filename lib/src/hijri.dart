@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import '../jalali_date.dart';
+import 'hijri_table.dart';
 import 'jalali_calc.dart';
 import 'pattern.dart';
 
@@ -187,13 +188,19 @@ class HijriDate implements Comparable<HijriDate> {
 
 /// The lunar Hijri calendar as Iran's official calendar uses it.
 ///
-/// A month starts the day after the evening its new crescent can be seen in
-/// Iran. The crescent is predicted from the positions of the Sun and the Moon
-/// (truncated Meeus series) with Yallop's criterion at the optical-aid limit
-/// (q >= -0.232), checked at several Iranian cities. Months where the
-/// published calendar differs from the prediction are fixed by a table
-/// checked against time.ir for Jalali 1387 to 1406, and [monthStarts] add
-/// announcements of your own.
+/// Month starts from Muharram 1265 (1848) to Shawwal 1448 (Jalali 1405/12)
+/// come from the official record: the calendars of the University of
+/// Tehran's Calendar Center from 1423 (2002) on, and historical sources
+/// before that, as collected by the qamari project. Where the crescent was
+/// seen on a different day than the calendar had predicted, the day it was
+/// seen counts.
+///
+/// Later months start the day after the evening their new crescent can be
+/// seen in Iran. The crescent is predicted from the positions of the Sun and
+/// the Moon (truncated Meeus series) with Yallop's criterion at the
+/// optical-aid limit (q >= -0.232), checked at several Iranian cities, and a
+/// few months already published on time.ir are fixed by a table.
+/// [monthStarts] add announcements of your own.
 ///
 /// The prediction is a calculation, not an announcement: a month can still
 /// move by a day when the crescent is or is not actually seen.
@@ -281,8 +288,12 @@ class IranianHijri {
   /// [year].
   int _start(int year, int month) {
     final index = year * 12 + month - 1;
-    return _corrections[index] ??
-        _officialStarts[index] ??
+    final corrected = _corrections[index];
+    if (corrected != null) return corrected;
+    if (index >= officialFirstMonth && index <= officialLastMonth) {
+      return _recordedStarts[index - officialFirstMonth];
+    }
+    return _publishedStarts[index] ??
         _predicted.putIfAbsent(
           index,
           () => _predictedStart((index / 12).floor(), index % 12 + 1),
@@ -348,8 +359,11 @@ class IranianHijri {
   ];
 
   // Yallop's q at or above this counts as seen (zone D, optical aid). With
-  // it, 109 of the 112 months with a holiday from 1395 to 1406 match the
-  // published calendar.
+  // it, the prediction alone matches 242 of the 259 months the University of
+  // Tehran published from 1427 to 1448. Most misses are months the calendar
+  // started although the crescent could not be seen from Iran (q about -0.3
+  // to -0.6) while it waited after other evenings with the same q, so no
+  // threshold separates them.
   static const _qVisible = -0.232;
 
   static bool _visibleInIran(int jdn) {
@@ -536,22 +550,25 @@ class IranianHijri {
     );
   }
 
-  /// Hijri month starts in Iran's official calendar that the prediction
-  /// misses, keyed by `year * 12 + month - 1`, as Julian day numbers.
-  ///
-  /// Checked for every month with a holiday from Rajab 1429 to the end of
-  /// Jalali 1406, against the calendar published on time.ir.
-  static const Map<int, int> _officialStarts = {
-    1429 * 12 + 6: 2454652, // Rajab 1429
-    1429 * 12 + 9: 2454741, // Shawwal 1429
-    1430 * 12 + 9: 2455095, // Shawwal 1430
-    1432 * 12 + 6: 2455717, // Rajab 1432
-    1432 * 12 + 8: 2455775, // Ramadan 1432
-    1433 * 12 + 9: 2456159, // Shawwal 1433
-    1435 * 12 + 1: 2456631, // Safar 1435
-    1435 * 12 + 7: 2456808, // Shaban 1435
-    1436 * 12 + 2: 2457016, // Rabi al-Awwal 1436
-    1443 * 12 + 9: 2459703, // Shawwal 1443
+  /// Julian day numbers of the month starts in the official record, from
+  /// [officialFirstMonth] to [officialLastMonth].
+  static final List<int> _recordedStarts = () {
+    final starts = [officialFirstDay];
+    for (var i = 0; i < officialLastMonth - officialFirstMonth; i++) {
+      final year = i ~/ 12;
+      final mask = int.parse(
+        officialMonthLengths.substring(year * 3, year * 3 + 3),
+        radix: 16,
+      );
+      starts.add(starts.last + (mask >> i % 12 & 1 == 1 ? 30 : 29));
+    }
+    return starts;
+  }();
+
+  /// Month starts after the official record that the prediction misses,
+  /// keyed by `year * 12 + month - 1`, as Julian day numbers, from the
+  /// calendar time.ir publishes for Jalali 1406.
+  static const Map<int, int> _publishedStarts = {
     1449 * 12 + 0: 2461564, // Muharram 1449
     1449 * 12 + 8: 2461800, // Ramadan 1449
   };

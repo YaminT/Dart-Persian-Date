@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:jalali_date/jalali_date.dart';
 import 'package:test/test.dart';
 
@@ -30,6 +32,29 @@ void main() {
         expect(eid.toPersianDate(), PersianDate.parse(text), reason: text);
         expect(PersianDate.parse(text).toHijri(), eid, reason: text);
       }
+    });
+
+    test('every month start matches the official record', () {
+      final line = RegExp(r'^\*?(\d+)/(\d+) (\d+)-(\d+)-(\d+)');
+      var months = 0;
+      for (final path in [
+        'test/data/qamari_consolidated.txt',
+        'test/data/hijri_supplement.txt',
+      ]) {
+        for (final text in File(path).readAsLinesSync()) {
+          final m = line.firstMatch(text);
+          if (m == null) continue;
+          final start =
+              DateTime(int.parse(m[3]!), int.parse(m[4]!), int.parse(m[5]!));
+          final date = HijriDate(int.parse(m[1]!), int.parse(m[2]!), 1);
+          expect(date.toDateTime(), start, reason: text);
+          expect(start.toHijriDate(), date, reason: text);
+          months++;
+        }
+      }
+      expect(months, 2206);
+      // Jumada al-Ula 1448 on the University of Tehran's calendar for 1405.
+      expect(HijriDate(1448, 5, 1).toPersianDate(), PersianDate(1405, 7, 20));
     });
 
     test('round trip and day sequence, 1300 to 1500', () {

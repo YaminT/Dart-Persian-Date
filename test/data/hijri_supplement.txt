@@ -1,0 +1,19 @@
+# Iran's official lunar Hijri month starts after the end of
+# qamari_consolidated.txt, in the same format: Hijri year/month, Gregorian
+# first day, and the source after #.
+#
+# ut-calendar-1405: the official calendar for Jalali 1405 published by the
+# Calendar Center of the Institute of Geophysics, University of Tehran,
+# https://calendar.ut.ac.ir/documents/2139738/7092644/Calendar-1405.pdf
+1447/11 2026-04-19 # ut-calendar-1405
+1447/12 2026-05-18 # ut-calendar-1405
+1448/1 2026-06-16 # ut-calendar-1405
+1448/2 2026-07-16 # ut-calendar-1405
+1448/3 2026-08-14 # ut-calendar-1405
+1448/4 2026-09-13 # ut-calendar-1405
+1448/5 2026-10-12 # ut-calendar-1405
+1448/6 2026-11-11 # ut-calendar-1405
+1448/7 2026-12-11 # ut-calendar-1405
+1448/8 2027-01-10 # ut-calendar-1405
+1448/9 2027-02-08 # ut-calendar-1405
+1448/10 2027-03-10 # ut-calendar-1405

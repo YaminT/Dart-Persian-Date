@@ -61,9 +61,8 @@ void main() {
 
 A Hijri month starts the day after the evening its new crescent is first seen in Iran.
 The package computes the new moon and the positions of the Sun and the Moon at sunset (Meeus, Astronomical Algorithms), and checks Yallop's visibility criterion at eight cities across Iran, counting a crescent visible with optical aid (q >= -0.232).
-Months where the calendar published by the Iranian calendar authority differs are corrected from a table.
-Checked against the published calendar for every month with a holiday from 1387 to 1406, the result matches all of them.
-Without the table, the calculation alone matches 174 of these 186 months, and 109 of the 112 from 1395 on.
+Up to Shawwal 1448 (Jalali 1405/12) the month starts come from the official record instead, the calendars of the University of Tehran's Calendar Center and historical sources before them, so past and current holidays match the published calendar.
+Against the 259 months published from 1427 to 1448, the calculation alone gets 242 right and is one day off for 17.
 The calendar itself lives in `jalali_date` as `HijriDate` and `IranianHijri`; use it directly when you need Hijri dates without holidays.
 
 What the offline mode cannot do:

@@ -68,8 +68,8 @@ class OfficialHoliday {
 ///
 /// Jalali holidays such as Nowruz are fixed. Hijri holidays such as Ashura
 /// follow the lunar calendar: their dates are calculated from the predicted
-/// first sighting of the new crescent in Iran, and corrected where the
-/// published calendar differs (checked from 1387 to 1406). Fridays are
+/// first sighting of the new crescent in Iran, and taken from the official
+/// record up to Jalali 1405 (see `IranianHijri`). Fridays are
 /// holidays when `fridaysAreHolidays` is true.
 ///
 /// Know that:
