@@ -65,6 +65,12 @@ void main() {
         30);
   });
 
+  test('moment of Nowruz', () {
+    final moment = PersianDate.nowruzMoment(1405);
+    expect(moment.toString(), '2026-03-20 14:45:55.823Z');
+    expect(moment.add(const Duration(hours: 3, minutes: 30)).hour, 18);
+  });
+
   test('relative time', () {
     final today = PersianDate(1405, 8, 5);
     expect(PersianDate(1405, 8, 4).relativeTo(today), 'دیروز');

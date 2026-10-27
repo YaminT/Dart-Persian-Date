@@ -78,6 +78,7 @@ Everything is exported from `package:jalali_date/jalali_date.dart`: the immutabl
 | `hasTime`, `hour`, `minute`, `second` | Time of day; the getters throw `StateError` when `hasTime` is false |
 | `dayPeriod` | Part of the day: `نیمه‌شب`, `بامداد`, `صبح`, `ظهر`, `عصر`, `شب` |
 | `isLeapYear`, `daysInYear` | Whether Esfand has 30 days; 365 or 366 |
+| `PersianDate.nowruzMoment(int year)` | The March equinox that begins the year (سال تحویل), in UTC |
 | `monthLength` | 31, 30, or 29 |
 | `dayOfYear` | 1 to 366 |
 | `quarter`, `season`, `seasonName` | 1 to 4, and `بهار` to `زمستان` |
@@ -266,6 +267,19 @@ print(date.seasonName); // پاییز
 print(date.lastDayOfMonth); // 1403/07/30
 print(date.lastDayOfYear); // 1403/12/30
 ```
+
+### Moment of Nowruz
+
+```dart
+final moment = PersianDate.nowruzMoment(1405);
+print(moment); // 2026-03-20 14:45:55.823Z
+print(moment.add(const Duration(hours: 3, minutes: 30))); // 18:15:55 in Iran
+```
+
+`nowruzMoment` gives the March equinox that begins a Jalali year, the moment of سال تحویل, in UTC; add 3 hours and 30 minutes for Iran Standard Time.
+It is calculated from the VSOP87 theory of the Earth's orbit and the observed rotation of the Earth (Delta T, 1974 to 2026).
+For 2003 to 2026 every result is within 4 seconds of the moment the University of Tehran announced, and from 1981 within 3 seconds of NASA JPL's DE440 ephemeris; years far from today are less certain, because the Earth's rotation cannot be predicted.
+The year begins on the day of the equinox when it comes before noon in Iran, and on the next day otherwise; from 1200 to 1699 that rule gives exactly the package's 1 Farvardin.
 
 ### Persian names
 
