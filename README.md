@@ -64,6 +64,7 @@ Everything is exported from `package:jalali_date/jalali_date.dart`: the immutabl
 | `PersianDate.fromGregorian(int year, int month, int day)` | From Gregorian values; overflow rolls over like `DateTime` |
 | `PersianDate.fromGregorianString(String)` | From an ISO 8601 Gregorian string, via `DateTime.parse` |
 | `PersianDate.parse(String, {era})`, `tryParse(String, {era})` | From a Jalali string such as `1403/01/01` or `۱۴۰۳-۱-۱ ۱۴:۳۰` |
+| `PersianDate.parseFormat(String, String pattern, {era})`, `tryParseFormat(...)` | From text written with a `format` pattern, such as `۴ فروردین ۱۴۰۳` |
 | `PersianDate.fromJson(String)`, `toJson()` | `yyyy-MM-dd` for storage and `jsonEncode` |
 | `PersianDate.min`, `PersianDate.max` | First and last supported day |
 | `copyWith({year, month, day})` | Copy with fields replaced; validates, never clamps |
@@ -184,6 +185,22 @@ PersianDate.tryParse('1400/12/30'); // null, 1400 is not a leap year
 `parse` accepts `/` or `-` between the parts (the same one twice), one- or two-digit month and day, an optional `HH:mm` or `HH:mm:ss`, and ASCII, Persian, or Arabic-Indic digits.
 It throws `FormatException` for anything else, including invalid dates; `tryParse` returns null instead.
 The output of `toString`, `toJson`, and `format('yyyy/MM/dd')` parses back.
+
+### Parsing with a pattern
+
+```dart
+PersianDate.parseFormat('۴ فروردین ۱۴۰۳', 'd MMMM yyyy'); // 1403/01/04
+PersianDate.parseFormat('1403 Farvardin 4', 'yyyy MMMM d'); // 1403/01/04
+PersianDate.parseFormat('سه شنبه ۷ فروردين ۱۴۰۳', 'EEEE d MMMM yyyy'); // 1403/01/07
+PersianDate.parseFormat('1403/01/04 2:30 ب.ظ', 'yyyy/MM/dd h:mm a'); // with 14:30
+PersianDate.tryParseFormat('دوشنبه ۷ فروردین ۱۴۰۳', 'EEEE d MMMM yyyy'); // null, 7 Farvardin 1403 is a Tuesday
+```
+
+`parseFormat` reads text written with the `format` tokens and quoting, so `PersianDate.parseFormat(date.format(pattern), pattern)` gives the date back.
+The pattern needs `yyyy`, a month, and a day; `MM` and `dd` need two digits, while `M` and `d` take one or two.
+`MMMM` reads Persian, Latin, and Dari month names, and `EEEE`, `E`, `D`, `Q`, `a`, and `B` must agree with the date.
+Persian and Arabic-Indic digits, Arabic `ي` and `ك`, and `سه‌شنبه` written with a space, a zero-width non-joiner, or neither are all accepted.
+It throws `FormatException` for text that does not match and `ArgumentError` for a pattern that cannot identify a date; `tryParseFormat` returns null for the first.
 
 ### Date arithmetic
 
@@ -489,7 +506,8 @@ These live in this repository under `packages/` and are released separately.
 - Check `hasTime` before reading `hour`, `minute`, `second`, or using time tokens.
 - `addMonths` clamps; it never rolls over like `DateTime`.
 - Esfand has 30 days only in leap years; use `monthLength` instead of hard-coding 29.
-- `parse` already accepts Persian digits; use `persianDigits: true` or `toPersianDigits` for output.
+- `parse` and `parseFormat` already accept Persian digits; use `persianDigits: true` or `toPersianDigits` for output.
+- To read text such as `۴ فروردین ۱۴۰۳`, use `PersianDate.parseFormat(text, 'd MMMM yyyy')`, not a hand-written regex.
 
 ## Supported range
 

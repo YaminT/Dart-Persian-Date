@@ -22,6 +22,7 @@ import 'src/digits.dart';
 import 'src/era.dart';
 import 'src/hijri.dart';
 import 'src/jalali_calc.dart';
+import 'src/parse_format.dart';
 import 'src/pattern.dart';
 import 'src/relative_time.dart';
 import 'src/words.dart';
@@ -201,6 +202,54 @@ class PersianDate implements Comparable<PersianDate> {
       return null;
     }
   }
+
+  /// Parses [input] written with [pattern], the reverse of [format]:
+  /// `PersianDate.parseFormat('۴ فروردین ۱۴۰۳', 'd MMMM yyyy')` is
+  /// 1403/01/04.
+  ///
+  /// [pattern] uses the tokens and quoting of [format] and needs `yyyy`, a
+  /// month (`MMMM`, `MM`, or `M`), and a day (`dd` or `d`). `MM`, `dd`, `HH`,
+  /// `hh`, `mm`, and `ss` need two digits, so `yyyyMMdd` works; `M`, `d`,
+  /// `H`, `h`, `m`, and `s` take one or two. `MMMM` reads Persian, Latin
+  /// (in any case), and Dari month names, and `EEEE` Persian and Latin
+  /// weekday names. `h` and `hh` need `a` or `B` (or `BBBB`) for the half of
+  /// the day. `EEEE`, `E`, `D`, `Q`, `a`, and `B` must agree with the date
+  /// and hour, or parsing fails.
+  ///
+  /// Digits may be ASCII, Persian, or Arabic-Indic. Arabic `ي`, `ى`, `ك`,
+  /// and `ة` count as their Persian letters, and a zero-width non-joiner,
+  /// a space, or nothing between the parts of a name all match, so
+  /// `سه‌شنبه`, `سه شنبه`, and `سهشنبه` are the same. Spaces in [pattern]
+  /// and around its literal text match any run of spaces.
+  ///
+  /// With an hour token the result is a local [PersianDate.withTime];
+  /// otherwise it is date-only. The year is read in [era], like [parse].
+  ///
+  /// Throws [FormatException] when [input] does not match or is not a valid
+  /// date, and [ArgumentError] when [pattern] lacks a part of the date, has
+  /// `h` without `a` or `B`, or has `yy`, `yw`, or `dw`, which cannot be
+  /// read back.
+  static PersianDate parseFormat(
+    String input,
+    String pattern, {
+    JalaliEra era = JalaliEra.solarHijri,
+  }) {
+    final date = parseWithPattern(input, pattern, era);
+    if (date == null) {
+      throw FormatException('Does not match the pattern $pattern', input);
+    }
+    return date;
+  }
+
+  /// Like [parseFormat], but returns null instead of throwing
+  /// [FormatException]. Still throws [ArgumentError] for a [pattern] that
+  /// cannot be parsed.
+  static PersianDate? tryParseFormat(
+    String input,
+    String pattern, {
+    JalaliEra era = JalaliEra.solarHijri,
+  }) =>
+      parseWithPattern(input, pattern, era);
 
   /// Date-only instance for Julian day number [jdn], range-checked.
   factory PersianDate._fromJulianDay(int jdn) {

@@ -2,6 +2,7 @@
 
 ### Added
 
+* `PersianDate.parseFormat` and `tryParseFormat`: read text written with a `format` pattern, such as `۴ فروردین ۱۴۰۳` with `d MMMM yyyy`, including Persian, Latin, and Dari month names, weekday names, `a` and `B` for 12-hour times, Persian and Arabic-Indic digits, and Arabic letters.
 * `dayPeriod` and the `B` and `BBBB` format tokens: the part of the day in Persian (`صبح`, `ظهر`, `عصر`, `شب`) on CLDR's hours, so `format('h B')` gives `4 عصر`.
 * `toPersianWords`: numbers in Persian words, `هزار و چهارصد و سه`, and ordinals with `ordinal: true`, `بیست و چهارم`.
 * `format` tokens `dw` (ordinal day in words) and `yw` (year in words, following `era`) on `PersianDate` and `HijriDate`: `format('EEEE dw MMMM yw')` gives `چهارشنبه بیست و چهارم مرداد هزار و چهارصد و سه`.
