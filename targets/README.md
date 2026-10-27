@@ -14,7 +14,7 @@ Each file is one target with its reason, the API it adds, and when it is done.
 | 05 | [Day periods](05-day-periods.md) | Feature, done |
 | 06 | [Differences in months and years](06-month-year-difference.md) | Feature, done |
 | 07 | [Moment of Nowruz](07-nowruz-moment.md) | Feature, done |
-| 08 | [Leap years after 1500](08-leap-year-notes.md) | Documentation |
+| 08 | [Leap years after 1500](08-leap-year-notes.md) | Documentation, done |
 
 ## iranian_holidays (Dart)
 
