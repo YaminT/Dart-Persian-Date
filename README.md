@@ -340,9 +340,10 @@ print(HijriDate(1447, 12, 1).monthLength); // 29
 ```
 
 `HijriDate` is the lunar Hijri (قمری) date as Iran's official calendar counts it.
-A month starts the day after the evening its new crescent can be seen in Iran.
-The start is calculated from the positions of the Sun and the Moon with Yallop's visibility criterion at eight Iranian cities, and a built-in table corrects the months where the published calendar differs.
-Checked against the calendar published on time.ir for every month with a holiday from Jalali 1387 to 1406, the result matches all of them.
+From Muharram 1265 (1848) to Shawwal 1448 (Jalali 1405/12), every month starts on the day of the official record: the calendars of the University of Tehran's Calendar Center from 1423 (2002) on, and newspapers and other historical sources before that, as collected by [qamari](https://github.com/roozbehp/qamari).
+Where the crescent was seen on a different day than the calendar had predicted, the day it was seen counts.
+Later months start the day after the evening their new crescent can be seen in Iran, calculated from the positions of the Sun and the Moon with Yallop's visibility criterion at eight Iranian cities.
+Against the 259 months published from 1427 to 1448, that calculation alone gets 242 right and is one day off for 17.
 
 What it cannot do:
 
@@ -359,7 +360,7 @@ What it cannot do:
   ```
 
 - Only Iran's calendar is implemented; Umm al-Qura and the tabular Islamic calendar are not.
-- Far from today the dates are a calculation only, with nothing to check them against.
+- After the official record the dates are a calculation; expect about one month in fifteen to be a day off until the next calendar is published.
 
 | Member | Description |
 | ------ | ----------- |

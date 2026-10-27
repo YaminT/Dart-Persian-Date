@@ -27,3 +27,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+## qamari
+
+The official lunar Hijri month starts in `test/data/qamari_consolidated.txt`, and the table generated from them in `lib/src/hijri_table.dart`, come from qamari (https://github.com/roozbehp/qamari) by Roozbeh Pournader and contributors, dedicated to the public domain under CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/).
