@@ -393,6 +393,21 @@ class PersianDate implements Comparable<PersianDate> {
   /// false.
   int get second => _time.second;
 
+  /// Persian name of the part of the day, as CLDR divides it for `fa`:
+  /// نیمه‌شب from 0:00, بامداد from 1:00, صبح from 4:00, ظهر from 12:00,
+  /// عصر from 13:00, and شب from 19:00.
+  ///
+  /// The same as the `B` token of [format]. Throws [StateError] when
+  /// [hasTime] is false.
+  String get dayPeriod => switch (_time.hour) {
+        0 => 'نیمه‌شب',
+        < 4 => 'بامداد',
+        < 12 => 'صبح',
+        12 => 'ظهر',
+        < 19 => 'عصر',
+        _ => 'شب',
+      };
+
   /// [year] in the Shahanshahi (Imperial) numbering, [year] plus 1180, so
   /// 1405 is 2585. See [JalaliEra].
   int get shahanshahiYear => year + JalaliEra.shahanshahi.offset;
@@ -723,7 +738,7 @@ class PersianDate implements Comparable<PersianDate> {
   static const _tokens = [
     'yyyy', 'yy', 'yw', 'MMMM', 'MM', 'M', 'dd', 'dw', 'd', 'EEEE', 'E', //
     'D', 'Q',
-    'HH', 'H', 'hh', 'h', 'mm', 'm', 'ss', 's', 'a',
+    'HH', 'H', 'hh', 'h', 'mm', 'm', 'ss', 's', 'a', 'BBBB', 'B',
   ];
 
   /// Formats this date with [pattern].
@@ -752,6 +767,8 @@ class PersianDate implements Comparable<PersianDate> {
   /// | `ss`   | second, two digits                       |
   /// | `s`    | second                                   |
   /// | `a`    | ق.ظ before noon, ب.ظ from noon           |
+  /// | `B`    | [dayPeriod], for example صبح or عصر      |
+  /// | `BBBB` | [dayPeriod], with بعدازظهر for ظهر       |
   ///
   /// The longest token wins, and every other character is copied as is.
   /// Text in single quotes is copied without looking for tokens, and two
@@ -811,6 +828,8 @@ class PersianDate implements Comparable<PersianDate> {
     }
     final time = _time;
     if (token == 'a') return time.hour < 12 ? 'ق.ظ' : 'ب.ظ';
+    if (token == 'B') return dayPeriod;
+    if (token == 'BBBB') return time.hour == 12 ? 'بعدازظهر' : dayPeriod;
     final value = switch (token[0]) {
       'H' => time.hour,
       'h' => time.hour % 12 == 0 ? 12 : time.hour % 12,

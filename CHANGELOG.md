@@ -2,6 +2,7 @@
 
 ### Added
 
+* `dayPeriod` and the `B` and `BBBB` format tokens: the part of the day in Persian (`صبح`, `ظهر`, `عصر`, `شب`) on CLDR's hours, so `format('h B')` gives `4 عصر`.
 * `toPersianWords`: numbers in Persian words, `هزار و چهارصد و سه`, and ordinals with `ordinal: true`, `بیست و چهارم`.
 * `format` tokens `dw` (ordinal day in words) and `yw` (year in words, following `era`) on `PersianDate` and `HijriDate`: `format('EEEE dw MMMM yw')` gives `چهارشنبه بیست و چهارم مرداد هزار و چهارصد و سه`.
 * `relativeTo` and `fromNow`: relative time in Persian such as `دیروز`, `3 روز پیش`, and `ماه آینده`, with the CLDR words that `Intl.RelativeTimeFormat('fa')` uses, `numeric`, and `persianDigits`.
@@ -9,7 +10,7 @@
 
 ### Changed
 
-* `dw` and `yw` are now `format` tokens. Quote them to keep them literal: `format("'dw'")`.
+* `dw`, `yw`, `B`, and `BBBB` are now `format` tokens. Quote them to keep them literal: `format("'B'")`.
 
 ## 1.2.2
 

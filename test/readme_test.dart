@@ -114,6 +114,7 @@ void main() {
     expect(date.format('d MMMM yyyy'), '1 فروردین 1400');
     expect(date.format('EEEE yyyy/MM/dd'), 'یکشنبه 1400/01/01');
     expect(date.format('h:mm a'), '2:05 ب.ظ');
+    expect(date.format('h:mm B'), '2:05 عصر');
     expect(date.format("'ساعت' HH:mm"), 'ساعت 14:05');
     expect(date.format("d 'o''clock'"), "1 o'clock");
     expect(date.format("'Q' Q"), 'Q 1');
