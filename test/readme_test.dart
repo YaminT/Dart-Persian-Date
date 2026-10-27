@@ -48,6 +48,21 @@ void main() {
         30);
   });
 
+  test('relative time', () {
+    final today = PersianDate(1405, 8, 5);
+    expect(PersianDate(1405, 8, 4).relativeTo(today), 'دیروز');
+    expect(PersianDate(1405, 8, 2).relativeTo(today), '3 روز پیش');
+    expect(PersianDate(1405, 9, 5).relativeTo(today), 'ماه آینده');
+    expect(PersianDate(1403, 8, 5).relativeTo(today, persianDigits: true),
+        '۲ سال پیش');
+    expect(
+        PersianDate(1405, 8, 4).relativeTo(today, numeric: true), '1 روز پیش');
+    expect(
+        PersianDate.withTime(1405, 8, 5, 9, 30)
+            .relativeTo(PersianDate.withTime(1405, 8, 5, 12, 0)),
+        '2 ساعت پیش');
+  });
+
   test('comparing dates', () {
     final last = PersianDate(1399, 12, 30);
     final first = PersianDate(1400, 1, 1);

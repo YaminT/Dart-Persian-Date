@@ -2,6 +2,7 @@
 
 ### Added
 
+* `relativeTo` and `fromNow`: relative time in Persian such as `دیروز`, `3 روز پیش`, and `ماه آینده`, with the CLDR words that `Intl.RelativeTimeFormat('fa')` uses, `numeric`, and `persianDigits`.
 * `differenceInMonths` and `differenceInYears`: whole Jalali months and years between two dates, counted like `addMonths`, so `date.addMonths(n).differenceInMonths(date) == n`.
 
 ## 1.2.2

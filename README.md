@@ -111,6 +111,7 @@ Everything is exported from `package:jalali_date/jalali_date.dart`: the immutabl
 | `toString({showDate, showTime, showHour, showMinute, showSecond, persianDigits, era})` | `yyyy/MM/dd`, optionally with `HH:mm:ss` |
 | `format(String pattern, {persianDigits, era})` | Custom string, tokens listed below |
 | `toPersianDigits(String)`, `toLatinDigits(String)` | Digit conversion, Persian and Arabic-Indic input |
+| `relativeTo(PersianDate, {numeric, persianDigits})`, `fromNow(...)` | `دیروز`, `3 روز پیش`, `ماه آینده` |
 
 Supported range: Jalali -61/01/01 to 3177/10/11, which is Gregorian 560-03-20 to 3798-12-31.
 
@@ -215,6 +216,24 @@ print(first.isSameMonth(PersianDate(1400, 1, 31))); // true
 
 Equality and ordering use the day only; the time of day is ignored.
 Lists of `PersianDate` sort with `list.sort()`.
+
+### Relative time
+
+```dart
+final today = PersianDate(1405, 8, 5);
+print(PersianDate(1405, 8, 4).relativeTo(today)); // دیروز
+print(PersianDate(1405, 8, 2).relativeTo(today)); // 3 روز پیش
+print(PersianDate(1405, 9, 5).relativeTo(today)); // ماه آینده
+print(PersianDate(1403, 8, 5).relativeTo(today, persianDigits: true)); // ۲ سال پیش
+print(PersianDate(1405, 8, 4).relativeTo(today, numeric: true)); // 1 روز پیش
+print(PersianDate.withTime(1405, 8, 5, 9, 30)
+    .relativeTo(PersianDate.withTime(1405, 8, 5, 12, 0))); // 2 ساعت پیش
+```
+
+`relativeTo` counts calendar days: days up to a week, weeks while less than a whole month has passed, then months and years counted like `differenceInMonths`.
+When both dates have a time of day and are less than a day apart, it uses hours and minutes instead, and `اکنون` under a minute.
+`fromNow()` is `relativeTo(PersianDate.now())`.
+The words are the CLDR ones that `Intl.RelativeTimeFormat('fa')` uses in browsers; `numeric: true` always writes a number.
 
 ### Leap years, months, and seasons
 
