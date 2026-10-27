@@ -41,6 +41,11 @@ void main() {
     expect('${PersianDate(1403, 12, 30).addYears(1)}', '1404/12/29');
     expect(
         PersianDate(1404, 1, 1).differenceInDays(PersianDate(1403, 1, 1)), 366);
+    expect(PersianDate(1405, 8, 5).differenceInMonths(PersianDate(1405, 2, 20)),
+        5);
+    expect(
+        PersianDate(1400, 12, 29).differenceInYears(PersianDate(1370, 12, 30)),
+        30);
   });
 
   test('comparing dates', () {

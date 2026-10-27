@@ -12,7 +12,7 @@ Each file is one target with its reason, the API it adds, and when it is done.
 | 03 | [Relative time in Persian](03-relative-time.md) | Feature |
 | 04 | [Numbers and dates in Persian words](04-persian-words.md) | Feature |
 | 05 | [Day periods](05-day-periods.md) | Feature |
-| 06 | [Differences in months and years](06-month-year-difference.md) | Feature |
+| 06 | [Differences in months and years](06-month-year-difference.md) | Feature, done |
 | 07 | [Moment of Nowruz](07-nowruz-moment.md) | Feature |
 | 08 | [Leap years after 1500](08-leap-year-notes.md) | Documentation |
 

@@ -283,6 +283,28 @@ class PersianDate implements Comparable<PersianDate> {
   /// `date.addDays(n).differenceInDays(date) == n`.
   int differenceInDays(PersianDate other) => _julianDay - other._julianDay;
 
+  /// Number of whole Jalali months from [other] to this date, ignoring the
+  /// time of day.
+  ///
+  /// Positive when this date is later. A month is complete when
+  /// `other.addMonths(n)` is not past this date, and [addMonths] clamps the
+  /// day, so `date.addMonths(n).differenceInMonths(date) == n`: 1403/06/31 to
+  /// 1403/07/30 is one month.
+  int differenceInMonths(PersianDate other) {
+    if (this < other) return -other.differenceInMonths(this);
+    final months = (year - other.year) * 12 + month - other.month;
+    final day = other.day < monthLength ? other.day : monthLength;
+    return day > this.day ? months - 1 : months;
+  }
+
+  /// Number of whole Jalali years from [other] to this date, ignoring the
+  /// time of day.
+  ///
+  /// Positive when this date is later, and counted like
+  /// [differenceInMonths]: someone born on 1370/12/30 is 30 years old on
+  /// 1400/12/29, the last day of 1400.
+  int differenceInYears(PersianDate other) => differenceInMonths(other) ~/ 12;
+
   /// Whether this instance carries a time of day.
   ///
   /// True for dates created from a [DateTime] ([PersianDate.now],
