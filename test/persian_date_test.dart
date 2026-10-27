@@ -260,6 +260,57 @@ void main() {
       final morning = PersianDate.fromDateTime(DateTime(2021, 3, 22, 0, 1));
       expect(morning.differenceInDays(evening), 1);
     });
+
+    test('differenceInMonths and differenceInYears', () {
+      final birth = PersianDate(1370, 12, 30);
+      expect(PersianDate(1400, 12, 29).differenceInYears(birth), 30);
+      expect(PersianDate(1400, 12, 28).differenceInYears(birth), 29);
+      expect(PersianDate(1405, 8, 5).differenceInYears(birth), 34);
+      expect(
+          PersianDate(1405, 8, 5).differenceInMonths(PersianDate(1405, 2, 20)),
+          5);
+      expect(
+          PersianDate(1405, 2, 20).differenceInMonths(PersianDate(1405, 8, 5)),
+          -5);
+      expect(
+          PersianDate(1403, 7, 30).differenceInMonths(PersianDate(1403, 6, 31)),
+          1);
+      expect(
+          PersianDate(1403, 6, 31).differenceInMonths(PersianDate(1403, 7, 30)),
+          -1);
+      expect(
+          PersianDate(1403, 2, 30).differenceInMonths(PersianDate(1403, 1, 31)),
+          0);
+      expect(
+          PersianDate(1403, 1, 4).differenceInMonths(PersianDate(1403, 1, 4)),
+          0);
+      expect(PersianDate(1404, 1, 3).differenceInYears(PersianDate(1403, 1, 4)),
+          0);
+      expect(PersianDate(1403, 1, 5).differenceInYears(PersianDate(1404, 1, 4)),
+          0);
+      expect(PersianDate(1403, 1, 4).differenceInYears(PersianDate(1404, 1, 4)),
+          -1);
+      expect(PersianDate.max.differenceInMonths(PersianDate(3177, 9, 30)), 0);
+      final evening = PersianDate.withTime(1403, 1, 31, 23, 59);
+      expect(PersianDate(1403, 2, 31).differenceInMonths(evening), 1);
+    });
+
+    test('differenceInMonths agrees with addMonths', () {
+      var start = PersianDate(1398, 11, 27);
+      for (var i = 0; i < 120; i++, start = start.addDays(3)) {
+        for (final n in [-25, -12, -2, -1, 0, 1, 2, 12, 25]) {
+          final end = start.addMonths(n);
+          final reason = '$start + $n';
+          expect(end.differenceInMonths(start), n, reason: reason);
+          expect(end.differenceInYears(start), n ~/ 12, reason: reason);
+          // The day before is one month short when moving forward.
+          if (n > 0) {
+            expect(end.addDays(-1).differenceInMonths(start), n - 1,
+                reason: reason);
+          }
+        }
+      }
+    });
   });
 
   group('comparison helpers', () {

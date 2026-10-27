@@ -1,3 +1,9 @@
+## 1.3.0
+
+### Added
+
+* `differenceInMonths` and `differenceInYears`: whole Jalali months and years between two dates, counted like `addMonths`, so `date.addMonths(n).differenceInMonths(date) == n`.
+
 ## 1.2.2
 
 ### Fixed

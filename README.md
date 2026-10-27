@@ -94,6 +94,7 @@ Everything is exported from `package:jalali_date/jalali_date.dart`: the immutabl
 | ------ | ----------- |
 | `addDays(int)`, `addMonths(int)`, `addYears(int)` | Negative values go back; months and years clamp the day |
 | `differenceInDays(PersianDate)` | Whole days from the other date to this one |
+| `differenceInMonths(PersianDate)`, `differenceInYears(PersianDate)` | Whole Jalali months or years, counted like `addMonths` |
 | `firstDayOfMonth`, `lastDayOfMonth`, `firstDayOfYear`, `lastDayOfYear` | Anchors |
 | `startOfWeek()`, `endOfWeek()` | Saturday and Friday of the same week |
 | `daysUntil(PersianDate end, {inclusive})` | Lazy sequence of days |
@@ -189,11 +190,17 @@ print(date.addDays(1)); // 1403/07/01
 print(date.addMonths(1)); // 1403/07/30, the day is clamped
 print(PersianDate(1403, 12, 30).addYears(1)); // 1404/12/29
 print(PersianDate(1404, 1, 1).differenceInDays(PersianDate(1403, 1, 1))); // 366
+print(PersianDate(1405, 8, 5).differenceInMonths(PersianDate(1405, 2, 20))); // 5
+print(PersianDate(1400, 12, 29).differenceInYears(PersianDate(1370, 12, 30))); // 30
 ```
 
 `addMonths` and `addYears` clamp the day to the length of the target month.
 This differs from `DateTime`, which rolls over into the next month.
 Results are date-only and throw `ArgumentError` outside the supported range.
+
+`differenceInMonths` and `differenceInYears` count whole months and years the same way, so `date.addMonths(n).differenceInMonths(date)` is always `n`.
+Someone born on 1370/12/30 is 30 on 1400/12/29, the last day of a year without 30 Esfand.
+Temporal's `persian` calendar counts that as 29 years, 11 months, and 29 days, because the day of the month is still smaller.
 
 ### Comparing dates
 
