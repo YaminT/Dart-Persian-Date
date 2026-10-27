@@ -2,6 +2,7 @@
 
 [![pub package](https://img.shields.io/pub/v/jalali_date.svg)](https://pub.dev/packages/jalali_date)
 [![CI](https://github.com/YaminT/Dart-Persian-Date/actions/workflows/ci.yml/badge.svg)](https://github.com/YaminT/Dart-Persian-Date/actions/workflows/ci.yml)
+[![docs](https://img.shields.io/badge/docs-nodets.com%2Fjalali-0b7a75)](https://nodets.com/jalali/)
 
 Persian (Jalali, Shamsi) calendar for Dart.
 It converts between Gregorian and Jalali dates in both directions, knows leap years and month lengths, does date arithmetic, parses and formats dates with Persian month and weekday names and Persian digits, and has everything a date picker needs: Saturday-first weeks, month anchors, day ranges, and bounds.
