@@ -102,6 +102,13 @@ void main() {
     expect(toLatinDigits('۱۴۰۳'), '1403');
   });
 
+  test('Persian words', () {
+    expect(PersianDate(1403, 5, 24).format('EEEE dw MMMM yw'),
+        'چهارشنبه بیست و چهارم مرداد هزار و چهارصد و سه');
+    expect(toPersianWords(1403), 'هزار و چهارصد و سه');
+    expect(toPersianWords(30, ordinal: true), 'سی‌ام');
+  });
+
   test('format', () {
     final date = PersianDate.withTime(1400, 1, 1, 14, 5);
     expect(date.format('d MMMM yyyy'), '1 فروردین 1400');

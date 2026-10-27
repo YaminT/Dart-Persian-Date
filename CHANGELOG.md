@@ -2,8 +2,14 @@
 
 ### Added
 
+* `toPersianWords`: numbers in Persian words, `هزار و چهارصد و سه`, and ordinals with `ordinal: true`, `بیست و چهارم`.
+* `format` tokens `dw` (ordinal day in words) and `yw` (year in words, following `era`) on `PersianDate` and `HijriDate`: `format('EEEE dw MMMM yw')` gives `چهارشنبه بیست و چهارم مرداد هزار و چهارصد و سه`.
 * `relativeTo` and `fromNow`: relative time in Persian such as `دیروز`, `3 روز پیش`, and `ماه آینده`, with the CLDR words that `Intl.RelativeTimeFormat('fa')` uses, `numeric`, and `persianDigits`.
 * `differenceInMonths` and `differenceInYears`: whole Jalali months and years between two dates, counted like `addMonths`, so `date.addMonths(n).differenceInMonths(date) == n`.
+
+### Changed
+
+* `dw` and `yw` are now `format` tokens. Quote them to keep them literal: `format("'dw'")`.
 
 ## 1.2.2
 

@@ -50,7 +50,7 @@ import 'package:jalali_date/jalali_date.dart';
 
 ## Quick reference
 
-Everything is exported from `package:jalali_date/jalali_date.dart`: the immutable `PersianDate` class, the `PersianDateRange` class, the `HijriDate` and `IranianHijri` classes, the `toPersianDigits` and `toLatinDigits` functions, the `JalaliEra` enum, and the `DateTime.toPersianDate()` and `DateTime.toHijriDate()` extensions.
+Everything is exported from `package:jalali_date/jalali_date.dart`: the immutable `PersianDate` class, the `PersianDateRange` class, the `HijriDate` and `IranianHijri` classes, the `toPersianDigits`, `toLatinDigits`, and `toPersianWords` functions, the `JalaliEra` enum, and the `DateTime.toPersianDate()` and `DateTime.toHijriDate()` extensions.
 
 ### Creating
 
@@ -111,6 +111,7 @@ Everything is exported from `package:jalali_date/jalali_date.dart`: the immutabl
 | `toString({showDate, showTime, showHour, showMinute, showSecond, persianDigits, era})` | `yyyy/MM/dd`, optionally with `HH:mm:ss` |
 | `format(String pattern, {persianDigits, era})` | Custom string, tokens listed below |
 | `toPersianDigits(String)`, `toLatinDigits(String)` | Digit conversion, Persian and Arabic-Indic input |
+| `toPersianWords(int, {ordinal})` | `هزار و چهارصد و سه`, `بیست و چهارم` |
 | `relativeTo(PersianDate, {numeric, persianDigits})`, `fromNow(...)` | `دیروز`, `3 روز پیش`, `ماه آینده` |
 
 Supported range: Jalali -61/01/01 to 3177/10/11, which is Gregorian 560-03-20 to 3798-12-31.
@@ -275,6 +276,18 @@ print(toPersianDigits('12:30')); // ۱۲:۳۰
 print(toLatinDigits('۱۴۰۳')); // 1403
 ```
 
+### Persian words
+
+```dart
+print(PersianDate(1403, 5, 24).format('EEEE dw MMMM yw'));
+// چهارشنبه بیست و چهارم مرداد هزار و چهارصد و سه
+print(toPersianWords(1403)); // هزار و چهارصد و سه
+print(toPersianWords(30, ordinal: true)); // سی‌ام
+```
+
+The `dw` token writes the day as an ordinal and `yw` writes the year, as formal letters and contracts do.
+`toPersianWords` works for any `int`: a leading thousand is `هزار` rather than `یک هزار`, ordinals are `یکم`, `سوم`, and `سی‌ام`, and negative numbers start with `منفی`.
+
 ### toString
 
 ```dart
@@ -303,11 +316,13 @@ print(date.format("'ساعت' HH:mm")); // ساعت 14:05
 | ------ | ---------------------------------- |
 | `yyyy` | year, at least four digits         |
 | `yy`   | last two digits of the year        |
+| `yw`   | year in Persian words              |
 | `MMMM` | Persian month name                 |
 | `MM`   | month, two digits                  |
 | `M`    | month                              |
 | `dd`   | day, two digits                    |
 | `d`    | day                                |
+| `dw`   | ordinal day in Persian words       |
 | `EEEE` | Persian weekday name               |
 | `E`    | one-letter Persian weekday name    |
 | `D`    | day of the year                    |
@@ -399,7 +414,7 @@ What it cannot do:
 | `weekday`, `weekdayName`, `weekdayNameShort` | ISO weekday and Persian names, like `PersianDate` |
 | `toPersianDate()`, `toDateTime()` | Jalali date, and local midnight of the day |
 | `==`, `compareTo`, `<`, `<=`, `>`, `>=`, `isBefore`, `isAfter` | By year, month, and day |
-| `format(String pattern, {persianDigits})` | Tokens `yyyy`, `yy`, `MMMM`, `MM`, `M`, `dd`, `d`, `EEEE`, `E`, quoting like `PersianDate.format` |
+| `format(String pattern, {persianDigits})` | Tokens `yyyy`, `yy`, `yw`, `MMMM`, `MM`, `M`, `dd`, `dw`, `d`, `EEEE`, `E`, quoting like `PersianDate.format` |
 | `toString()` | `day monthName year`, for example `10 محرم 1448` |
 | `HijriDate.min`, `HijriDate.max` | The Hijri dates of `PersianDate.min` and `PersianDate.max` |
 | `IranianHijri.official` | The calendar every `HijriDate` conversion uses |
@@ -476,6 +491,10 @@ In the Shahanshahi numbering that is 1119/01/01 to 4357/10/11, and in the lunar 
 Every constructor, `parse`, and the arithmetic methods throw outside that range.
 
 ## Migrating
+
+### From 1.2.x
+
+- `dw` and `yw` are now `format` tokens; quote them to keep them literal: `format("'dw'")`.
 
 ### From 1.0.x
 

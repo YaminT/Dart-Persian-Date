@@ -142,7 +142,7 @@ class HijriDate implements Comparable<HijriDate> {
   bool operator >=(HijriDate other) => compareTo(other) >= 0;
 
   static const _tokens = [
-    'yyyy', 'yy', 'MMMM', 'MM', 'M', 'dd', 'd', 'EEEE', 'E', //
+    'yyyy', 'yy', 'yw', 'MMMM', 'MM', 'M', 'dd', 'dw', 'd', 'EEEE', 'E', //
   ];
 
   /// Formats this date with [pattern].
@@ -151,11 +151,13 @@ class HijriDate implements Comparable<HijriDate> {
   /// | ------ | ------------------------------- |
   /// | `yyyy` | year, at least four digits      |
   /// | `yy`   | last two digits of the year     |
+  /// | `yw`   | year in Persian words           |
   /// | `MMMM` | Persian month name              |
   /// | `MM`   | month, two digits               |
   /// | `M`    | month                           |
   /// | `dd`   | day, two digits                 |
   /// | `d`    | day                             |
+  /// | `dw`   | ordinal day in Persian words    |
   /// | `EEEE` | Persian weekday name            |
   /// | `E`    | one-letter Persian weekday name |
   ///
@@ -172,10 +174,12 @@ class HijriDate implements Comparable<HijriDate> {
   String _formatToken(String token) => switch (token) {
         'yyyy' => fourDigitYear(year),
         'yy' => twoDigits(year.remainder(100).abs()),
+        'yw' => toPersianWords(year),
         'MMMM' => monthName,
         'MM' => twoDigits(month),
         'M' => '$month',
         'dd' => twoDigits(day),
+        'dw' => toPersianWords(day, ordinal: true),
         'd' => '$day',
         'EEEE' => weekdayName,
         _ => weekdayNameShort,
