@@ -1,3 +1,11 @@
+## 0.4.0
+
+### Breaking
+
+* `OfficialHoliday.iran` names the holidays in religiously neutral wording instead of the official text, so `OfflineHolidaySource` descriptions change.
+  Honorifics are dropped, "رحلت" is "درگذشت", Shia Imams are named by their place among the Shia Imams, and the state holidays describe the event: `عاشورای حسینی` is now `عاشورا`, `پیروزی انقلاب اسلامی` is now `سالروز انقلاب ۱۳۵۷`.
+  Pass your own `holidays` list to keep the official text. Online sources are unchanged.
+
 ## 0.3.0
 
 ### Breaking

@@ -9,7 +9,7 @@
 /// ```dart
 /// final offline = OfflineHolidaySource();
 /// print(offline.dayOf(PersianDate(1405, 4, 4)).holidays.first.description);
-/// // عاشورای حسینی
+/// // عاشورا
 ///
 /// final source = CachedHolidaySource(HolidayApiIrSource());
 /// final day = await source.day(PersianDate(1403, 1, 1));

@@ -6,7 +6,8 @@ import 'holiday_source.dart';
 
 /// One official holiday of Iran, on a fixed Jalali or Hijri date.
 class OfficialHoliday {
-  /// Text of the holiday, as the official calendar writes it.
+  /// Name of the holiday in Persian, in religiously neutral wording rather
+  /// than the official text: no honorifics or religious titles.
   final String description;
 
   /// Whether the date is on the lunar Hijri calendar.
@@ -28,34 +29,34 @@ class OfficialHoliday {
 
   /// The 26 official holidays of Iran, besides Fridays.
   static const List<OfficialHoliday> iran = [
-    OfficialHoliday.jalali(1, 1, 'جشن نوروز/جشن سال نو'),
-    OfficialHoliday.jalali(1, 2, 'عیدنوروز'),
-    OfficialHoliday.jalali(1, 3, 'عیدنوروز'),
-    OfficialHoliday.jalali(1, 4, 'عیدنوروز'),
-    OfficialHoliday.jalali(1, 12, 'روز جمهوری اسلامی'),
-    OfficialHoliday.jalali(1, 13, 'جشن سیزده به در'),
-    OfficialHoliday.jalali(3, 14, 'رحلت حضرت امام خمینی'),
-    OfficialHoliday.jalali(3, 15, 'قیام 15 خرداد'),
-    OfficialHoliday.jalali(11, 22, 'پیروزی انقلاب اسلامی'),
-    OfficialHoliday.jalali(12, 29, 'روز ملی شدن صنعت نفت ایران'),
-    OfficialHoliday.hijri(1, 9, 'تاسوعای حسینی'),
-    OfficialHoliday.hijri(1, 10, 'عاشورای حسینی'),
-    OfficialHoliday.hijri(2, 20, 'اربعین حسینی'),
-    OfficialHoliday.hijri(2, 28, 'رحلت رسول اکرم؛شهادت امام حسن مجتبی (ع)'),
-    OfficialHoliday.hijri(2, 29, 'شهادت امام رضا (ع)'),
-    OfficialHoliday.hijri(3, 8, 'شهادت امام حسن عسکری (ع)'),
-    OfficialHoliday.hijri(3, 17, 'میلاد رسول اکرم و امام جعفر صادق (ع)'),
-    OfficialHoliday.hijri(6, 3, 'شهادت حضرت فاطمه زهرا (س)'),
-    OfficialHoliday.hijri(7, 13, 'ولادت امام علی (ع) و روز پدر'),
-    OfficialHoliday.hijri(7, 27, 'مبعث رسول اکرم (ص)'),
+    OfficialHoliday.jalali(1, 1, 'جشن نوروز'),
+    OfficialHoliday.jalali(1, 2, 'تعطیلات نوروز'),
+    OfficialHoliday.jalali(1, 3, 'تعطیلات نوروز'),
+    OfficialHoliday.jalali(1, 4, 'تعطیلات نوروز'),
+    OfficialHoliday.jalali(1, 12, 'سالروز همه‌پرسی ۱۳۵۸'),
+    OfficialHoliday.jalali(1, 13, 'سیزده‌به‌در'),
+    OfficialHoliday.jalali(3, 14, 'سالروز درگذشت روح‌الله خمینی'),
+    OfficialHoliday.jalali(3, 15, 'سالروز رویدادهای ۱۵ خرداد ۱۳۴۲'),
+    OfficialHoliday.jalali(11, 22, 'سالروز انقلاب ۱۳۵۷'),
+    OfficialHoliday.jalali(12, 29, 'روز ملی شدن صنعت نفت'),
+    OfficialHoliday.hijri(1, 9, 'تاسوعا'),
+    OfficialHoliday.hijri(1, 10, 'عاشورا'),
+    OfficialHoliday.hijri(2, 20, 'اربعین'),
     OfficialHoliday.hijri(
-        8, 15, 'ولادت حضرت قائم عجل الله تعالی فرجه و جشن نیمه شعبان'),
-    OfficialHoliday.hijri(9, 21, 'شهادت حضرت علی (ع)'),
-    OfficialHoliday.hijri(10, 1, 'عید سعید فطر'),
-    OfficialHoliday.hijri(10, 2, 'تعطیل به مناسبت عید سعید فطر'),
-    OfficialHoliday.hijri(10, 25, 'شهادت امام جعفر صادق (ع)'),
-    OfficialHoliday.hijri(12, 10, 'عید سعید قربان'),
-    OfficialHoliday.hijri(12, 18, 'عید سعید غدیر خم'),
+        2, 28, 'سالروز درگذشت پیامبر اسلام و شهادت امام دوم شیعیان'),
+    OfficialHoliday.hijri(2, 29, 'سالروز شهادت امام هشتم شیعیان'),
+    OfficialHoliday.hijri(3, 8, 'سالروز شهادت امام یازدهم شیعیان'),
+    OfficialHoliday.hijri(3, 17, 'زادروز پیامبر اسلام و امام ششم شیعیان'),
+    OfficialHoliday.hijri(6, 3, 'سالروز شهادت فاطمه، دختر پیامبر اسلام'),
+    OfficialHoliday.hijri(7, 13, 'زادروز امام اول شیعیان و روز پدر'),
+    OfficialHoliday.hijri(7, 27, 'عید مبعث'),
+    OfficialHoliday.hijri(8, 15, 'نیمه شعبان'),
+    OfficialHoliday.hijri(9, 21, 'سالروز شهادت امام اول شیعیان'),
+    OfficialHoliday.hijri(10, 1, 'عید فطر'),
+    OfficialHoliday.hijri(10, 2, 'تعطیلی عید فطر'),
+    OfficialHoliday.hijri(10, 25, 'سالروز شهادت امام ششم شیعیان'),
+    OfficialHoliday.hijri(12, 10, 'عید قربان'),
+    OfficialHoliday.hijri(12, 18, 'عید غدیر'),
   ];
 
   @override

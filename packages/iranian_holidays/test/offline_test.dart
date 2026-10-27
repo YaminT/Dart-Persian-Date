@@ -54,7 +54,7 @@ void main() {
       final day = source.dayOf(PersianDate.parse(text));
       expect(
         day.holidays.map((e) => e.description),
-        contains('عید سعید فطر'),
+        contains('عید فطر'),
         reason: text,
       );
     }
@@ -63,13 +63,12 @@ void main() {
   test('Hijri events carry the Hijri date', () {
     final ashura = source.dayOf(PersianDate(1405, 4, 4));
     expect(ashura.isHoliday, isTrue);
-    expect(ashura.events.single.description, 'عاشورای حسینی');
+    expect(ashura.events.single.description, 'عاشورا');
     expect(ashura.events.single.additionalDescription, '10 محرم 1448');
     expect(ashura.events.single.isReligious, isTrue);
 
     final nowruz = source.dayOf(PersianDate(1405, 1, 1));
-    expect(nowruz.events.map((e) => e.description),
-        ['جشن نوروز/جشن سال نو', 'عید سعید فطر']);
+    expect(nowruz.events.map((e) => e.description), ['جشن نوروز', 'عید فطر']);
     expect(nowruz.events.first.additionalDescription, '1 فروردین');
     expect(nowruz.events.first.isReligious, isFalse);
   });
@@ -77,7 +76,7 @@ void main() {
   test('Imam Reza is on 29 Safar even when Safar has 30 days', () {
     expect(source.hijriDate(PersianDate(1404, 6, 3)), HijriDate(1447, 3, 1));
     expect(source.dayOf(PersianDate(1404, 6, 1)).holidays.single.description,
-        'شهادت امام رضا (ع)');
+        'سالروز شهادت امام هشتم شیعیان');
     expect(source.dayOf(PersianDate(1404, 6, 2)).isHoliday, isFalse);
   });
 
@@ -136,14 +135,14 @@ void main() {
     expect(corrected.dayOf(PersianDate(1405, 4, 3)).isHoliday, isFalse);
     expect(
       corrected.dayOf(PersianDate(1405, 4, 4)).holidays.single.description,
-      'تاسوعای حسینی',
+      'تاسوعا',
     );
     expect(
       corrected
           .dayOf(PersianDate(1405, 4, 5))
           .holidays
           .map((e) => e.description),
-      contains('عاشورای حسینی'),
+      contains('عاشورا'),
     );
     expect(
         corrected.hijriDate(PersianDate(1405, 3, 27)), HijriDate(1448, 1, 1));
