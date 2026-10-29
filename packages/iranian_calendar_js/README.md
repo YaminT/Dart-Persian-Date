@@ -1,5 +1,7 @@
 # iranian-calendar
 
+[![npm](https://img.shields.io/npm/v/iranian-calendar.svg)](https://www.npmjs.com/package/iranian-calendar)
+
 Iran's official lunar Hijri (قمری) calendar and Iranian holidays for JavaScript and TypeScript, offline.
 
 - Hijri dates as Iran's official calendar counts them, which `Intl` and Temporal do not: their Islamic calendars put 1405/01/01 (2026-03-21) on 2 or 3 Shawwal 1447, while Iran's calendar has 1 Shawwal.
