@@ -53,6 +53,7 @@ import 'package:jalali_date/jalali_date.dart';
 ## Quick reference
 
 Everything is exported from `package:jalali_date/jalali_date.dart`: the immutable `PersianDate` class, the `PersianDateRange` class, the `HijriDate` and `IranianHijri` classes, the `toPersianDigits`, `toLatinDigits`, and `toPersianWords` functions, the `JalaliEra` enum, and the `DateTime.toPersianDate()` and `DateTime.toHijriDate()` extensions.
+Every class and member is described in the [API reference](https://nodets.com/jalali/api/).
 
 ### Creating
 
