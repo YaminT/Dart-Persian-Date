@@ -1,0 +1,51 @@
+{
+  "name": "iranian-calendar",
+  "version": "0.1.0",
+  "description": "Iran's official lunar Hijri calendar and Iranian holidays, offline: the published month starts from 1848 to today, a crescent-visibility prediction after them, and working days.",
+  "keywords": [
+    "hijri",
+    "islamic calendar",
+    "iran",
+    "holidays",
+    "jalali",
+    "persian calendar",
+    "shamsi",
+    "qamari",
+    "تقویم",
+    "تعطیلات"
+  ],
+  "homepage": "https://github.com/YaminT/Dart-Persian-Date/tree/master/packages/iranian_calendar_js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YaminT/Dart-Persian-Date.git",
+    "directory": "packages/iranian_calendar_js"
+  },
+  "bugs": "https://github.com/YaminT/Dart-Persian-Date/issues",
+  "license": "Apache-2.0",
+  "author": "Yamin Tashakkori",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "tsc -p tsconfig.json && node --test \"build/test/**/*.test.js\"",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "devDependencies": {
+    "@types/node": "22.18.0",
+    "temporal-polyfill": "1.0.6",
+    "typescript": "5.9.3"
+  }
+}

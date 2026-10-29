@@ -1,0 +1,16 @@
+name: npm_fixtures
+description: Writes the test data the npm package checks against the Dart packages.
+publish_to: none
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  iranian_holidays:
+    path: ../../packages/iranian_holidays
+  jalali_date:
+    path: ../..
+
+dependency_overrides:
+  jalali_date:
+    path: ../..

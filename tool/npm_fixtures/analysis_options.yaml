@@ -1,0 +1,4 @@
+# A standalone tool with its own pubspec; it does not use the root lints.
+analyzer:
+  language:
+    strict-casts: true

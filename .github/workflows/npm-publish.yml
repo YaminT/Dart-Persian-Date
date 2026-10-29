@@ -1,0 +1,39 @@
+name: Publish iranian-calendar
+
+# Publishes packages/iranian_calendar_js to npm with provenance when a tag
+# such as iranian-calendar-v0.1.0 is pushed. The tag must match the version in
+# package.json.
+#
+# Authentication: npm trusted publishing (configure this repository and
+# workflow on the package's settings page on npmjs.com), or a granular access
+# token in the repository secret NPM_TOKEN.
+
+on:
+  push:
+    tags: ['iranian-calendar-v*']
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/iranian_calendar_js
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      # Trusted publishing needs npm 11.5.1 or later.
+      - run: npm install -g npm@11
+      - name: Check the tag matches package.json
+        run: test "iranian-calendar-v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
+      - run: npm ci
+      - run: npm test
+      - run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
