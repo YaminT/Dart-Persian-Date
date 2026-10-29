@@ -13,4 +13,6 @@ Documentation only.
 ## Change
 
 - A short "Leap years" note in the README under "Supported range": the rule, the years it is checked for, and that other software may differ from 1502, where the official rule is not yet decided.
-- A test pinning the leap years 1304 to 1498 to the University of Tehran list, so a future change in the algorithm cannot move them silently.
+- A test pinning the leap years 1304 to 1498, so a future change in the algorithm cannot move them silently.
+  The University of Tehran site describes the rule but publishes no list; the pinned years are the ones the equinox rule gives with `nowruzMoment` (target 07), which agrees with the package for every year from 1200 to 1699.
+- Found while doing it: the package makes 1502 a leap year and ICU makes 1503 one. The equinox of 2124 comes about 4 minutes after noon in Iran, within the uncertainty of Delta T that far ahead.

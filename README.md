@@ -529,6 +529,13 @@ Jalali -61/01/01 to 3177/10/11, which is Gregorian 560-03-20 to 3798-12-31.
 In the Shahanshahi numbering that is 1119/01/01 to 4357/10/11, and in the lunar Hijri calendar -64/10/05 to 3274/12/10.
 Every constructor, `parse`, and the arithmetic methods throw outside that range.
 
+### Leap years
+
+Leap years follow jalaali-js, and from 1200 to 1699 they agree with the official rule: the year begins on the day of the March equinox when it comes before noon in Iran, and on the next day otherwise (see `nowruzMoment`).
+ICU, which `Intl` in browsers and Node and Java's ICU4J use, and Python's persiantools give the same days from 1300 to 1500 but differ from 1502 on (Gregorian 2123), because they use a 33-year rule with a table of corrections.
+For 1502 and 1503 the difference is whether 1503 begins on 2124-03-20 or 2124-03-21; the equinox comes about 4 minutes after noon, closer than the Earth's rotation can be predicted a century ahead, so the official calendar for that year is not settled.
+The old 2820-year rule, still found in some code, is wrong as early as 1403 and 1404.
+
 ## Migrating
 
 ### From 1.2.x

@@ -12,6 +12,7 @@
 
 ### Changed
 
+* The README explains the leap-year rule and where other software differs, from 1502 on.
 * `dw`, `yw`, `B`, and `BBBB` are now `format` tokens. Quote them to keep them literal: `format("'B'")`.
 
 ## 1.2.2
