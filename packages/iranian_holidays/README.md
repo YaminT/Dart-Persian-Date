@@ -2,13 +2,13 @@
 
 [![pub package](https://img.shields.io/pub/v/iranian_holidays.svg)](https://pub.dev/packages/iranian_holidays)
 
-Iranian holidays and events for [jalali_date](https://pub.dev/packages/jalali_date) dates.
-تعطیلات و مناسبت‌های تقویم رسمی ایران برای تاریخ‌های `jalali_date`.
+Iranian holidays and events for [jalali_date](https://pub.dev/packages/jalali_date) dates, calculated offline on the device or fetched from an online source you choose.
+تعطیلات و مناسبت‌های تقویم رسمی ایران برای تاریخ‌های `jalali_date`، با محاسبه‌ی آفلاین روی دستگاه یا از یک منبع آنلاین به انتخاب شما.
 
 Two ways to get holidays, and you choose one explicitly:
 
 - **Offline**: `OfflineHolidaySource` calculates the official holidays on the device, with no network and no third party.
-  Religious holidays follow the lunar Hijri calendar; their dates come from the predicted first sighting of the new crescent in Iran.
+  Religious holidays follow the lunar Hijri calendar; their dates come from the official calendars up to Jalali 1405, and from the predicted first sighting of the new crescent in Iran after that.
 - **Online**: a holiday service such as holidayapi.ir, Calendarific, or Google Calendar, or one of your own.
   It follows announcements and lists every event of the calendar, not only days off.
 

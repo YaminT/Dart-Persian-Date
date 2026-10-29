@@ -8,10 +8,11 @@ Persian (Jalali, Shamsi) calendar for Dart.
 It converts between Gregorian and Jalali dates in both directions, knows leap years and month lengths, does date arithmetic, parses and formats dates with Persian month and weekday names and Persian digits, and has everything a date picker needs: Saturday-first weeks, month anchors, day ranges, and bounds.
 The conversion is a port of [jalaali-js](https://github.com/jalaali/jalaali-js), so century years and leap cycles are handled correctly.
 It also gives the lunar Hijri date as Iran's official calendar counts it, and writes and reads years in the Shahanshahi numbering when you ask for it.
+Iranian official holidays are in the companion package [iranian_holidays](https://pub.dev/packages/iranian_holidays): it calculates them offline on the device, the lunar Hijri ones included, or fetches them from an online source you choose (holidayapi.ir, Calendarific, or Google Calendar), and can fall back from online to offline.
 It is pure Dart with no dependencies and works on the Web, Flutter, and the Dart VM.
 
 Also known as the Shamsi, Khorshidi, Solar Hijri, Hijri Shamsi, or Iranian calendar.
-Keywords: تقویم شمسی، تقویم جلالی، تقویم خورشیدی، هجری شمسی، هجری قمری، سال شاهنشاهی، تاریخ فارسی، تبدیل تاریخ میلادی به شمسی و شمسی به میلادی.
+Keywords: تقویم شمسی، تقویم جلالی، تقویم خورشیدی، هجری شمسی، هجری قمری، سال شاهنشاهی، تعطیلات رسمی ایران، تاریخ فارسی، تبدیل تاریخ میلادی به شمسی و شمسی به میلادی.
 
 ## معرفی به فارسی
 
@@ -19,6 +20,7 @@ Keywords: تقویم شمسی، تقویم جلالی، تقویم خورشید�
 تاریخ میلادی را به شمسی و شمسی را به میلادی تبدیل می‌کند، سال کبیسه و طول ماه‌ها را می‌داند و تاریخ را با نام فارسی ماه‌ها و روزهای هفته و ارقام فارسی نمایش می‌دهد.
 جمع و تفریق روز و ماه و سال، خواندن تاریخ از متن (با ارقام فارسی یا لاتین)، هفته‌ی شنبه تا جمعه و بازه‌ی تاریخ را هم دارد و برای ساختن انتخابگر تاریخ (date picker) آماده است.
 تاریخ هجری قمری را مطابق تقویم رسمی ایران هم می‌دهد و در صورت نیاز سال را به شاهنشاهی می‌نویسد و می‌خواند.
+تعطیلات رسمی ایران در بسته‌ی همراه [iranian_holidays](https://pub.dev/packages/iranian_holidays) است: آن‌ها را بدون اینترنت روی خود دستگاه محاسبه می‌کند، تعطیلات قمری هم، یا از یک منبع آنلاین به انتخاب شما (holidayapi.ir، Calendarific یا Google Calendar) می‌گیرد، و اگر منبع آنلاین در دسترس نباشد می‌تواند به محاسبه‌ی آفلاین برگردد.
 الگوریتم تبدیل از [jalaali-js](https://github.com/jalaali/jalaali-js) گرفته شده و برای سال‌های قرن میلادی و چرخه‌های کبیسه درست کار می‌کند.
 به Flutter وابسته نیست و روی وب، Flutter و Dart VM اجرا می‌شود.
 
