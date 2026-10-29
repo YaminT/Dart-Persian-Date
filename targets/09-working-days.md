@@ -13,13 +13,13 @@ DNTPersianUtils.Core has `PersianBusinessDaysContext`, and persianist has `addJa
 ```dart
 final offline = OfflineHolidaySource();
 offline.addWorkingDays(PersianDate(1405, 1, 1), 3); // 1405/01/08: 1 to 4 Farvardin are off, 7 is a Friday
-offline.workingDaysBetween(PersianDate(1405, 1, 1), PersianDate(1405, 1, 31)); // count
+offline.workingDaysBetween(PersianDate(1405, 1, 1), PersianDate(1405, 1, 8)); // 3
 offline.isWorkingDay(PersianDate(1405, 1, 13)); // false, Nature Day
 ```
 
-- Synchronous on `OfflineHolidaySource`; the weekend is Friday by default, with an option for Thursday and Friday since many offices close on Thursdays.
+- Synchronous on `OfflineHolidaySource`; `weekend` is a set of `DateTime` weekdays, Friday by default, so offices that close on Thursdays pass `{DateTime.thursday, DateTime.friday}`.
 - Negative counts go back.
-- Ranges are inclusive at the start and exclusive at the end, and the doc comment says so.
+- `workingDaysBetween` counts the end but not the start, in both directions, so it undoes `addWorkingDays`; the target first said inclusive start and exclusive end, which breaks that when the start is a day off.
 
 ## Done when
 

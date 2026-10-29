@@ -133,6 +133,62 @@ class OfflineHolidaySource implements HolidaySource {
     ];
   }
 
+  /// Whether [date] is a working day: not one of [holidays] and not a day
+  /// of [weekend], given as [DateTime.weekday] values. The time of day is
+  /// ignored.
+  ///
+  /// [weekend] is Friday unless given, for example
+  /// `{DateTime.thursday, DateTime.friday}` for offices that close on
+  /// Thursdays; `fridaysAreHolidays` does not change it.
+  bool isWorkingDay(
+    PersianDate date, {
+    Set<int> weekend = const {DateTime.friday},
+  }) =>
+      !weekend.contains(date.weekday) &&
+      !_year(date.year)
+          .containsKey(PersianDate(date.year, date.month, date.day));
+
+  /// The [days]th working day after [date], or before it when [days] is
+  /// negative; [date] itself when [days] is 0. See [isWorkingDay] for
+  /// [weekend]. The result is date-only.
+  ///
+  /// Throws [ArgumentError] when [weekend] has every day of the week or the
+  /// result is outside the supported range.
+  PersianDate addWorkingDays(
+    PersianDate date,
+    int days, {
+    Set<int> weekend = const {DateTime.friday},
+  }) {
+    if (weekend.containsAll(const [1, 2, 3, 4, 5, 6, 7])) {
+      throw ArgumentError.value(weekend, 'weekend', 'Leaves no working day');
+    }
+    final step = days < 0 ? -1 : 1;
+    var result = PersianDate(date.year, date.month, date.day);
+    for (var left = days.abs(); left > 0;) {
+      result = result.addDays(step);
+      if (isWorkingDay(result, weekend: weekend)) left--;
+    }
+    return result;
+  }
+
+  /// Number of working days passed going from [start] to [end], counting
+  /// [end] but not [start], so `workingDaysBetween(d, addWorkingDays(d, n))`
+  /// is `n`. Negative when [end] is before [start]. See [isWorkingDay] for
+  /// [weekend].
+  int workingDaysBetween(
+    PersianDate start,
+    PersianDate end, {
+    Set<int> weekend = const {DateTime.friday},
+  }) {
+    if (start == end) return 0;
+    final backward = end < start;
+    final days = backward
+        ? end.daysUntil(start, inclusive: false)
+        : start.addDays(1).daysUntil(end);
+    final count = days.where((d) => isWorkingDay(d, weekend: weekend)).length;
+    return backward ? -count : count;
+  }
+
   @override
   Future<HolidayDay> day(PersianDate date) async => dayOf(date);
 
