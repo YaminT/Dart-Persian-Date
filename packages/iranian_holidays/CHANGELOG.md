@@ -4,11 +4,9 @@
 
 * `isWorkingDay`, `addWorkingDays`, and `workingDaysBetween` on `OfflineHolidaySource`: working days around official holidays and a weekend you choose, Friday by default.
 
-## 0.4.1
-
 ### Fixed
 
-* Hijri holidays up to Jalali 1405 follow Iran's official record, through `jalali_date` 1.2.2. Some holidays in past years move by a day, for example 21 Ramadan in 1381, 1386, and 1390, and Ashura in 1383.
+* Hijri holidays up to Jalali 1405 follow Iran's official record, through `jalali_date` 1.3.0. Some holidays in past years move by a day, for example 21 Ramadan in 1381, 1386, and 1390, and Ashura in 1383.
 
 ## 0.4.0
 

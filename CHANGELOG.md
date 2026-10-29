@@ -10,17 +10,15 @@
 * `relativeTo` and `fromNow`: relative time in Persian such as `دیروز`, `3 روز پیش`, and `ماه آینده`, with the CLDR words that `Intl.RelativeTimeFormat('fa')` uses, `numeric`, and `persianDigits`.
 * `differenceInMonths` and `differenceInYears`: whole Jalali months and years between two dates, counted like `addMonths`, so `date.addMonths(n).differenceInMonths(date) == n`.
 
-### Changed
-
-* The README explains the leap-year rule and where other software differs, from 1502 on.
-* `dw`, `yw`, `B`, and `BBBB` are now `format` tokens. Quote them to keep them literal: `format("'B'")`.
-
-## 1.2.2
-
 ### Fixed
 
 * Hijri month starts from Muharram 1265 (1848) to Shawwal 1448 (Jalali 1405/12) follow Iran's official record, the calendars of the University of Tehran's Calendar Center from 1423 on and historical sources before that, as collected by the qamari project. 282 months start a day earlier or later than before, 17 of them since 1423, for example Jumada al-Ula 1448 now starts on 1405/07/20 as on the published calendar instead of 1405/07/21. `HijriDate` values in those months move by a day.
 * Where the crescent was seen on a different day than the calendar had predicted, the day it was seen counts: Ramadan 1432 starts on 1390/05/11.
+
+### Changed
+
+* The README explains the leap-year rule and where other software differs, from 1502 on.
+* `dw`, `yw`, `B`, and `BBBB` are now `format` tokens. Quote them to keep them literal: `format("'B'")`.
 
 ## 1.2.1
 

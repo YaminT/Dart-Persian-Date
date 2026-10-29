@@ -2,7 +2,7 @@
 
 Bug fix in `lib/src/hijri.dart`.
 
-Status: done in jalali_date 1.2.2 and iranian_holidays 0.4.1.
+Status: done, released with jalali_date 1.3.0 and iranian_holidays 0.5.0.
 Step 3 changed nothing: no threshold or city set does better, because the published calendar sometimes starts a month when the crescent cannot be seen from Iran (Yallop q about -0.3 to -0.6) and waits after other evenings with the same q.
 Every month the prediction gets late from 1427 on matches Umm al-Qura instead; with too few cases to model, this stays a note.
 
