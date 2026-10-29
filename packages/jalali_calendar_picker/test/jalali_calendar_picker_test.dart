@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:jalali_date_picker/jalali_date_picker.dart';
+import 'package:jalali_calendar_picker/jalali_calendar_picker.dart';
 
 Widget _app(Widget child) => MaterialApp(
       home: Scaffold(body: SingleChildScrollView(child: child)),

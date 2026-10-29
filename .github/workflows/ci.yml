@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: packages/jalali_date_picker
+        working-directory: packages/jalali_calendar_picker
     steps:
       - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2

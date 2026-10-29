@@ -1,6 +1,6 @@
-# jalali_date_picker
+# jalali_calendar_picker
 
-[![pub package](https://img.shields.io/pub/v/jalali_date_picker.svg)](https://pub.dev/packages/jalali_date_picker)
+[![pub package](https://img.shields.io/pub/v/jalali_calendar_picker.svg)](https://pub.dev/packages/jalali_calendar_picker)
 
 Persian (Jalali, Shamsi) date picker and range picker for Flutter, built on [jalali_date](https://pub.dev/packages/jalali_date).
 انتخابگر تاریخ و بازه‌ی تاریخ شمسی برای Flutter.
@@ -15,16 +15,16 @@ Persian (Jalali, Shamsi) date picker and range picker for Flutter, built on [jal
 
 ## Installation
 
-`jalali_date_picker` is published on [pub.dev](https://pub.dev/packages/jalali_date_picker):
+`jalali_calendar_picker` is published on [pub.dev](https://pub.dev/packages/jalali_calendar_picker):
 
 ```sh
-flutter pub add jalali_date_picker
+flutter pub add jalali_calendar_picker
 ```
 
-`jalali_date_picker` re-exports `jalali_date`, so one import is enough:
+`jalali_calendar_picker` re-exports `jalali_date`, so one import is enough:
 
 ```dart
-import 'package:jalali_date_picker/jalali_date_picker.dart';
+import 'package:jalali_calendar_picker/jalali_calendar_picker.dart';
 ```
 
 ## Dialogs
