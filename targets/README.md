@@ -8,7 +8,7 @@ Each file is one target with its reason, the API it adds, and when it is done.
 | # | Target | Kind |
 | - | ------ | ---- |
 | 01 | [Official Hijri month table](01-official-hijri-table.md) | Bug fix, done |
-| 02 | [Parsing with a pattern and month names](02-pattern-parsing.md) | Feature |
+| 02 | [Parsing with a pattern and month names](02-pattern-parsing.md) | Feature, done |
 | 03 | [Relative time in Persian](03-relative-time.md) | Feature, done |
 | 04 | [Numbers and dates in Persian words](04-persian-words.md) | Feature, done |
 | 05 | [Day periods](05-day-periods.md) | Feature, done |

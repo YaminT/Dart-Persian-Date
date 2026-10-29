@@ -34,6 +34,23 @@ void main() {
     expect(PersianDate.parse(d.toJson()), d);
   });
 
+  test('parsing with a pattern', () {
+    expect(PersianDate.parseFormat('۴ فروردین ۱۴۰۳', 'd MMMM yyyy'),
+        PersianDate(1403, 1, 4));
+    expect(PersianDate.parseFormat('1403 Farvardin 4', 'yyyy MMMM d'),
+        PersianDate(1403, 1, 4));
+    expect(
+        PersianDate.parseFormat('سه شنبه ۷ فروردين ۱۴۰۳', 'EEEE d MMMM yyyy'),
+        PersianDate(1403, 1, 7));
+    expect(
+        PersianDate.parseFormat('1403/01/04 2:30 ب.ظ', 'yyyy/MM/dd h:mm a')
+            .hour,
+        14);
+    expect(
+        PersianDate.tryParseFormat('دوشنبه ۷ فروردین ۱۴۰۳', 'EEEE d MMMM yyyy'),
+        isNull);
+  });
+
   test('date arithmetic', () {
     final date = PersianDate(1403, 6, 31);
     expect('${date.addDays(1)}', '1403/07/01');
