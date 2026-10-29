@@ -75,6 +75,7 @@ Everything is exported from `package:jalali_date/jalali_date.dart`: the immutabl
 | `year`, `month`, `day` | Jalali year, month (1 to 12), and day of month |
 | `shahanshahiYear` | `year` plus 1180, the Shahanshahi (Imperial) year |
 | `hasTime`, `hour`, `minute`, `second` | Time of day; the getters throw `StateError` when `hasTime` is false |
+| `dayPeriod` | Part of the day: `نیمه‌شب`, `بامداد`, `صبح`, `ظهر`, `عصر`, `شب` |
 | `isLeapYear`, `daysInYear` | Whether Esfand has 30 days; 365 or 366 |
 | `monthLength` | 31, 30, or 29 |
 | `dayOfYear` | 1 to 366 |
@@ -309,6 +310,7 @@ final date = PersianDate.withTime(1400, 1, 1, 14, 5);
 print(date.format('d MMMM yyyy')); // 1 فروردین 1400
 print(date.format('EEEE yyyy/MM/dd')); // یکشنبه 1400/01/01
 print(date.format('h:mm a')); // 2:05 ب.ظ
+print(date.format('h:mm B')); // 2:05 عصر
 print(date.format("'ساعت' HH:mm")); // ساعت 14:05
 ```
 
@@ -336,6 +338,11 @@ print(date.format("'ساعت' HH:mm")); // ساعت 14:05
 | `ss`   | second, two digits                 |
 | `s`    | second                             |
 | `a`    | `ق.ظ` before noon, `ب.ظ` from noon |
+| `B`    | part of the day: `صبح`, `ظهر`, `عصر`, `شب` |
+| `BBBB` | the same, `بعدازظهر` instead of `ظهر` |
+
+`B` and `dayPeriod` follow CLDR's hours for Persian, the same words browsers write with `Intl.DateTimeFormat('fa', {dayPeriod: 'short'})`: نیمه‌شب from 0:00, بامداد from 1:00, صبح from 4:00, ظهر from 12:00, عصر from 13:00, and شب from 19:00.
+`BBBB` matches `dayPeriod: 'long'`.
 
 The longest token wins, and every other character is copied as is.
 Put literal text in single quotes, and write two single quotes for one: `format("d 'o''clock'")` gives `1 o'clock`.
@@ -494,7 +501,7 @@ Every constructor, `parse`, and the arithmetic methods throw outside that range.
 
 ### From 1.2.x
 
-- `dw` and `yw` are now `format` tokens; quote them to keep them literal: `format("'dw'")`.
+- `dw`, `yw`, `B`, and `BBBB` are now `format` tokens; quote them to keep them literal: `format("'dw'")`.
 
 ### From 1.0.x
 
