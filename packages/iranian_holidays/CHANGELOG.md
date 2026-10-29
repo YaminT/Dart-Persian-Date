@@ -1,3 +1,9 @@
+## 0.5.1
+
+### Changed
+
+* README: the introduction says up front that holidays are calculated offline on the device or fetched from an online source, and the offline description says the Hijri dates come from the official calendars up to Jalali 1405.
+
 ## 0.5.0
 
 ### Added

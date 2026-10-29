@@ -1,3 +1,9 @@
+## 1.3.1
+
+### Changed
+
+* README: the introduction, in English and Persian, lists the 1.3.0 features and says that holidays come from iranian_holidays, calculated offline or fetched online. "Building a date picker" points to jalali_calendar_picker, the notes for code generators cover the new APIs, and the API reference on nodets.com is linked.
+
 ## 1.3.0
 
 ### Added
