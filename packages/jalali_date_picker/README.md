@@ -1,5 +1,7 @@
 # jalali_date_picker
 
+[![pub package](https://img.shields.io/pub/v/jalali_date_picker.svg)](https://pub.dev/packages/jalali_date_picker)
+
 Persian (Jalali, Shamsi) date picker and range picker for Flutter, built on [jalali_date](https://pub.dev/packages/jalali_date).
 انتخابگر تاریخ و بازه‌ی تاریخ شمسی برای Flutter.
 
@@ -12,6 +14,8 @@ Persian (Jalali, Shamsi) date picker and range picker for Flutter, built on [jal
 - Persian labels; the dialog texts can be changed with `helpText`, `confirmText`, and `cancelText`.
 
 ## Installation
+
+`jalali_date_picker` is published on [pub.dev](https://pub.dev/packages/jalali_date_picker):
 
 ```sh
 flutter pub add jalali_date_picker
