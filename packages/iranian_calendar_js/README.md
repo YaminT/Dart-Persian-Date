@@ -85,6 +85,7 @@ for (const day of holidaysOfYear(1405)) {
 }
 ```
 
+Holidays are calculated on the device, with no network and no third party; this package has no online sources, unlike the Dart package [iranian_holidays](https://pub.dev/packages/iranian_holidays).
 `holidaysOfYear` lists the official holidays of a Jalali year in order, and `holidaysOn` those of one day; Fridays are not included.
 Each holiday has a Persian `name`, in religiously neutral wording rather than the official text, an English `nameEnglish`, and its `calendar`, `month`, and `day`.
 Pass `holidays` to use your own list, and `calendar` for announced month starts.
