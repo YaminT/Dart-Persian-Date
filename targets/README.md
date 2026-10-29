@@ -26,7 +26,7 @@ Each file is one target with its reason, the API it adds, and when it is done.
 
 | # | Target | Kind |
 | - | ------ | ---- |
-| 10 | [iranian-calendar for npm](10-npm-iranian-calendar.md) | New package |
+| 10 | [iranian-calendar for npm](10-npm-iranian-calendar.md) | New package, done |
 
 ## Considered and not adopted
 

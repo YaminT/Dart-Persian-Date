@@ -2,6 +2,11 @@
 
 New package. Start only after target 01 is done, so the port carries the corrected table.
 
+Status: built in `packages/iranian_calendar_js/` as version 0.1.0. Changes from the plan:
+- No dependencies at all: the Jalali conversion is the same jalaali-js port as the Dart package, a few dozen lines.
+- No `@internationalized/date` calendar: React Aria formats calendar cells with `Intl` and the calendar's identifier, so a custom Hijri calendar would show `Intl`'s day numbers, not Iran's. The README says so.
+- The cross-language fixtures are every month start from 1200 to 1600 and the holidays of 1395 to 1410, written by `tool/npm_fixtures`; the npm tests match them exactly.
+
 ## Does JavaScript need it?
 
 Not as another Jalali date library:

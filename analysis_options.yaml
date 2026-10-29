@@ -6,3 +6,5 @@ analyzer:
     # analyzed from their own directories.
     - packages/**
     - tool/jalaali_sweep/node_modules/**
+    # Has its own pubspec; run it from its directory or with its path.
+    - tool/npm_fixtures/**
