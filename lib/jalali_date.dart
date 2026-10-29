@@ -24,11 +24,13 @@ import 'src/hijri.dart';
 import 'src/jalali_calc.dart';
 import 'src/pattern.dart';
 import 'src/relative_time.dart';
+import 'src/words.dart';
 
 export 'src/digits.dart';
 export 'src/era.dart';
 export 'src/hijri.dart';
 export 'src/persian_date_range.dart';
+export 'src/words.dart';
 
 /// An immutable Jalali (Persian) calendar date.
 ///
@@ -719,7 +721,8 @@ class PersianDate implements Comparable<PersianDate> {
   String toJson() => format('yyyy-MM-dd');
 
   static const _tokens = [
-    'yyyy', 'yy', 'MMMM', 'MM', 'M', 'dd', 'd', 'EEEE', 'E', 'D', 'Q', //
+    'yyyy', 'yy', 'yw', 'MMMM', 'MM', 'M', 'dd', 'dw', 'd', 'EEEE', 'E', //
+    'D', 'Q',
     'HH', 'H', 'hh', 'h', 'mm', 'm', 'ss', 's', 'a',
   ];
 
@@ -729,11 +732,13 @@ class PersianDate implements Comparable<PersianDate> {
   /// | ------ | ---------------------------------------- |
   /// | `yyyy` | year, at least four digits               |
   /// | `yy`   | last two digits of the year              |
+  /// | `yw`   | year in Persian words                    |
   /// | `MMMM` | Persian month name                       |
   /// | `MM`   | month, two digits                        |
   /// | `M`    | month                                    |
   /// | `dd`   | day, two digits                          |
   /// | `d`    | day                                      |
+  /// | `dw`   | ordinal day in Persian words, `یکم`      |
   /// | `EEEE` | Persian weekday name                     |
   /// | `E`    | one-letter Persian weekday name          |
   /// | `D`    | day of the year                          |
@@ -759,8 +764,10 @@ class PersianDate implements Comparable<PersianDate> {
   /// With [persianDigits], numbers produced by tokens are written as ۰ to ۹;
   /// literal text in [pattern] is copied unchanged.
   ///
-  /// `yyyy` and `yy` number the year in [era], Solar Hijri by default:
-  /// `format('yyyy', era: JalaliEra.shahanshahi)` gives `2585` for 1405.
+  /// `yyyy`, `yy`, and `yw` number the year in [era], Solar Hijri by
+  /// default: `format('yyyy', era: JalaliEra.shahanshahi)` gives `2585` for
+  /// 1405. `format('EEEE dw MMMM yw')` writes the whole date in words, see
+  /// [toPersianWords].
   String format(
     String pattern, {
     bool persianDigits = false,
@@ -779,6 +786,8 @@ class PersianDate implements Comparable<PersianDate> {
         return fourDigitYear(eraYear);
       case 'yy':
         return twoDigits(eraYear.remainder(100).abs());
+      case 'yw':
+        return toPersianWords(eraYear);
       case 'MMMM':
         return monthName;
       case 'MM':
@@ -789,6 +798,8 @@ class PersianDate implements Comparable<PersianDate> {
         return twoDigits(day);
       case 'd':
         return '$day';
+      case 'dw':
+        return toPersianWords(day, ordinal: true);
       case 'EEEE':
         return weekdayName;
       case 'E':
