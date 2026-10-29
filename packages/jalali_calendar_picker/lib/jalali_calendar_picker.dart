@@ -4,7 +4,7 @@
 /// final date = await showPersianDatePicker(context: context);
 /// final range = await showPersianDateRangePicker(context: context);
 /// ```
-library jalali_date_picker;
+library jalali_calendar_picker;
 
 export 'package:jalali_date/jalali_date.dart';
 

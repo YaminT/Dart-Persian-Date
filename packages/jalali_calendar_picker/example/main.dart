@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jalali_date_picker/jalali_date_picker.dart';
+import 'package:jalali_calendar_picker/jalali_calendar_picker.dart';
 
 void main() => runApp(const MaterialApp(home: ExamplePage()));
 
@@ -17,7 +17,7 @@ class _ExamplePageState extends State<ExamplePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('jalali_date_picker')),
+      appBar: AppBar(title: const Text('jalali_calendar_picker')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
