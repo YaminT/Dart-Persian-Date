@@ -5,13 +5,16 @@ name: Publish iranian-calendar
 # package.json; a version already on npm is skipped, so tagging a release that
 # was published by hand does not fail.
 #
-# Authentication: npm trusted publishing (configure this repository and
-# workflow on the package's settings page on npmjs.com), or a granular access
-# token in the repository secret NPM_TOKEN.
+# Authentication: npm trusted publishing, configured for this repository and
+# workflow on the package's settings page on npmjs.com. No token is set: an
+# empty NODE_AUTH_TOKEN makes npm skip trusted publishing.
+#
+# Run it by hand (Actions, Run workflow, on the tag) to retry a release.
 
 on:
   push:
     tags: ['iranian-calendar-v*']
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -30,7 +33,7 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org
       # Trusted publishing needs npm 11.5.1 or later.
-      - run: npm install -g npm@11
+      - run: npm install -g npm@11 && npm --version
       - name: Check the tag matches package.json
         run: test "iranian-calendar-v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
       - name: Check whether this version is already on npm
@@ -47,5 +50,3 @@ jobs:
         run: npm test
       - if: steps.published.outputs.exists != 'true'
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
