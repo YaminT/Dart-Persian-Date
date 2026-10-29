@@ -2,7 +2,8 @@ name: Publish iranian-calendar
 
 # Publishes packages/iranian_calendar_js to npm with provenance when a tag
 # such as iranian-calendar-v0.1.0 is pushed. The tag must match the version in
-# package.json.
+# package.json; a version already on npm is skipped, so tagging a release that
+# was published by hand does not fail.
 #
 # Authentication: npm trusted publishing (configure this repository and
 # workflow on the package's settings page on npmjs.com), or a granular access
@@ -32,8 +33,19 @@ jobs:
       - run: npm install -g npm@11
       - name: Check the tag matches package.json
         run: test "iranian-calendar-v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
-      - run: npm ci
-      - run: npm test
-      - run: npm publish --provenance --access public
+      - name: Check whether this version is already on npm
+        id: published
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if npm view "iranian-calendar@$version" version >/dev/null 2>&1; then
+            echo "iranian-calendar@$version is already on npm; skipping the publish."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.published.outputs.exists != 'true'
+        run: npm ci
+      - if: steps.published.outputs.exists != 'true'
+        run: npm test
+      - if: steps.published.outputs.exists != 'true'
+        run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
