@@ -32,6 +32,8 @@ print(PersianDate.parse('۱۳۵۷/۱۱/۲۲').toDateTime()); // 1979-02-11 00:00
 
 ## Installation
 
+`jalali_date` is published on [pub.dev](https://pub.dev/packages/jalali_date):
+
 ```sh
 dart pub add jalali_date
 ```

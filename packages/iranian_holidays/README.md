@@ -1,5 +1,7 @@
 # iranian_holidays
 
+[![pub package](https://img.shields.io/pub/v/iranian_holidays.svg)](https://pub.dev/packages/iranian_holidays)
+
 Iranian holidays and events for [jalali_date](https://pub.dev/packages/jalali_date) dates.
 تعطیلات و مناسبت‌های تقویم رسمی ایران برای تاریخ‌های `jalali_date`.
 
@@ -27,6 +29,8 @@ Not usable today: [Nager.Date](https://date.nager.at) is free but has no Iranian
 Tell your users where holiday data comes from, for example on an about or settings screen; `HolidaySource.name`, `website`, and `notice` hold that text.
 
 ## Installation
+
+`iranian_holidays` is published on [pub.dev](https://pub.dev/packages/iranian_holidays):
 
 ```sh
 dart pub add iranian_holidays
