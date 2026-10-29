@@ -6,6 +6,7 @@
 
 Persian (Jalali, Shamsi) calendar for Dart.
 It converts between Gregorian and Jalali dates in both directions, knows leap years and month lengths, does date arithmetic, parses and formats dates with Persian month and weekday names and Persian digits, and has everything a date picker needs: Saturday-first weeks, month anchors, day ranges, and bounds.
+It reads dates written with a pattern or with month names, writes relative time (`3 روز پیش`), dates in Persian words, and parts of the day (`صبح`, `عصر`), counts whole months and years, and gives the moment of Nowruz (سال تحویل).
 The conversion is a port of [jalaali-js](https://github.com/jalaali/jalaali-js), so century years and leap cycles are handled correctly.
 It also gives the lunar Hijri date as Iran's official calendar counts it, and writes and reads years in the Shahanshahi numbering when you ask for it.
 Iranian official holidays are in the companion package [iranian_holidays](https://pub.dev/packages/iranian_holidays): it calculates them offline on the device, the lunar Hijri ones included, or fetches them from an online source you choose (holidayapi.ir, Calendarific, or Google Calendar), and can fall back from online to offline.
@@ -19,6 +20,7 @@ Keywords: تقویم شمسی، تقویم جلالی، تقویم خورشید�
 `jalali_date` یک بسته‌ی خالص Dart برای تقویم هجری شمسی (جلالی، خورشیدی) است.
 تاریخ میلادی را به شمسی و شمسی را به میلادی تبدیل می‌کند، سال کبیسه و طول ماه‌ها را می‌داند و تاریخ را با نام فارسی ماه‌ها و روزهای هفته و ارقام فارسی نمایش می‌دهد.
 جمع و تفریق روز و ماه و سال، خواندن تاریخ از متن (با ارقام فارسی یا لاتین)، هفته‌ی شنبه تا جمعه و بازه‌ی تاریخ را هم دارد و برای ساختن انتخابگر تاریخ (date picker) آماده است.
+تاریخ نوشته‌شده با الگو یا نام ماه (مثل ۴ فروردین ۱۴۰۳) را می‌خواند، زمان نسبی (۳ روز پیش)، تاریخ با حروف و بخش‌های روز (صبح، عصر، شب) را می‌نویسد، ماه‌ها و سال‌های کامل (مثلاً سن) را می‌شمارد و لحظه‌ی تحویل سال را می‌دهد.
 تاریخ هجری قمری را مطابق تقویم رسمی ایران هم می‌دهد و در صورت نیاز سال را به شاهنشاهی می‌نویسد و می‌خواند.
 تعطیلات رسمی ایران در بسته‌ی همراه [iranian_holidays](https://pub.dev/packages/iranian_holidays) است: آن‌ها را بدون اینترنت روی خود دستگاه محاسبه می‌کند، تعطیلات قمری هم، یا از یک منبع آنلاین به انتخاب شما (holidayapi.ir، Calendarific یا Google Calendar) می‌گیرد، و اگر منبع آنلاین در دسترس نباشد می‌تواند به محاسبه‌ی آفلاین برگردد.
 الگوریتم تبدیل از [jalaali-js](https://github.com/jalaali/jalaali-js) گرفته شده و برای سال‌های قرن میلادی و چرخه‌های کبیسه درست کار می‌کند.
@@ -480,7 +482,8 @@ print(PersianDate(1403, 12, 29).daysUntil(PersianDate(1404, 1, 1)).length); // 3
 
 ## Building a date picker
 
-The package has no widgets, but it has the calendar logic a picker needs.
+For a ready-made Flutter date picker and range picker, use [jalali_calendar_picker](https://pub.dev/packages/jalali_calendar_picker).
+This package has no widgets, but it has the calendar logic a picker of your own needs.
 A month grid with Saturday in the first column:
 
 ```dart
@@ -528,6 +531,9 @@ These live in this repository under `packages/` and are released separately.
 - Esfand has 30 days only in leap years; use `monthLength` instead of hard-coding 29.
 - `parse` and `parseFormat` already accept Persian digits; use `persianDigits: true` or `toPersianDigits` for output.
 - To read text such as `۴ فروردین ۱۴۰۳`, use `PersianDate.parseFormat(text, 'd MMMM yyyy')`, not a hand-written regex.
+- For ages and terms use `differenceInMonths` or `differenceInYears`; dividing `differenceInDays` by 30 or 365 gives wrong answers.
+- For text such as `3 روز پیش` or `دیروز`, use `relativeTo` or `fromNow`.
+- For Iranian holidays use the iranian_holidays package (`OfflineHolidaySource`, or an online source); never hard-code holiday dates, because the lunar Hijri ones move every year.
 
 ## Supported range
 

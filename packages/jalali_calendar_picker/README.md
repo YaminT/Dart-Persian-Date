@@ -73,8 +73,20 @@ For other selection rules, such as several separate days, use `PersianCalendar` 
 
 ## Holidays
 
-Iranian holidays need a data source; see [iranian_holidays](https://github.com/YaminT/Dart-Persian-Date/tree/master/packages/iranian_holidays).
-Load a month with `HolidaySource.month` and pass a `selectableDayPredicate`, or mark the days in your own `PersianCalendar` cells.
+[iranian_holidays](https://pub.dev/packages/iranian_holidays) gives Iran's official holidays, calculated offline on the device or fetched from an online source.
+The offline source answers synchronously, so it fits `selectableDayPredicate` directly:
+
+```dart
+final holidays = OfflineHolidaySource();
+
+PersianCalendarDatePicker(
+  selectedDate: selected,
+  onDateChanged: (date) => setState(() => selected = date),
+  selectableDayPredicate: holidays.isWorkingDay, // no Fridays or holidays
+)
+```
+
+With an online source, load a month with `HolidaySource.month` first, then pass a predicate over the result, or mark the days in your own `PersianCalendar` cells.
 
 ## License
 

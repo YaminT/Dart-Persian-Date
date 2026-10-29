@@ -1,6 +1,6 @@
 {
   "name": "iranian-calendar",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Iran's official lunar Hijri calendar and Iranian holidays, offline: the published month starts from 1848 to today, a crescent-visibility prediction after them, and working days.",
   "keywords": [
     "hijri",

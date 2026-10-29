@@ -1,3 +1,7 @@
+## 0.1.1
+
+* README: the holidays section shows `OfflineHolidaySource.isWorkingDay` as a `selectableDayPredicate`, and links iranian_holidays on pub.dev.
+
 ## 0.1.0
 
 * First release, published as `jalali_calendar_picker` because pub.dev holds `jalali_date_picker` too close to the existing `jalalidatepicker`.

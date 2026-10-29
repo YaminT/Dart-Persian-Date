@@ -1,6 +1,6 @@
 name: jalali_calendar_picker
 description: "Persian (Jalali, Shamsi) date picker and range picker for Flutter: Saturday-first Material 3 calendar, Persian digits, right-to-left, built on jalali_date."
-version: 0.1.0
+version: 0.1.1
 homepage: https://nodets.com/jalali/
 repository: https://github.com/YaminT/Dart-Persian-Date/tree/master/packages/jalali_calendar_picker
 issue_tracker: https://github.com/YaminT/Dart-Persian-Date/issues
