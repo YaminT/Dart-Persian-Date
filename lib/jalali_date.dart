@@ -22,6 +22,7 @@ import 'src/digits.dart';
 import 'src/era.dart';
 import 'src/hijri.dart';
 import 'src/jalali_calc.dart';
+import 'src/nowruz.dart';
 import 'src/parse_format.dart';
 import 'src/pattern.dart';
 import 'src/relative_time.dart';
@@ -250,6 +251,35 @@ class PersianDate implements Comparable<PersianDate> {
     JalaliEra era = JalaliEra.solarHijri,
   }) =>
       parseWithPattern(input, pattern, era);
+
+  /// The moment Jalali [year] begins, the March equinox (سال تحویل), in
+  /// UTC.
+  ///
+  /// `PersianDate.nowruzMoment(1405)` is 2026-03-20 14:45:56 UTC, which is
+  /// 18:15:56 in Iran; the University of Tehran announced 18:15:59. Add
+  /// 3 hours and 30 minutes for Iran Standard Time, which Iran has kept all
+  /// year since 2022; before that, Iran used daylight saving time in summer,
+  /// but never at the equinox.
+  ///
+  /// Calculated from the VSOP87 theory of the Earth's orbit with nutation
+  /// and aberration, then converted to UTC with the observed difference
+  /// between atomic time and the Earth's rotation (Delta T) for 1974 to
+  /// 2026. For 2003 to 2026 every result is within 4 seconds of the moment
+  /// the University of Tehran announced, and from 1981 within 3 seconds of
+  /// the JPL DE440 ephemeris. Further from today the error grows with the
+  /// uncertainty of Delta T: minutes a century away, and more in the
+  /// earliest and latest supported years.
+  ///
+  /// The year begins on the day of this moment when it comes before noon in
+  /// Iran, and on the next day otherwise, which is how 1 Farvardin is fixed.
+  ///
+  /// Throws [ArgumentError] when [year] is outside -61 to 3177.
+  static DateTime nowruzMoment(int year) {
+    if (year < -61 || year > 3177) {
+      throw ArgumentError.value(year, 'year', 'Must be in -61 to 3177');
+    }
+    return marchEquinox(year + 621);
+  }
 
   /// Date-only instance for Julian day number [jdn], range-checked.
   factory PersianDate._fromJulianDay(int jdn) {

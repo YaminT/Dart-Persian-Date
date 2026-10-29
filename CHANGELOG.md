@@ -2,6 +2,7 @@
 
 ### Added
 
+* `PersianDate.nowruzMoment`: the March equinox that begins a Jalali year (سال تحویل), in UTC, from VSOP87 with observed Delta T; within 4 seconds of every moment the University of Tehran announced from 2003 to 2026.
 * `PersianDate.parseFormat` and `tryParseFormat`: read text written with a `format` pattern, such as `۴ فروردین ۱۴۰۳` with `d MMMM yyyy`, including Persian, Latin, and Dari month names, weekday names, `a` and `B` for 12-hour times, Persian and Arabic-Indic digits, and Arabic letters.
 * `dayPeriod` and the `B` and `BBBB` format tokens: the part of the day in Persian (`صبح`, `ظهر`, `عصر`, `شب`) on CLDR's hours, so `format('h B')` gives `4 عصر`.
 * `toPersianWords`: numbers in Persian words, `هزار و چهارصد و سه`, and ordinals with `ordinal: true`, `بیست و چهارم`.

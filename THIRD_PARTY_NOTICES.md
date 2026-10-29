@@ -31,3 +31,7 @@ SOFTWARE.
 ## qamari
 
 The official lunar Hijri month starts in `test/data/qamari_consolidated.txt`, and the table generated from them in `lib/src/hijri_table.dart`, come from qamari (https://github.com/roozbehp/qamari) by Roozbeh Pournader and contributors, dedicated to the public domain under CC0 1.0 Universal (https://creativecommons.org/publicdomain/zero/1.0/).
+
+## VSOP87 and Delta T
+
+The series in `lib/src/nowruz_data.dart` are taken from VSOP87, version D, for the Earth (P. Bretagnon and G. Francou, Astronomy and Astrophysics 202, 309, 1988), distributed by the CDS at https://cdsarc.cds.unistra.fr/ftp/VI/81/. The Delta T values are from the U.S. Naval Observatory (https://maia.usno.navy.mil/ser7/deltat.data), a work of the United States Government.
