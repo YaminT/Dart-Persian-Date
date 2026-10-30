@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jalali_date: Persian (Jalali) calendar for Dart and Flutter</title>
+<meta name="description" content="Convert Gregorian to Jalali and back, add days and months the Persian calendar way, parse Persian digits and format with Persian names. Pure Dart, no dependencies.">
+<meta name="author" content="Yamin Tashakkori">
+<link rel="canonical" href="https://yamint.github.io/Dart-Persian-Date/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="jalali_date: Persian (Jalali) calendar for Dart and Flutter">
+<meta property="og:description" content="Convert Gregorian to Jalali and back, add days and months the Persian calendar way, parse Persian digits and format with Persian names. Pure Dart, no dependencies.">
+<meta property="og:url" content="https://yamint.github.io/Dart-Persian-Date/">
+<meta property="og:site_name" content="jalali_date">
+<meta name="theme-color" content="#0b7a75">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>:root{--ink:#1c2128;--paper:#ffffff;--mist:#f1f3f5;--line:#d9dde2;--muted:#5b6470;--accent:#0b7a75}*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 'IBM Plex Sans',system-ui,sans-serif}a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px}a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}code,pre,kbd{font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace}.wrap{max-width:1040px;margin:0 auto;padding:0 16px}header.site{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:18px 0;border-bottom:1px solid var(--line);font-size:15px}header.site a{color:var(--ink);text-decoration:none}header.site a:hover{text-decoration:underline}header.site .by{color:var(--muted)}.hero{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:40px;align-items:start;padding:48px 0 40px}.hero>*{min-width:0}pre{max-width:100%}h1{margin:0 0 6px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:clamp(2rem,5vw,2.9rem);font-weight:500;line-height:1.1;letter-spacing:-0.02em}.tagline{margin:0 0 18px;font-size:1.25rem;font-weight:500;color:var(--accent)}.pitch{margin:0 0 22px;max-width:60ch}.notice{margin:0 0 22px;padding:10px 14px;border-left:3px solid var(--accent);background:var(--mist);font-size:15px;max-width:60ch}.install{margin:0 0 22px}.install pre{margin:0;padding:12px 14px;background:var(--ink);color:#f5f7fa;border-radius:4px;font-size:14px;overflow-x:auto;white-space:pre}.links{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px 18px;font-size:15px}.links a{font-weight:500}.frame{border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:4px;background:var(--mist);min-width:0}.frame .tab{display:flex;justify-content:space-between;padding:8px 14px;font-size:13px;color:var(--muted);border-bottom:1px solid var(--line)}.frame pre{margin:0;padding:16px 14px;font-size:13px;line-height:1.5;overflow-x:auto;white-space:pre}h2{font-size:1.35rem;font-weight:600;letter-spacing:-0.01em;margin:40px 0 14px}.facts{margin:0;padding:0;list-style:none;max-width:72ch}.facts li{margin:0 0 12px;padding-left:18px;border-left:2px solid var(--line)}.facts b{font-weight:600}.docs{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px 28px;max-width:72ch}.docs li{font-size:15px}.docs small{display:block;color:var(--muted)}footer.site{margin-top:56px;padding:20px 0 32px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}footer.site a{color:var(--ink)}@media (max-width:900px){.hero{grid-template-columns:1fr;gap:28px;padding-top:32px}}@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}</style>
+</head>
+<body>
+<div class="wrap">
+<header class="site">
+<a href="https://yamint.github.io/Dart-Persian-Date/">jalali_date</a>
+<span class="by">by <a href="https://nodets.com/">Yamin Tashakkori</a></span>
+</header>
+<main>
+<section class="hero">
+<div>
+<h1>jalali_date</h1>
+<p class="tagline">A Persian calendar that behaves like one</p>
+<p class="pitch">Convert between Gregorian and Jalali dates, do arithmetic that clamps to the Persian month, parse Persian and Arabic-Indic digits, and format with Persian month and weekday names. Pure Dart with no dependencies, so it runs on Flutter, the web and the Dart VM.</p>
+
+<div class="install"><pre><code>dart pub add jalali_date</code></pre></div>
+<ul class="links"><li><a href="https://nodets.com/jalali/">Documentation on nodets.com</a></li><li><a href="https://pub.dev/packages/jalali_date">Package on pub.dev</a></li><li><a href="https://github.com/YaminT/Dart-Persian-Date">Source on GitHub</a></li></ul>
+</div>
+<div class="frame"><div class="tab"><span>main.dart</span><span>Dart</span></div><pre><code>final nowruz = PersianDate(1400, 1, 1);
+nowruz == PersianDate.fromGregorian(2021, 3, 21);  // true
+PersianDate(1357, 11, 22).toDateTime();  // 1979-02-11 00:00:00.000
+
+// Persian digits, with a time of day
+PersianDate.parse('۱۴۰۳/۰۱/۰۱ ۱۴:۳۰');
+// null: 1400 is not a leap year
+PersianDate.tryParse('1400/12/30');
+
+// the day is clamped to the target month
+PersianDate(1403, 6, 31).addMonths(1);  // 1403/07/30
+PersianDate(1403, 12, 30).addYears(1);  // 1404/12/29</code></pre></div>
+</section>
+<h2>What it does</h2>
+<ul class="facts"><li><b>Leap years that are right.</b> The conversion is a port of jalaali-js, so century years and leap cycles are handled correctly.</li>
+<li><b>Lunar Hijri and Shahanshahi.</b> Hijri dates as Iran’s official calendar counts them, and years written or read in the Shahanshahi numbering.</li>
+<li><b>Iranian holidays.</b> The companion iranian_holidays package calculates the official holidays offline or fetches them from an API.</li>
+<li><b>Ready for a date picker.</b> Saturday-first weeks, month anchors, day ranges and bounds are built in.</li></ul>
+<h2>The full documentation is on nodets.com</h2>
+<ul class="docs"><li><a href="https://nodets.com/jalali/converting-dates/">Converting dates</a><small>Create PersianDate values from Jalali or Gregorian dates, convert Jalali to Gregorian, compare dates and check leap years and month lengths in Dart.</small></li>
+<li><a href="https://nodets.com/jalali/date-arithmetic/">Date arithmetic</a><small>Add days, months and years to Jalali dates in Dart, count whole months and years, write relative time such as ۳ روز پیش, and work with date ranges.</small></li>
+<li><a href="https://nodets.com/jalali/parsing/">Parsing</a><small>Read Jalali dates in Dart from text such as 1403/01/04 or ۴ فروردین ۱۴۰۳, with Persian, Latin or Dari month names, Persian digits and format patterns.</small></li>
+<li><a href="https://nodets.com/jalali/formatting/">Formatting</a><small>Format Persian dates in Dart with toString flags and format() patterns, Persian month and weekday names, Persian digits, dates in Persian words and parts of the day.</small></li>
+<li><a href="https://nodets.com/jalali/hijri-calendar/">Hijri, Shahanshahi, Nowruz</a><small>Convert Jalali and Gregorian dates to the lunar Hijri calendar as Iran's official calendar counts it, read or write Shahanshahi years, and get the moment of Nowruz in Dart.</small></li>
+<li><a href="https://nodets.com/jalali/holidays/">Iranian holidays</a><small>Iran's official holidays for jalali_date in Dart: calculated offline, lunar Hijri ones included, or fetched from holidayapi.ir, Calendarific or Google Calendar.</small></li>
+<li><a href="https://nodets.com/jalali/date-picker/">Flutter date picker</a><small>jalali_calendar_picker: a Material 3 Jalali date picker and range picker for Flutter with Saturday-first weeks, Persian digits and right-to-left layout.</small></li>
+<li><a href="https://nodets.com/jalali/javascript/">JavaScript (npm)</a><small>iranian-calendar on npm: Iran's official lunar Hijri calendar, Iranian holidays and working days for JavaScript and TypeScript, offline, with Temporal support.</small></li>
+<li><a href="https://nodets.com/jalali/reference/">Quick reference</a><small>Every PersianDate constructor, getter and method of jalali_date at a glance, and notes for code generators and AI assistants.</small></li>
+<li><a href="https://nodets.com/jalali/migration/">Migrating</a><small>Breaking changes in jalali_date: new format tokens in 1.3, quoting and new tokens in 1.1, and Dart 3, padded toString, final fields and validation in 1.0.</small></li>
+<li><a href="https://nodets.com/jalali/changelog/">Changelog</a><small>Release history of jalali_date, the Persian (Jalali) calendar package for Dart and Flutter: new features, fixes and breaking changes by version.</small></li>
+<li><a href="https://nodets.com/jalali/credits/">Credits &amp; license</a><small>Credits for jalali_date: the jalaali-js conversion it ports, the people who contributed, third-party notices and the Apache-2.0 license.</small></li></ul>
+</main>
+<footer class="site">
+<p>By <a href="https://nodets.com/about/">Yamin Tashakkori</a>. Source on <a href="https://github.com/YaminT/Dart-Persian-Date">GitHub</a>, package on <a href="https://pub.dev/packages/jalali_date">pub.dev</a>. This page is the short version; the docs live at <a href="https://nodets.com/jalali/">nodets.com/jalali/</a>.</p>
+</footer>
+</div>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"SoftwareSourceCode","name":"jalali_date","description":"Convert Gregorian to Jalali and back, add days and months the Persian calendar way, parse Persian digits and format with Persian names. Pure Dart, no dependencies.","url":"https://yamint.github.io/Dart-Persian-Date/","codeRepository":"https://github.com/YaminT/Dart-Persian-Date","programmingLanguage":"Dart","license":"https://spdx.org/licenses/Apache-2.0.html","author":{"@id":"https://nodets.com/#person"},"sameAs":["https://nodets.com/jalali/","https://pub.dev/packages/jalali_date","https://github.com/YaminT/Dart-Persian-Date"]},{"@type":"Person","@id":"https://nodets.com/#person","name":"Yamin Tashakkori","url":"https://nodets.com/","sameAs":["https://github.com/YaminT","https://stackoverflow.com/users/3123267/yamin","https://www.linkedin.com/in/yamin-tashakkori","https://pub.dev/publishers/nodets.com/packages"]}]}</script>
+</body>
+</html>
