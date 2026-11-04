@@ -49,12 +49,13 @@ double _apparentSunLongitude(double jde) {
   return (longitude + fk5 + _nutationInLongitude(tau * 10) + aberration) % 360;
 }
 
-double _series(List<List<(double, double, double)>> powers, double tau) {
+double _series(List<List<double>> powers, double tau) {
   var total = 0.0, factor = 1.0;
   for (final terms in powers) {
     var sum = 0.0;
-    for (final (amplitude, phase, frequency) in terms) {
-      sum += amplitude * math.cos(phase + frequency * tau);
+    // Amplitude, phase, and frequency of each term.
+    for (var i = 0; i < terms.length; i += 3) {
+      sum += terms[i] * math.cos(terms[i + 1] + terms[i + 2] * tau);
     }
     total += sum * factor;
     factor *= tau;
@@ -71,34 +72,39 @@ double _nutationInLongitude(double t) {
   final f = 93.27191 + 483202.017538 * t - 0.0036825 * t * t;
   final omega = 125.04452 - 1934.136261 * t + 0.0020708 * t * t;
   var sum = 0.0;
-  for (final (cd, cm, cmp, cf, co, a, b) in _nutation) {
-    final argument = cd * d + cm * m + cmp * mp + cf * f + co * omega;
-    sum += (a + b * t) * math.sin(argument * _rad);
+  for (var i = 0; i < _nutation.length; i += 7) {
+    final argument = _nutation[i] * d +
+        _nutation[i + 1] * m +
+        _nutation[i + 2] * mp +
+        _nutation[i + 3] * f +
+        _nutation[i + 4] * omega;
+    sum +=
+        (_nutation[i + 5] + _nutation[i + 6] * t) * math.sin(argument * _rad);
   }
   return sum / 10000 / 3600;
 }
 
 // D, M, M', F, Omega, and the coefficient of the sine in 0.0001 arcseconds
 // with its change per century.
-const _nutation = [
-  (0, 0, 0, 0, 1, -171996.0, -174.2),
-  (-2, 0, 0, 2, 2, -13187.0, -1.6),
-  (0, 0, 0, 2, 2, -2274.0, -0.2),
-  (0, 0, 0, 0, 2, 2062.0, 0.2),
-  (0, 1, 0, 0, 0, 1426.0, -3.4),
-  (0, 0, 1, 0, 0, 712.0, 0.1),
-  (-2, 1, 0, 2, 2, -517.0, 1.2),
-  (0, 0, 0, 2, 1, -386.0, -0.4),
-  (0, 0, 1, 2, 2, -301.0, 0.0),
-  (-2, -1, 0, 2, 2, 217.0, -0.5),
-  (-2, 0, 1, 0, 0, -158.0, 0.0),
-  (-2, 0, 0, 2, 1, 129.0, 0.1),
-  (0, 0, -1, 2, 2, 123.0, 0.0),
-  (2, 0, 0, 0, 0, 63.0, 0.0),
-  (0, 0, 1, 0, 1, 63.0, 0.1),
-  (2, 0, -1, 2, 2, -59.0, 0.0),
-  (0, 0, -1, 0, 1, -58.0, -0.1),
-  (0, 0, 1, 2, 1, -51.0, 0.0),
+const _nutation = <double>[
+  0, 0, 0, 0, 1, -171996.0, -174.2, //
+  -2, 0, 0, 2, 2, -13187.0, -1.6, //
+  0, 0, 0, 2, 2, -2274.0, -0.2, //
+  0, 0, 0, 0, 2, 2062.0, 0.2, //
+  0, 1, 0, 0, 0, 1426.0, -3.4, //
+  0, 0, 1, 0, 0, 712.0, 0.1, //
+  -2, 1, 0, 2, 2, -517.0, 1.2, //
+  0, 0, 0, 2, 1, -386.0, -0.4, //
+  0, 0, 1, 2, 2, -301.0, 0.0, //
+  -2, -1, 0, 2, 2, 217.0, -0.5, //
+  -2, 0, 1, 0, 0, -158.0, 0.0, //
+  -2, 0, 0, 2, 1, 129.0, 0.1, //
+  0, 0, -1, 2, 2, 123.0, 0.0, //
+  2, 0, 0, 0, 0, 63.0, 0.0, //
+  0, 0, 1, 0, 1, 63.0, 0.1, //
+  2, 0, -1, 2, 2, -59.0, 0.0, //
+  0, 0, -1, 0, 1, -58.0, -0.1, //
+  0, 0, 1, 2, 1, -51.0, 0.0, //
 ];
 
 /// Delta T (TT - UT1) in seconds at the fractional [year].

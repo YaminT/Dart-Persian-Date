@@ -34,7 +34,8 @@ void main(List<String> args) {
     for (var power = 0; series.containsKey((variable, power)); power++) {
       final terms = series[(variable, power)]!
           .where((t) => double.parse(t.$1).abs() >= _threshold)
-          .map((t) => '    (${t.$1}, ${t.$2}, ${t.$3}),')
+          // The comment keeps one term per line through dart format.
+          .map((t) => '    ${t.$1}, ${t.$2}, ${t.$3}, //')
           .join('\n');
       powers.add('  [\n$terms\n  ],');
     }
@@ -52,12 +53,13 @@ void main(List<String> args) {
 /// Series for the Earth's heliocentric longitude (radians) in VSOP87D,
 /// referred to the mean ecliptic and equinox of the date, with the terms of
 /// at least $_threshold. Element `i` is multiplied by the `i`th power of
-/// Julian millennia from J2000; each term is (amplitude, phase, frequency).
-const earthLongitude = <List<(double, double, double)>>${table(1)};
+/// Julian millennia from J2000 and holds three numbers per term: amplitude,
+/// phase, and frequency.
+const earthLongitude = <List<double>>${table(1)};
 
 /// Series for the Earth's distance from the Sun (AU), like
 /// [earthLongitude].
-const earthRadius = <List<(double, double, double)>>${table(3)};
+const earthRadius = <List<double>>${table(3)};
 
 /// First year of [deltaT].
 const deltaTFirstYear = $firstYear;

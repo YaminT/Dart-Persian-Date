@@ -15,17 +15,14 @@ String formatPattern(
   final out = StringBuffer();
   var i = 0;
   while (i < pattern.length) {
-    if (pattern[i] == "'") {
+    final c = pattern.codeUnitAt(i);
+    if (c == _quote) {
       i = _copyQuoted(pattern, i, out);
       continue;
     }
-    final c = pattern.codeUnitAt(i);
-    final token = tokens.firstWhere(
-      (t) => t.codeUnitAt(0) == c && pattern.startsWith(t, i),
-      orElse: () => '',
-    );
-    if (token.isEmpty) {
-      out.write(pattern[i]);
+    final token = _tokenAt(pattern, i, c, tokens);
+    if (token == null) {
+      out.writeCharCode(c);
       i++;
       continue;
     }
@@ -34,6 +31,16 @@ String formatPattern(
     i += token.length;
   }
   return out.toString();
+}
+
+const _quote = 0x27;
+
+/// The first of [tokens] at [i] in [pattern], whose code unit there is [c].
+String? _tokenAt(String pattern, int i, int c, List<String> tokens) {
+  for (final t in tokens) {
+    if (t.codeUnitAt(0) == c && pattern.startsWith(t, i)) return t;
+  }
+  return null;
 }
 
 /// Splits [pattern] into tokens from [tokens] and the literal text between
@@ -56,17 +63,14 @@ List<({bool token, String text})> splitPattern(
 
   var i = 0;
   while (i < pattern.length) {
-    if (pattern[i] == "'") {
+    final c = pattern.codeUnitAt(i);
+    if (c == _quote) {
       i = _copyQuoted(pattern, i, literal);
       continue;
     }
-    final c = pattern.codeUnitAt(i);
-    final token = tokens.firstWhere(
-      (t) => t.codeUnitAt(0) == c && pattern.startsWith(t, i),
-      orElse: () => '',
-    );
-    if (token.isEmpty) {
-      literal.write(pattern[i]);
+    final token = _tokenAt(pattern, i, c, tokens);
+    if (token == null) {
+      literal.writeCharCode(c);
       i++;
       continue;
     }

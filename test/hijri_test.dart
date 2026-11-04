@@ -108,6 +108,12 @@ void main() {
       final min = HijriDate.min, max = HijriDate.max;
       expect(() => HijriDate(min.year - 1, 1, 1), throwsArgumentError);
       expect(() => HijriDate(max.year + 1, 1, 1), throwsArgumentError);
+      // IranianHijri checks years against constants copied from min and max.
+      final official = IranianHijri.official;
+      expect(() => official.monthLength(min.year - 1, 12), throwsArgumentError);
+      expect(() => official.monthLength(max.year + 1, 1), throwsArgumentError);
+      expect(HijriDate(min.year, min.month, min.day), min);
+      expect(HijriDate(max.year, max.month, max.day), max);
       if (min.day > 1) {
         expect(() => HijriDate(min.year, min.month, min.day - 1),
             throwsArgumentError);
