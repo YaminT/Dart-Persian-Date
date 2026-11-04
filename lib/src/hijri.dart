@@ -203,7 +203,9 @@ class HijriDate implements Comparable<HijriDate> {
 /// seen in Iran. The crescent is predicted from the positions of the Sun and
 /// the Moon (truncated Meeus series) with Yallop's criterion at the
 /// optical-aid limit (q >= -0.232), checked at several Iranian cities, and a
-/// few months already published on time.ir are fixed by a table.
+/// few months already published on time.ir are fixed by a table. Through
+/// Dhu al-Hijjah 1550 the predicted month starts are stored, calculated in
+/// advance the same way; months after that are calculated when first used.
 /// [monthStarts] add announcements of your own.
 ///
 /// The prediction is a calculation, not an announcement: a month can still
@@ -300,6 +302,9 @@ class IranianHijri {
     if (corrected != null) return corrected;
     if (index >= officialFirstMonth && index <= officialLastMonth) {
       return _recordedStarts[index - officialFirstMonth];
+    }
+    if (index > officialLastMonth && index <= predictedLastMonth) {
+      return _predictedStarts[index - officialLastMonth];
     }
     return _publishedStarts[index] ??
         _predicted.putIfAbsent(
@@ -578,6 +583,15 @@ class IranianHijri {
     return starts;
   }();
 
+  static final List<int> _predictedStarts = () {
+    final starts = <int>[_recordedStarts.last];
+    for (var i = 0; i < predictedLastMonth - officialLastMonth; i++) {
+      final mask = int.parse(predictedMonthLengths[i ~/ 4], radix: 16);
+      starts.add(starts.last + ((mask >> (i % 4)) & 1 == 1 ? 30 : 29));
+    }
+    return starts;
+  }();
+
   /// Month starts after the official record that the prediction misses,
   /// keyed by `year * 12 + month - 1`, as Julian day numbers, from the
   /// calendar time.ir publishes for Jalali 1406.
@@ -646,6 +660,16 @@ class IranianHijri {
     0, 1, 0, 1, -1794, //
   ];
 }
+
+/// Start of month [index] (`year * 12 + month - 1`) from the published
+/// starts or the crescent prediction, without the official and predicted
+/// tables. For tool/hijri_table/generate.dart and the tests; not exported.
+int calculatedMonthStart(int index) =>
+    IranianHijri._publishedStarts[index] ??
+    IranianHijri._predicted.putIfAbsent(
+      index,
+      () => IranianHijri._predictedStart(index ~/ 12, index % 12 + 1),
+    );
 
 const _rad = math.pi / 180;
 double _sin(double degrees) => math.sin(degrees * _rad);

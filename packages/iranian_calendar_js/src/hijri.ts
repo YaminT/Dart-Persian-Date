@@ -9,7 +9,7 @@ import {
 } from './days.js';
 import { d2g, d2j } from './jalali.js';
 import { predictedStart, tabularFromJulianDay } from './predict.js';
-import { officialFirstDay, officialFirstMonth, officialLastMonth, officialMonthLengths } from './table.js';
+import { officialFirstDay, officialFirstMonth, officialLastMonth, officialMonthLengths, predictedLastMonth, predictedMonthLengths } from './table.js';
 
 export {
   type DateFields,
@@ -167,6 +167,9 @@ export class IranianHijri {
     if (index >= officialFirstMonth && index <= officialLastMonth) {
       return recordedStarts()[index - officialFirstMonth];
     }
+    if (index > officialLastMonth && index <= predictedLastMonth) {
+      return predictedStarts()[index - officialLastMonth];
+    }
     const published = publishedStarts.get(index);
     if (published !== undefined) return published;
     let start = predicted.get(index);
@@ -191,6 +194,17 @@ const publishedStarts = new Map<number, number>([
 const predicted = new Map<number, number>();
 
 let recorded: number[] | undefined;
+let predictedRecorded: number[] | undefined;
+
+function predictedStarts(): number[] {
+  if (predictedRecorded) return predictedRecorded;
+  const starts = [recordedStarts().at(-1)!];
+  for (let i = 0; i < predictedLastMonth - officialLastMonth; i++) {
+    const nibble = parseInt(predictedMonthLengths[i >> 2], 16);
+    starts.push(starts[i] + ((nibble >> (i & 3)) & 1 ? 30 : 29));
+  }
+  return (predictedRecorded = starts);
+}
 
 /** Julian day numbers of the month starts in the official record. */
 function recordedStarts(): number[] {
