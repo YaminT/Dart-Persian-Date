@@ -203,7 +203,9 @@ class HijriDate implements Comparable<HijriDate> {
 /// seen in Iran. The crescent is predicted from the positions of the Sun and
 /// the Moon (truncated Meeus series) with Yallop's criterion at the
 /// optical-aid limit (q >= -0.232), checked at several Iranian cities, and a
-/// few months already published on time.ir are fixed by a table.
+/// few months already published on time.ir are fixed by a table. Through
+/// Dhu al-Hijjah 1550 the predicted month starts are stored, calculated in
+/// advance the same way; months after that are calculated when first used.
 /// [monthStarts] add announcements of your own.
 ///
 /// The prediction is a calculation, not an announcement: a month can still
@@ -282,11 +284,15 @@ class IranianHijri {
     if (month < 1 || month > 12) {
       throw ArgumentError.value(month, 'month', 'Must be in 1 to 12');
     }
-    final first = HijriDate.min.year, last = HijriDate.max.year;
-    if (year < first || year > last) {
-      throw ArgumentError.value(year, 'year', 'Must be in $first to $last');
+    // HijriDate.min.year and HijriDate.max.year, which hijri_test checks.
+    // Constants, because computing those dates predicts four crescents.
+    if (year < _firstYear || year > _lastYear) {
+      throw ArgumentError.value(
+          year, 'year', 'Must be in $_firstYear to $_lastYear');
     }
   }
+
+  static const _firstYear = -64, _lastYear = 3274;
 
   /// Julian day number of the first day of [month] (1 to 12) of Hijri
   /// [year].
@@ -296,6 +302,9 @@ class IranianHijri {
     if (corrected != null) return corrected;
     if (index >= officialFirstMonth && index <= officialLastMonth) {
       return _recordedStarts[index - officialFirstMonth];
+    }
+    if (index > officialLastMonth && index <= predictedLastMonth) {
+      return _predictedStarts[index - officialLastMonth];
     }
     return _publishedStarts[index] ??
         _predicted.putIfAbsent(
@@ -488,13 +497,18 @@ class IranianHijri {
     final e = 1 - 0.002516 * t - 0.0000074 * t * t;
 
     var sl = 0.0, sr = 0.0, sb = 0.0;
-    for (final (cd, cm, cmp, cf, l, r) in _lonDist) {
+    for (var i = 0; i < _lonDist.length; i += 6) {
+      final cd = _lonDist[i], cm = _lonDist[i + 1];
+      final cmp = _lonDist[i + 2], cf = _lonDist[i + 3];
+      final l = _lonDist[i + 4], r = _lonDist[i + 5];
       final arg = cd * d + cm * m + cmp * mp + cf * f;
       final factor = cm == 0 ? 1.0 : (cm.abs() == 1 ? e : e * e);
       sl += l * factor * _sin(arg);
       sr += r * factor * _cos(arg);
     }
-    for (final (cd, cm, cmp, cf, b) in _lat) {
+    for (var i = 0; i < _lat.length; i += 5) {
+      final cd = _lat[i], cm = _lat[i + 1], cmp = _lat[i + 2];
+      final cf = _lat[i + 3], b = _lat[i + 4];
       final factor = cm == 0 ? 1.0 : (cm.abs() == 1 ? e : e * e);
       sb += b * factor * _sin(cd * d + cm * m + cmp * mp + cf * f);
     }
@@ -569,6 +583,15 @@ class IranianHijri {
     return starts;
   }();
 
+  static final List<int> _predictedStarts = () {
+    final starts = <int>[_recordedStarts.last];
+    for (var i = 0; i < predictedLastMonth - officialLastMonth; i++) {
+      final mask = int.parse(predictedMonthLengths[i ~/ 4], radix: 16);
+      starts.add(starts.last + ((mask >> (i % 4)) & 1 == 1 ? 30 : 29));
+    }
+    return starts;
+  }();
+
   /// Month starts after the official record that the prediction misses,
   /// keyed by `year * 12 + month - 1`, as Julian day numbers, from the
   /// calendar time.ir publishes for Jalali 1406.
@@ -578,65 +601,75 @@ class IranianHijri {
   };
 
   // Meeus table 47.A: D, M, M', F, longitude (1e-6 degrees), distance (m).
-  static const _lonDist = [
-    (0, 0, 1, 0, 6288774, -20905355),
-    (2, 0, -1, 0, 1274027, -3699111),
-    (2, 0, 0, 0, 658314, -2955968),
-    (0, 0, 2, 0, 213618, -569925),
-    (0, 1, 0, 0, -185116, 48888),
-    (0, 0, 0, 2, -114332, -3149),
-    (2, 0, -2, 0, 58793, 246158),
-    (2, -1, -1, 0, 57066, -152138),
-    (2, 0, 1, 0, 53322, -170733),
-    (2, -1, 0, 0, 45758, -204586),
-    (0, 1, -1, 0, -40923, -129620),
-    (1, 0, 0, 0, -34720, 108743),
-    (0, 1, 1, 0, -30383, 104755),
-    (2, 0, 0, -2, 15327, 10321),
-    (0, 0, 1, 2, -12528, 0),
-    (0, 0, 1, -2, 10980, 79661),
-    (4, 0, -1, 0, 10675, -34782),
-    (0, 0, 3, 0, 10034, -23210),
-    (4, 0, -2, 0, 8548, -21636),
-    (2, 1, -1, 0, -7888, 24208),
-    (2, 1, 0, 0, -6766, 30824),
-    (1, 0, -1, 0, -5163, -8379),
-    (1, 1, 0, 0, 4987, -16675),
-    (2, -1, 1, 0, 4036, -12831),
-    (2, 0, 2, 0, 3994, -10445),
-    (4, 0, 0, 0, 3861, -11650),
-    (2, 0, -3, 0, 3665, 14403),
-    (0, 1, -2, 0, -2689, -7003),
-    (2, 0, -1, 2, -2602, 0),
-    (2, -1, -2, 0, 2390, 10056),
-    (1, 0, 1, 0, -2348, 6322),
-    (2, -2, 0, 0, 2236, -9884),
+  static const _lonDist = <int>[
+    0, 0, 1, 0, 6288774, -20905355, //
+    2, 0, -1, 0, 1274027, -3699111, //
+    2, 0, 0, 0, 658314, -2955968, //
+    0, 0, 2, 0, 213618, -569925, //
+    0, 1, 0, 0, -185116, 48888, //
+    0, 0, 0, 2, -114332, -3149, //
+    2, 0, -2, 0, 58793, 246158, //
+    2, -1, -1, 0, 57066, -152138, //
+    2, 0, 1, 0, 53322, -170733, //
+    2, -1, 0, 0, 45758, -204586, //
+    0, 1, -1, 0, -40923, -129620, //
+    1, 0, 0, 0, -34720, 108743, //
+    0, 1, 1, 0, -30383, 104755, //
+    2, 0, 0, -2, 15327, 10321, //
+    0, 0, 1, 2, -12528, 0, //
+    0, 0, 1, -2, 10980, 79661, //
+    4, 0, -1, 0, 10675, -34782, //
+    0, 0, 3, 0, 10034, -23210, //
+    4, 0, -2, 0, 8548, -21636, //
+    2, 1, -1, 0, -7888, 24208, //
+    2, 1, 0, 0, -6766, 30824, //
+    1, 0, -1, 0, -5163, -8379, //
+    1, 1, 0, 0, 4987, -16675, //
+    2, -1, 1, 0, 4036, -12831, //
+    2, 0, 2, 0, 3994, -10445, //
+    4, 0, 0, 0, 3861, -11650, //
+    2, 0, -3, 0, 3665, 14403, //
+    0, 1, -2, 0, -2689, -7003, //
+    2, 0, -1, 2, -2602, 0, //
+    2, -1, -2, 0, 2390, 10056, //
+    1, 0, 1, 0, -2348, 6322, //
+    2, -2, 0, 0, 2236, -9884, //
   ];
 
   // Meeus table 47.B: D, M, M', F, latitude (1e-6 degrees).
-  static const _lat = [
-    (0, 0, 0, 1, 5128122),
-    (0, 0, 1, 1, 280602),
-    (0, 0, 1, -1, 277693),
-    (2, 0, 0, -1, 173237),
-    (2, 0, -1, 1, 55413),
-    (2, 0, -1, -1, 46271),
-    (2, 0, 0, 1, 32573),
-    (0, 0, 2, 1, 17198),
-    (2, 0, 1, -1, 9266),
-    (0, 0, 2, -1, 8822),
-    (2, -1, 0, -1, 8216),
-    (2, 0, -2, -1, 4324),
-    (2, 0, 1, 1, 4200),
-    (2, 1, 0, -1, -3359),
-    (2, -1, -1, 1, 2463),
-    (2, -1, 0, 1, 2211),
-    (2, -1, -1, -1, 2065),
-    (0, 1, -1, -1, -1870),
-    (4, 0, -1, -1, 1828),
-    (0, 1, 0, 1, -1794),
+  static const _lat = <int>[
+    0, 0, 0, 1, 5128122, //
+    0, 0, 1, 1, 280602, //
+    0, 0, 1, -1, 277693, //
+    2, 0, 0, -1, 173237, //
+    2, 0, -1, 1, 55413, //
+    2, 0, -1, -1, 46271, //
+    2, 0, 0, 1, 32573, //
+    0, 0, 2, 1, 17198, //
+    2, 0, 1, -1, 9266, //
+    0, 0, 2, -1, 8822, //
+    2, -1, 0, -1, 8216, //
+    2, 0, -2, -1, 4324, //
+    2, 0, 1, 1, 4200, //
+    2, 1, 0, -1, -3359, //
+    2, -1, -1, 1, 2463, //
+    2, -1, 0, 1, 2211, //
+    2, -1, -1, -1, 2065, //
+    0, 1, -1, -1, -1870, //
+    4, 0, -1, -1, 1828, //
+    0, 1, 0, 1, -1794, //
   ];
 }
+
+/// Start of month [index] (`year * 12 + month - 1`) from the published
+/// starts or the crescent prediction, without the official and predicted
+/// tables. For tool/hijri_table/generate.dart and the tests; not exported.
+int calculatedMonthStart(int index) =>
+    IranianHijri._publishedStarts[index] ??
+    IranianHijri._predicted.putIfAbsent(
+      index,
+      () => IranianHijri._predictedStart(index ~/ 12, index % 12 + 1),
+    );
 
 const _rad = math.pi / 180;
 double _sin(double degrees) => math.sin(degrees * _rad);

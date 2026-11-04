@@ -3,7 +3,8 @@
  *
  * @packageDocumentation
  */
-import { type DateFields, type GregorianInput, IranianHijri, jalaliJulianDay, julianDay } from './hijri.js';
+import { type DateFields, type GregorianInput, jalaliJulianDay, julianDay } from './days.js';
+import { IranianHijri } from './hijri.js';
 import { d2g, d2j, isLeapJalaliYear, jalaliMonthLength } from './jalali.js';
 
 export {

@@ -1,27 +1,25 @@
-import { d2g, d2j, g2d, j2d, jalaliMonthLength } from './jalali.js';
+import {
+  type DateFields,
+  type GregorianInput,
+  checkRange,
+  firstSupportedDay,
+  jalaliJulianDay,
+  julianDay,
+  lastSupportedDay,
+} from './days.js';
+import { d2g, d2j } from './jalali.js';
 import { predictedStart, tabularFromJulianDay } from './predict.js';
-import { officialFirstDay, officialFirstMonth, officialLastMonth, officialMonthLengths } from './table.js';
+import { officialFirstDay, officialFirstMonth, officialLastMonth, officialMonthLengths, predictedLastMonth, predictedMonthLengths } from './table.js';
 
-/** A year, month (1 to 12), and day of the month. */
-export interface DateFields {
-  readonly year: number;
-  readonly month: number;
-  readonly day: number;
-}
-
-/**
- * A Temporal date or date-time (`Temporal.PlainDate`, `PlainDateTime`, or
- * `ZonedDateTime`), in any calendar. Only `withCalendar` is used.
- */
-export interface TemporalLike {
-  withCalendar(calendar: 'iso8601'): DateFields;
-}
-
-/**
- * A Gregorian day: a `Date` (its local calendar day), a Temporal date in any
- * calendar, or Gregorian `{ year, month, day }` with months 1 to 12.
- */
-export type GregorianInput = Date | TemporalLike | DateFields;
+export {
+  type DateFields,
+  type GregorianInput,
+  type TemporalLike,
+  firstSupportedDay,
+  jalaliJulianDay,
+  julianDay,
+  lastSupportedDay,
+} from './days.js';
 
 /** Persian names of the Hijri months, from Muharram to Dhu al-Hijjah. */
 export const hijriMonthNames: readonly string[] = Object.freeze([
@@ -54,11 +52,6 @@ export const hijriMonthNamesEnglish: readonly string[] = Object.freeze([
   "Dhu al-Qa'dah",
   'Dhu al-Hijjah',
 ]);
-
-/** First supported day, Jalali -61/01/01 (Gregorian 560-03-20). */
-export const firstSupportedDay = j2d(-61, 1, 1);
-/** Last supported day, Jalali 3177/10/11 (Gregorian 3798-12-31). */
-export const lastSupportedDay = j2d(3177, 10, 11);
 
 /** Options for {@link IranianHijri}. */
 export interface IranianHijriOptions {
@@ -142,7 +135,7 @@ export class IranianHijri {
   /** Whether `date` is a day of this calendar within the supported range. */
   isValid(date: DateFields): boolean {
     const { year, month, day } = date;
-    if (![year, month, day].every(Number.isInteger) || month < 1 || month > 12) return false;
+    if (!(Number.isInteger(year) && Number.isInteger(month) && Number.isInteger(day)) || month < 1 || month > 12) return false;
     if (day < 1 || day > this.monthLength(year, month)) return false;
     const jdn = this.#start(year * 12 + month - 1) + day - 1;
     return jdn >= firstSupportedDay && jdn <= lastSupportedDay;
@@ -174,6 +167,9 @@ export class IranianHijri {
     if (index >= officialFirstMonth && index <= officialLastMonth) {
       return recordedStarts()[index - officialFirstMonth];
     }
+    if (index > officialLastMonth && index <= predictedLastMonth) {
+      return predictedStarts()[index - officialLastMonth];
+    }
     const published = publishedStarts.get(index);
     if (published !== undefined) return published;
     let start = predicted.get(index);
@@ -198,6 +194,17 @@ const publishedStarts = new Map<number, number>([
 const predicted = new Map<number, number>();
 
 let recorded: number[] | undefined;
+let predictedRecorded: number[] | undefined;
+
+function predictedStarts(): number[] {
+  if (predictedRecorded) return predictedRecorded;
+  const starts = [recordedStarts().at(-1)!];
+  for (let i = 0; i < predictedLastMonth - officialLastMonth; i++) {
+    const nibble = parseInt(predictedMonthLengths[i >> 2], 16);
+    starts.push(starts[i] + ((nibble >> (i & 3)) & 1 ? 30 : 29));
+  }
+  return (predictedRecorded = starts);
+}
 
 /** Julian day numbers of the month starts in the official record. */
 function recordedStarts(): number[] {
@@ -217,49 +224,3 @@ function checkMonth(month: number): void {
   }
 }
 
-function checkRange(jdn: number): number {
-  if (!Number.isInteger(jdn) || jdn < firstSupportedDay || jdn > lastSupportedDay) {
-    throw new RangeError('Date must be in Jalali -61/01/01 to 3177/10/11 (Gregorian 560-03-20 to 3798-12-31)');
-  }
-  return jdn;
-}
-
-/** Julian day number of a Gregorian day, range-checked. */
-export function julianDay(date: GregorianInput): number {
-  let fields: DateFields;
-  if (date instanceof Date) {
-    if (Number.isNaN(date.getTime())) throw new RangeError('Invalid Date');
-    fields = { year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate() };
-  } else if (typeof (date as TemporalLike).withCalendar === 'function') {
-    fields = (date as TemporalLike).withCalendar('iso8601');
-  } else {
-    fields = date as DateFields;
-  }
-  const { year, month, day } = fields;
-  if (![year, month, day].every(Number.isInteger) || month < 1 || month > 12 || day < 1 || day > 31) {
-    throw new RangeError(`Not a Gregorian date: ${year}-${month}-${day}`);
-  }
-  const jdn = g2d(year, month, day);
-  const back = d2g(jdn);
-  if (back.year !== year || back.month !== month || back.day !== day) {
-    throw new RangeError(`Not a Gregorian date: ${year}-${month}-${day}`);
-  }
-  return checkRange(jdn);
-}
-
-/** Julian day number of a Jalali day, range-checked. */
-export function jalaliJulianDay(date: DateFields): number {
-  const { year, month, day } = date;
-  if (
-    ![year, month, day].every(Number.isInteger) ||
-    year < -61 ||
-    year > 3177 ||
-    month < 1 ||
-    month > 12 ||
-    day < 1 ||
-    day > jalaliMonthLength(year, month)
-  ) {
-    throw new RangeError(`Not a Jalali date: ${year}/${month}/${day}`);
-  }
-  return checkRange(j2d(year, month, day));
-}

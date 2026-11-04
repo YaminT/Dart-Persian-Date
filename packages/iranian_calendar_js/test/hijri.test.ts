@@ -11,6 +11,8 @@ import {
   toHijri,
   toJalali,
 } from '../src/index.js';
+import { predictedLastMonth, officialLastMonth } from '../src/table.js';
+import { predictedStart } from '../src/predict.js';
 
 // Compiled to build/test/, so the package root is two levels up.
 const packageFile = (path: string): string => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
@@ -36,6 +38,14 @@ test('every month start matches the Dart package, 1200 to 1600', () => {
     const month = (i % 12) + 1;
     assert.equal(iso(IranianHijri.official.monthStart(year, month)), expected, `${year}/${month}`);
   });
+});
+
+test('precomputed starts match the live prediction and published starts', () => {
+  const published = new Map([[1449 * 12, 2461564], [1449 * 12 + 8, 2461800]]);
+  for (let index = officialLastMonth + 1; index <= predictedLastMonth; index++) {
+    const expected = published.get(index) ?? predictedStart(Math.floor(index / 12), index % 12 + 1);
+    assert.equal(IranianHijri.official.monthStartJulianDay(Math.floor(index / 12), index % 12 + 1), expected, `${index}`);
+  }
 });
 
 test('every month start matches the official record', () => {

@@ -19,6 +19,37 @@ const _dayPeriods = [
 ///
 /// Throws [ArgumentError] when [pattern] cannot identify a date.
 PersianDate? parseWithPattern(String input, String pattern, JalaliEra era) {
+  final (:parts, :regex) = _compile(pattern);
+  final match = regex.firstMatch(_normalize(input));
+  if (match == null) return null;
+
+  // Every value read, by field; a field read twice must agree.
+  final fields = <String, int>{};
+  var group = 0;
+  for (final part in parts) {
+    if (!part.token) continue;
+    final text = match[++group]!;
+    final (field, value) = _read(part.text, text);
+    if (value == null) return null;
+    if (fields[field] case final previous? when previous != value) return null;
+    fields[field] = value;
+  }
+  return _date(fields, era);
+}
+
+typedef _Compiled = ({List<({bool token, String text})> parts, RegExp regex});
+
+/// Patterns compiled so far, so parsing many inputs with one pattern builds
+/// its regular expression once. Cleared when it holds [_maxCompiled].
+final _compiled = <String, _Compiled>{};
+const _maxCompiled = 32;
+
+/// The parts of [pattern] and the regular expression that reads them.
+///
+/// Throws [ArgumentError] when [pattern] cannot identify a date.
+_Compiled _compile(String pattern) {
+  final cached = _compiled[pattern];
+  if (cached != null) return cached;
   final parts = splitPattern(pattern, _tokens);
   final tokens = {
     for (final part in parts)
@@ -50,22 +81,15 @@ PersianDate? parseWithPattern(String input, String pattern, JalaliEra era) {
     regex.write(part.token ? '(${_tokenRegex(part.text)})' : _literal(part));
   }
   regex.write(r'$');
-  final match = RegExp(regex.toString(), caseSensitive: false)
-      .firstMatch(_normalize(input));
-  if (match == null) return null;
+  if (_compiled.length >= _maxCompiled) _compiled.clear();
+  return _compiled[pattern] = (
+    parts: parts,
+    regex: RegExp(regex.toString(), caseSensitive: false),
+  );
+}
 
-  // Every value read, by field; a field read twice must agree.
-  final fields = <String, int>{};
-  var group = 0;
-  for (final part in parts) {
-    if (!part.token) continue;
-    final text = match[++group]!;
-    final (field, value) = _read(part.text, text);
-    if (value == null) return null;
-    if (fields[field] case final previous? when previous != value) return null;
-    fields[field] = value;
-  }
-
+/// The date [fields] describe, or null when they do not fit together.
+PersianDate? _date(Map<String, int> fields, JalaliEra era) {
   final year = fields['year']! - era.offset;
   final month = fields['month']!, day = fields['day']!;
   if (year < -61 || year > 3177 || month < 1 || month > 12 || day < 1) {
@@ -166,12 +190,15 @@ String _withoutDot(String text) =>
 int? _nameIndex(String text, List<List<String>> lists, {int first = 1}) {
   final key = _nameKey(text);
   for (final names in lists) {
-    for (var i = 0; i < names.length; i++) {
-      if (_nameKey(names[i]) == key) return i + first;
-    }
+    final keys = _nameKeys[names] ??= [for (final n in names) _nameKey(n)];
+    final i = keys.indexOf(key);
+    if (i != -1) return i + first;
   }
   return null;
 }
+
+/// [_nameKey] of every name, by list of names.
+final _nameKeys = Map<List<String>, List<String>>.identity();
 
 /// [name] without spaces and in lower case, for comparing names.
 String _nameKey(String name) =>

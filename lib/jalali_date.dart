@@ -30,7 +30,7 @@ import 'src/words.dart';
 
 export 'src/digits.dart';
 export 'src/era.dart';
-export 'src/hijri.dart';
+export 'src/hijri.dart' hide calculatedMonthStart;
 export 'src/persian_date_range.dart';
 export 'src/words.dart';
 

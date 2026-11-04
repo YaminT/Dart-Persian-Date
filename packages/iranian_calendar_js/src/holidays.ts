@@ -1,12 +1,6 @@
 import { d2g, d2j, j2d, jalaliMonthLength } from './jalali.js';
-import {
-  type DateFields,
-  type GregorianInput,
-  IranianHijri,
-  firstSupportedDay,
-  julianDay,
-  lastSupportedDay,
-} from './hijri.js';
+import { type DateFields, type GregorianInput, firstSupportedDay, julianDay, lastSupportedDay } from './days.js';
+import { IranianHijri } from './hijri.js';
 
 /** One official holiday of Iran, on a fixed Jalali or Hijri date. */
 export interface OfficialHoliday {

@@ -1,3 +1,13 @@
+## 1.3.2
+
+### Changed
+
+* Faster lunar Hijri dates after the official record: month starts predicted through Dhu al-Hijjah 1550 (past Jalali 1500) are stored, calculated in advance the same way, instead of being calculated on first use. The first `HijriDate` in 1460 takes 0.3 ms instead of 4.7 ms, and a Hijri year after 1448 no longer costs a crescent calculation per month. Months after 1550 are still calculated. Every month start is the same as before.
+* The first `HijriDate` no longer calculates four crescents to check the supported range: 0.2 ms instead of 16 ms.
+* `parseFormat` and `tryParseFormat` reuse the regular expression of a pattern: 8 µs instead of 141 µs per call for `d MMMM yyyy`.
+* Faster `format`, `toPersianDigits`, and `toLatinDigits`.
+* The VSOP87, nutation, and Moon tables are stored as flat number lists, so web builds that use `nowruzMoment` are about 1.9 KB smaller gzipped.
+
 ## 1.3.1
 
 ### Changed

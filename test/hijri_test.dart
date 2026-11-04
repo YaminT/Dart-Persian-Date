@@ -1,6 +1,10 @@
 import 'dart:io';
 
 import 'package:jalali_date/jalali_date.dart';
+import 'package:jalali_date/src/hijri.dart' show calculatedMonthStart;
+import 'package:jalali_date/src/hijri_table.dart'
+    show officialLastMonth, predictedLastMonth;
+import 'package:jalali_date/src/jalali_calc.dart' show d2g;
 import 'package:test/test.dart';
 
 // 1 Shawwal (Eid al-Fitr) on the calendars published on time.ir, Hijri 1429
@@ -13,6 +17,18 @@ const _eidAlFitr = [
 ];
 
 void main() {
+  test('precomputed predicted starts match the live calculation', () {
+    for (var index = officialLastMonth + 1;
+        index <= predictedLastMonth;
+        index++) {
+      final year = index ~/ 12, month = index % 12 + 1;
+      expect(
+        IranianHijri.official.monthStart(year, month).toDateTime(),
+        _dateFromJdn(calculatedMonthStart(index)),
+        reason: '$year/$month',
+      );
+    }
+  });
   group('conversion', () {
     test('known days', () {
       expect(PersianDate(1405, 1, 1).toHijri(), HijriDate(1447, 10, 1));
@@ -108,6 +124,12 @@ void main() {
       final min = HijriDate.min, max = HijriDate.max;
       expect(() => HijriDate(min.year - 1, 1, 1), throwsArgumentError);
       expect(() => HijriDate(max.year + 1, 1, 1), throwsArgumentError);
+      // IranianHijri checks years against constants copied from min and max.
+      final official = IranianHijri.official;
+      expect(() => official.monthLength(min.year - 1, 12), throwsArgumentError);
+      expect(() => official.monthLength(max.year + 1, 1), throwsArgumentError);
+      expect(HijriDate(min.year, min.month, min.day), min);
+      expect(HijriDate(max.year, max.month, max.day), max);
       if (min.day > 1) {
         expect(() => HijriDate(min.year, min.month, min.day - 1),
             throwsArgumentError);
@@ -199,4 +221,9 @@ void main() {
           throwsArgumentError);
     });
   });
+}
+
+DateTime _dateFromJdn(int jdn) {
+  final date = d2g(jdn);
+  return DateTime(date.gy, date.gm, date.gd);
 }
