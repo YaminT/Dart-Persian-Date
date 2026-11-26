@@ -1,3 +1,7 @@
+## 0.1.2
+
+* Requires jalali_date 1.3.2.
+
 ## 0.1.1
 
 * README: the holidays section shows `OfflineHolidaySource.isWorkingDay` as a `selectableDayPredicate`, and links iranian_holidays on pub.dev.

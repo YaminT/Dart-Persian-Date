@@ -1,3 +1,9 @@
+## 1.3.3
+
+### Changed
+
+* README: a "Coming from shamsi_date" table maps its common calls to this package.
+
 ## 1.3.2
 
 ### Changed

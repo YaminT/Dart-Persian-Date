@@ -1,3 +1,9 @@
+## 0.5.2
+
+### Changed
+
+* Requires jalali_date 1.3.2, with its faster Hijri dates.
+
 ## 0.5.1
 
 ### Changed

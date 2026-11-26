@@ -54,6 +54,23 @@ Then import the single library:
 import 'package:jalali_date/jalali_date.dart';
 ```
 
+## Coming from shamsi_date
+
+The names differ a little, the ideas are the same. Check each row against the version of `shamsi_date` you use.
+
+| shamsi_date | jalali_date |
+| ----------- | ----------- |
+| `Jalali(1403, 1, 1)` | `PersianDate(1403, 1, 1)` (date-only, throws `ArgumentError` when invalid) |
+| `Jalali.now()` | `PersianDate.now()` |
+| `Jalali.fromDateTime(dt)` | `PersianDate.fromDateTime(dt)` or `dt.toPersianDate()` |
+| `jalali.toDateTime()` | `date.toDateTime()` |
+| `jalali.addDays(n)` | `date.addDays(n)`, also `addMonths` and `addYears` |
+| `jalali.isLeapYear()` | `date.isLeapYear` (a getter) |
+| `jalali.monthLength` | `date.monthLength` |
+| `jalali.formatter.wN`, `jalali.formatFullDate()` | `date.weekdayName`, `date.format('EEEE d MMMM yyyy')` |
+
+On top of that, `jalali_date` parses text written with a pattern (`parseFormat`), writes relative time and dates in words, counts whole months and years, gives the moment of Nowruz, and has the official lunar Hijri calendar. See the [Quick reference](#quick-reference).
+
 ## Quick reference
 
 Everything is exported from `package:jalali_date/jalali_date.dart`: the immutable `PersianDate` class, the `PersianDateRange` class, the `HijriDate` and `IranianHijri` classes, the `toPersianDigits`, `toLatinDigits`, and `toPersianWords` functions, the `JalaliEra` enum, and the `DateTime.toPersianDate()` and `DateTime.toHijriDate()` extensions.
