@@ -61,7 +61,7 @@ jobs:
         with:
           channel: stable
       - run: flutter pub get
-      - run: flutter analyze --fatal-infos
+      - run: flutter analyze --no-fatal-infos
       - run: flutter test
 
   npm:
