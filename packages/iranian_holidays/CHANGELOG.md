@@ -1,3 +1,9 @@
+## 1.0.0
+
+### Changed
+
+* First stable release. The public API (the offline and online holiday sources, `Holiday`, and the fallback source) is now covered by semantic versioning: breaking changes will wait for 2.0.0. No code changes since 0.5.2.
+
 ## 0.5.2
 
 ### Changed
